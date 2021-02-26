@@ -1,6 +1,6 @@
 ## 0.2.1
 
-  * Fixes version constraint and documentation issues.
+  * Fixes small issues.
 
 ## 0.2.0
 

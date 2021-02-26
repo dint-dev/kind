@@ -65,13 +65,39 @@ void main() {
       expect(now.toDateTime().isAfter(DateTime.now()), isFalse);
     });
 
-    test('toIso8601String', () {
-      expect(DateTimeWithTimeZone.epoch.toIso8601String(),
-          '1970-01-01T02:00:00.000Z');
+    test('toIso8601String()', () {
+      expect(
+        DateTimeWithTimeZone.epoch.toIso8601String(),
+        '1970-01-01T00:00:00.000Z',
+      );
+    });
+
+    test('toIso8601String(), +1:00', () {
+      final dateTimeWithTimeZone =
+          DateTimeWithTimeZone.fromMicrosecondsSinceEpoch(
+        9000,
+        Timezone.parse('+01:00'),
+      );
+      expect(dateTimeWithTimeZone.microsecondsSinceEpochInUtc, 9000);
+      expect(
+        dateTimeWithTimeZone.toIso8601String(),
+        '1970-01-01T01:00:00.009+01',
+      );
+      expect(
+        dateTimeWithTimeZone.toDateTime(utc: true).toIso8601String(),
+        '1970-01-01T00:00:00.009Z',
+      );
+      expect(
+        dateTimeWithTimeZone
+            .subtract(Timezone.local.differenceToUtc)
+            .toDateTime()
+            .toIso8601String(),
+        '1970-01-01T00:00:00.009',
+      );
     });
 
     test('parse (no timezone)', () {
-      final s = '1970-01-01T02:00:00.009';
+      final s = '1970-01-01T00:00:00.009';
       final parsed = DateTimeWithTimeZone.parse(s);
       expect(parsed.microsecondsSinceEpochInUtc, 9000);
       expect(
@@ -81,76 +107,82 @@ void main() {
     });
 
     test('parse (...z)', () {
-      final s = '1970-01-01T02:00:00.009z';
+      final s = '1970-01-01T00:00:00.009z';
       final parsed = DateTimeWithTimeZone.parse(s);
       expect(parsed.microsecondsSinceEpochInUtc, 9000);
       expect(parsed.timezone, Timezone.utc);
     });
 
     test('parse (...Z)', () {
-      final s = '1970-01-01T02:00:00.009Z';
+      final s = '1970-01-01T00:00:00.009Z';
       final parsed = DateTimeWithTimeZone.parse(s);
       expect(parsed.microsecondsSinceEpochInUtc, 9000);
       expect(parsed.timezone, Timezone.utc);
     });
 
     test('parse (...+00)', () {
-      final s = '1970-01-01T02:00:00.009+00';
+      final s = '1970-01-01T00:00:00.009+00';
       final parsed = DateTimeWithTimeZone.parse(s);
       expect(parsed.microsecondsSinceEpochInUtc, 9000);
       expect(parsed.timezone, Timezone.utc);
     });
 
     test('parse (...+00:00)', () {
-      final s = '1970-01-01T02:00:00.009+00:00';
+      final s = '1970-01-01T00:00:00.009+00:00';
       final parsed = DateTimeWithTimeZone.parse(s);
       expect(parsed.microsecondsSinceEpochInUtc, 9000);
       expect(parsed.timezone, Timezone.utc);
     });
 
     test('parse (...-05)', () {
-      final s = '1970-01-01T02:00:00.009-05';
+      final s = '1970-01-01T00:00:00.009-05';
       final parsed = DateTimeWithTimeZone.parse(s);
-      expect(parsed.microsecondsSinceEpochInUtc, 9000);
       expect(
         parsed.timezone,
-        Timezone.fromDifferenceToUtc(-const Duration(hours: 5)),
+        Timezone.fromDifferenceToUtc(const Duration(hours: -5)),
+      );
+      expect(
+        parsed.microsecondsSinceEpochInUtc,
+        9000 + 5 * 3600 * 1000 * 1000,
       );
     });
 
     test('parse (...+05)', () {
-      final s = '1970-01-01T02:00:00.009+05';
+      final s = '1970-01-01T00:00:00.009+05';
       final parsed = DateTimeWithTimeZone.parse(s);
-      expect(parsed.microsecondsSinceEpochInUtc, 9000);
       expect(
         parsed.timezone,
         Timezone.fromDifferenceToUtc(const Duration(hours: 5)),
       );
+      expect(
+        parsed.microsecondsSinceEpochInUtc,
+        9000 - 5 * 3600 * 1000 * 1000,
+      );
     });
 
     test('parse (...-05:30)', () {
-      final s = '1970-01-01T02:00:00.009-05:30';
+      final s = '1970-01-01T00:00:00.009-05:30';
       final parsed = DateTimeWithTimeZone.parse(s);
       expect(
-        parsed.microsecondsSinceEpochInUtc,
-        9000,
+        parsed.timezone,
+        Timezone.fromDifferenceToUtc(const Duration(hours: -5, minutes: -30)),
       );
       expect(
-        parsed.timezone,
-        Timezone.fromDifferenceToUtc(-const Duration(hours: 5, minutes: 30)),
+        parsed.microsecondsSinceEpochInUtc,
+        9000 + (5 * 3600 + 30 * 60) * 1000 * 1000,
       );
     });
 
     test('parse (...+05:30)', () {
-      final s = '1970-01-01T02:00:00.009+05:30';
+      final s = '1970-01-01T00:00:00.009+05:30';
       final parsed = DateTimeWithTimeZone.parse(s);
-      expect(
-        parsed.microsecondsSinceEpochInUtc,
-        9000,
-      );
       expect(
         parsed.timezone,
         Timezone.fromDifferenceToUtc(const Duration(hours: 5, minutes: 30)),
+      );
+      expect(
+        parsed.microsecondsSinceEpochInUtc,
+        9000 - (5 * 3600 + 30 * 60) * 1000 * 1000,
       );
     });
   });

@@ -32,7 +32,7 @@ class DateTimeWithTimeZone implements Comparable<DateTimeWithTimeZone> {
   /// Constructs dateTimeWithTimeZone from [DateTime].
   ///
   /// The API is identical to [DateTime()] constructor.
-  factory DateTimeWithTimeZone(
+  factory DateTimeWithTimeZone.utc(
     int year, [
     int month = 1,
     int day = 1,
@@ -42,7 +42,7 @@ class DateTimeWithTimeZone implements Comparable<DateTimeWithTimeZone> {
     int millisecond = 0,
     int microsecond = 0,
   ]) {
-    final dateTime = DateTime(
+    final dateTime = DateTime.utc(
       year,
       month,
       day,
@@ -134,8 +134,9 @@ class DateTimeWithTimeZone implements Comparable<DateTimeWithTimeZone> {
   /// Constructs [DateTime] from this instance.
   DateTime toDateTime({bool utc = false}) {
     final dateTime = DateTime.fromMicrosecondsSinceEpoch(
-        microsecondsSinceEpochInUtc,
-        isUtc: true);
+      microsecondsSinceEpochInUtc,
+      isUtc: true,
+    );
     if (utc) {
       return dateTime;
     }
@@ -144,12 +145,13 @@ class DateTimeWithTimeZone implements Comparable<DateTimeWithTimeZone> {
 
   /// Returns a string with format "yyyy-MM-ddTHH:mm:ss.mmmuuuZ"
   String toIso8601String() {
-    final dateTime = toDateTime();
-    final s = dateTime.toIso8601String();
-    if (dateTime.isUtc) {
-      return s;
+    if (timezone == Timezone.utc) {
+      return toDateTime(utc: true).toIso8601String();
     }
-    return '$s${timezone.toIso8601String()}';
+    final dateTime = toDateTime(utc: true).add(timezone.differenceToUtc);
+    final string = dateTime.toIso8601String();
+    final stringWithoutZ = string.substring(0, string.length - 1);
+    return '$stringWithoutZ${timezone.toIso8601String()}';
   }
 
   @override
@@ -178,19 +180,19 @@ class DateTimeWithTimeZone implements Comparable<DateTimeWithTimeZone> {
   /// ```
   static DateTimeWithTimeZone parse(String s) {
     var timezone = Timezone.utc;
-    if (s.endsWith('z') || s.endsWith('Z')) {
-      s = s.substring(0, s.length - 1);
-    } else {
+    if (!(s.endsWith('z') || s.endsWith('Z'))) {
       var i = s.lastIndexOf('+');
       if (i < 0) {
         i = s.lastIndexOf('-');
       }
       if (i == s.length - 3 || i == s.length - 6) {
         timezone = Timezone.parse(s.substring(i));
-        s = s.substring(0, i);
+        s = '${s.substring(0, i)}Z';
+      } else {
+        s = '${s}Z';
       }
     }
-    final dateTime = DateTime.parse(s).toUtc();
+    final dateTime = DateTime.parse(s).subtract(timezone.differenceToUtc);
     return DateTimeWithTimeZone.fromMicrosecondsSinceEpoch(
       dateTime.microsecondsSinceEpoch,
       timezone,
