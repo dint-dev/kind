@@ -1,3 +1,7 @@
+## 0.2.1
+
+  * Fixes version constraint and documentation issues.
+
 ## 0.2.0
 
   * Improved the initial draft. Still experimental.

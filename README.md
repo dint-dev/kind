@@ -7,6 +7,11 @@ This is __Kind framework__ for serialization / persistence / reactive state mana
 
 __This is an initial experimental version. The APIs are not frozen.__
 
+## Links
+  * [API reference](https://pub.dev/documentation/kind/latest/)
+  * [Issue tracker](https://github.com/dint-dev/kind/issues)
+  * [Github project](https://github.com/dint-dev/kind)
+
 ## What it gives you?
   * __Convert graphs to/from JSON trees.__
     * Use [kind.jsonTreeEncode](https://pub.dev/documentation/kind/latest/kind/EntityKind/jsonTreeEncode.html)
@@ -74,12 +79,11 @@ __This is an initial experimental version. The APIs are not frozen.__
   * Your custom models
     * [CompositePrimitiveKind](https://pub.dev/documentation/kind/latest/kind/CompositePrimitiveKind-class.html)
     * [EntityKind](https://pub.dev/documentation/kind/latest/kind/EntityKind-class.html)
-
-### Built-in string formats
-  * [stringKindForEmailAddress](https://pub.dev/documentation/kind/latest/kind.strings/stringKindForEmailAddress.html) (email address)
-  * [stringKindForMarkdown](https://pub.dev/documentation/kind/latest/kind.strings/stringKindForMarkdown.html) (Markdown formatted content)
-  * [stringKindForPhoneNumber](https://pub.dev/documentation/kind/latest/kind.strings/stringKindForPhoneNumber.html) (phone number)
-  * [stringKindForUrl](https://pub.dev/documentation/kind/latest/kind.strings/stringKindForUrl.html) (URL)
+  * Recommended _StringKind_ instances:
+    * [stringKindForEmailAddress](https://pub.dev/documentation/kind/latest/kind.strings/stringKindForEmailAddress.html) (email address)
+    * [stringKindForMarkdown](https://pub.dev/documentation/kind/latest/kind.strings/stringKindForMarkdown.html) (Markdown formatted content)
+    * [stringKindForPhoneNumber](https://pub.dev/documentation/kind/latest/kind.strings/stringKindForPhoneNumber.html) (phone number)
+    * [stringKindForUrl](https://pub.dev/documentation/kind/latest/kind.strings/stringKindForUrl.html) (URL)
 
 ### Data primitives
   * [Date](https://pub.dev/documentation/kind/latest/kind/GeoPoint-class.html) (like _DateTime_, but does not define time)
@@ -102,7 +106,7 @@ __This is an initial experimental version. The APIs are not frozen.__
   * [protobuf](https://pub.dev/packages/protobuf)
     * Generates code for Protocol Buffers serialization.
 
-## For state management
+### For state management
   * [get](https://pub.dev/packages/get)
   * [get_it](https://pub.dev/packages/get_it)
   * [fish_redux](https://pub.dev/packages/fish_redux)
@@ -118,7 +122,7 @@ environment:
   sdk: '>=2.12.0-0 <3.0.0'
 
 dependencies:
-  kind: ^0.2.0
+  kind: ^0.2.1
 ```
 
 ## 2.Write data models
@@ -191,8 +195,7 @@ The alternative approaches:
       inevitably going to be some complexity unless Dart language designers decide to support
       something like decorator annotations.
 
-## For mutable classes
-### ...without reactive programming support
+## Mutable class, without reactive state management
 You just define `getter` and `setter` in [Prop](https://pub.dev/documentation/kind/latest/kind/Prop-class.html)
 for ordinary Dart fields:
 ```dart
@@ -225,9 +228,10 @@ final EntityKind<Person> personKind = EntityKind<Person>(
 );
 ```
 
-### ...with reactive programming support
+## Mutable class, with reactive state management
 You can use [ReactiveMixin](https://pub.dev/documentation/kind/latest/kind/ReactiveMixin-class.html)
-for implementing reactive getters and setters:
+for implementing getters and setters that send notifications to
+[ReactiveSystem](https://pub.dev/documentation/kind/latest/kind/ReactiveSystem-class.html):
 ```dart
 class Person extends Entity with ReactiveMixin {
   String? _fullName;
@@ -249,8 +253,7 @@ class Person extends Entity with ReactiveMixin {
 ```
 
 
-## For immutable classes
-### ...without reactive programming support
+## Immutable class, without reactive state management
 ```dart
 // Extending Entity is optional, but recommended.
 class Person {
@@ -291,9 +294,10 @@ final EntityKind<Person> personKind = EntityKind<Person>(
 );
 ```
 
-### ...with reactive programming support
+## Immutable class, with reactive state management
 You can use [ReactiveMixin](https://pub.dev/documentation/kind/latest/kind/ReactiveMixin-class.html)
-for implementing reactive getters:
+for implementing getters and setters that send notifications to
+[ReactiveSystem](https://pub.dev/documentation/kind/latest/kind/ReactiveSystem-class.html):
 ```dart
 // Extending Entity is optional, but recommended.
 class Person extends Entity with ReactiveMixin {
