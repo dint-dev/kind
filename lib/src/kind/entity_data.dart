@@ -14,23 +14,26 @@
 
 import 'package:kind/kind.dart';
 
-/// Raw data of [Entity].
+///  A collection of ([Prop], value) tuples.
 abstract class EntityData {
+  /// Constructs a mutable instance of [EntityData].
   factory EntityData() = _EntityData;
 
-  /// Whether object is unmodifiable.
+  /// Tells whether object is unmodifiable.
   bool get isFrozen;
 
-  /// Checks whether the property is defined.
+  /// Tells whether the data contains the property.
   bool contains(Prop prop);
 
-  /// Ensures that [isFrozen] is `true`.
+  /// Makes the data immutable (if it isn't already).
   ///
-  /// After calling this method, invocations of [set] or [remove]
-  /// must throw [FrozenError].
+  /// After calling this method:
+  ///   * Invocations of state-mutating methods ([set] or [remove]) must throw
+  ///     [FrozenError].
+  ///   * [isFrozen] must return `true`.
   void freeze();
 
-  /// Get the property.
+  /// Gets value of the property.
   R get<R>(Prop<dynamic, R> prop);
 
   /// Removes the property.
@@ -38,7 +41,7 @@ abstract class EntityData {
   /// Throws [FrozenError] if [isFrozen] is true.
   void remove(Prop prop);
 
-  /// Sets the property.
+  /// Sets value of the property.
   ///
   /// Throws [FrozenError] if [isFrozen] is true.
   void set<T>(Prop<dynamic, T> prop, T value);
@@ -52,6 +55,7 @@ abstract class EntityData {
 ///   * [ReactiveSet.freeze]
 class FrozenError extends Error {}
 
+/// Default implementation of [EntityData].
 class _EntityData implements EntityData {
   final Map<int, Object?> _map = {};
   bool _isFrozen = false;

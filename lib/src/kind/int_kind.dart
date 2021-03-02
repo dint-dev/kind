@@ -61,6 +61,12 @@ import 'int_kind_impl_not_js.dart' if (dart.library.js) 'int_kind_impl_js.dart';
 ///     * [Int64FixNumKind]
 @sealed
 class Int16Kind extends IntKindBase {
+  /// Minimum possible value (`-(2^16)`).
+  static const int minPossible = -maxPossible - 1;
+
+  /// Maximum possible value (`2^16 - 1`).
+  static const int maxPossible = 0x7FFF;
+
   /// [Kind] for [Int16Kind].
   ///
   /// The purpose of annotation `@protected` is reducing accidental use.
@@ -68,19 +74,19 @@ class Int16Kind extends IntKindBase {
   static final EntityKind<Int16Kind> kind = EntityKind<Int16Kind>(
     name: 'Int16Kind',
     build: (c) {
-      final minProp = c.optionalInt32(
+      final min = c.optionalInt32(
         id: 1,
         name: 'min',
         getter: (t) => t.min,
       );
-      final maxProp = c.optionalInt32(
+      final max = c.optionalInt32(
         id: 2,
         name: 'max',
         getter: (t) => t.max,
       );
       c.constructorFromData = (data) => Int16Kind(
-            min: data.get(minProp),
-            max: data.get(maxProp),
+            min: data.get(min),
+            max: data.get(max),
           );
     },
   );
@@ -116,6 +122,17 @@ class Int16Kind extends IntKindBase {
 
   @override
   EntityKind<Int16Kind> getKind() => kind;
+
+  @override
+  void instanceValidateConstraints(ValidateContext context, int value) {
+    if (value < minPossible || value > maxPossible) {
+      context.invalid(
+        value: value,
+        message: 'Not a signed 16-bit integer.',
+      );
+    }
+    super.instanceValidateConstraints(context, value);
+  }
 
   @override
   List<int> newList(int length, {bool growable = false, bool reactive = true}) {
@@ -172,6 +189,12 @@ class Int16Kind extends IntKindBase {
 ///     * [Int64FixNumKind]
 @sealed
 class Int32Kind extends IntKindBase {
+  /// Minimum possible value (`-2^32`).
+  static const int minPossible = -maxPossible - 1;
+
+  /// Maximum possible value (`-(2^32)-1`).
+  static const int maxPossible = 0x7FFFFFFF;
+
   /// [Kind] for [Int32Kind].
   ///
   /// The purpose of annotation `@protected` is reducing accidental use.
@@ -179,19 +202,19 @@ class Int32Kind extends IntKindBase {
   static final EntityKind<Int32Kind> kind = EntityKind<Int32Kind>(
     name: 'Int32Kind',
     build: (c) {
-      final minProp = c.optionalInt32(
+      final min = c.optionalInt32(
         id: 1,
         name: 'min',
         getter: (t) => t.min,
       );
-      final maxProp = c.optionalInt32(
+      final max = c.optionalInt32(
         id: 2,
         name: 'max',
         getter: (t) => t.max,
       );
       c.constructorFromData = (data) => Int32Kind(
-            min: data.get(minProp),
-            max: data.get(maxProp),
+            min: data.get(min),
+            max: data.get(max),
           );
     },
   );
@@ -229,6 +252,17 @@ class Int32Kind extends IntKindBase {
   EntityKind<Int32Kind> getKind() => kind;
 
   @override
+  void instanceValidateConstraints(ValidateContext context, int value) {
+    if (value < minPossible || value > maxPossible) {
+      context.invalid(
+        value: value,
+        message: 'Not a signed 32-bit integer.',
+      );
+    }
+    super.instanceValidateConstraints(context, value);
+  }
+
+  @override
   List<int> newList(int length, {bool growable = false, bool reactive = true}) {
     if (growable) {
       return super.newList(
@@ -247,16 +281,16 @@ class Int32Kind extends IntKindBase {
 
 /// [Kind] for 64-bit signed integers.
 ///
-/// Note that [int] is actually [double] in browsers, which means that you get
-/// precision issues if your integer has more than 48 bits.
-/// Use [Int64FixNumKind] if you want to avoid this issue.
+/// In browsers [int] is actually [double], which means that integers with more
+/// than 52 bits can't be reliably stored / handled. Use [Int64FixNumKind] if
+/// you want to avoid this issue.
 ///
 /// ## Serialization
 /// ### JSON
 /// You can encode/decode JSON with [jsonEncode] and [jsonDecode].
 ///
 /// The JSON representation is JSON number. You will run into precision issues
-/// if your integer has more than 48 bits.
+/// if your integer has more than 52 bits.
 ///
 /// ### Protocol Buffers / GRPC
 /// Instances are encoded as variable-length 64-bit signed integers (_sint64_).
@@ -288,6 +322,12 @@ class Int32Kind extends IntKindBase {
 ///     * [Int64FixNumKind]
 @sealed
 class Int64Kind extends IntKindBase {
+  /// Minimum safe value in Javascript (`-(2^53) - 1`).
+  static const int minSafeInJs = -maxSafeInJs;
+
+  /// Maximum safe value in Javascript (`2^53 - 1`).
+  static const int maxSafeInJs = 0xFFFFFFFFFFFFF;
+
   /// [Kind] for [Int64Kind].
   ///
   /// The purpose of annotation `@protected` is reducing accidental use.
@@ -295,27 +335,38 @@ class Int64Kind extends IntKindBase {
   static final EntityKind<Int64Kind> kind = EntityKind<Int64Kind>(
     name: 'Int16Kind',
     build: (c) {
-      final minProp = c.optionalInt64(
+      final min = c.optionalInt64(
         id: 1,
         name: 'min',
         getter: (t) => t.min,
       );
-      final maxProp = c.optionalInt64(
+      final max = c.optionalInt64(
         id: 2,
         name: 'max',
         getter: (t) => t.max,
       );
+      final safeInJs = c.requiredBool(
+        id: 3,
+        name: 'safeInJs',
+        getter: (t) => t.safeInJs,
+      );
       c.constructorFromData = (data) => Int64Kind(
-            min: data.get(minProp),
-            max: data.get(maxProp),
+            min: data.get(min),
+            max: data.get(max),
+            safeInJs: data.get(safeInJs),
           );
     },
   );
+
+  /// Whether the value must be between [minSafeInJs] and
+  /// [maxSafeInJs].
+  final bool safeInJs;
 
   @literal
   const Int64Kind({
     int? min,
     int? max,
+    this.safeInJs = false,
   }) : super(
           min: min,
           max: max,
@@ -343,6 +394,17 @@ class Int64Kind extends IntKindBase {
 
   @override
   EntityKind<Int64Kind> getKind() => kind;
+
+  @override
+  void instanceValidateConstraints(ValidateContext context, int value) {
+    if (safeInJs && !(value >= minSafeInJs && value <= maxSafeInJs)) {
+      context.invalid(
+        value: value,
+        message: 'Value is outside the safe range in Javascript (52 bits)',
+      );
+    }
+    super.instanceValidateConstraints(context, value);
+  }
 
   @override
   List<int> newList(int length, {bool growable = false, bool reactive = true}) {
@@ -401,6 +463,12 @@ class Int64Kind extends IntKindBase {
 ///     * [Int64FixNumKind]
 @sealed
 class Int8Kind extends IntKindBase {
+  /// Minimum possible value (`-(2^8)`).
+  static const int minPossible = -maxPossible - 1;
+
+  /// Maximum possible value (`2^7 - 1`).
+  static const int maxPossible = 0x7F;
+
   /// [Kind] for [Int8Kind].
   ///
   /// The purpose of annotation `@protected` is reducing accidental use.
@@ -408,19 +476,19 @@ class Int8Kind extends IntKindBase {
   static final EntityKind<Int8Kind> kind = EntityKind<Int8Kind>(
     name: 'Int8Kind',
     build: (c) {
-      final minProp = c.optionalInt32(
+      final min = c.optionalInt32(
         id: 1,
         name: 'min',
         getter: (t) => t.min,
       );
-      final maxProp = c.optionalInt32(
+      final max = c.optionalInt32(
         id: 2,
         name: 'max',
         getter: (t) => t.max,
       );
       c.constructorFromData = (data) => Int8Kind(
-            min: data.get(minProp),
-            max: data.get(maxProp),
+            min: data.get(min),
+            max: data.get(max),
           );
     },
   );
@@ -433,6 +501,7 @@ class Int8Kind extends IntKindBase {
           min: min,
           max: max,
         );
+
   @override
   int get bitsPerListElement => 8;
 
@@ -455,6 +524,17 @@ class Int8Kind extends IntKindBase {
 
   @override
   EntityKind<Int8Kind> getKind() => kind;
+
+  @override
+  void instanceValidateConstraints(ValidateContext context, int value) {
+    if (value < minPossible || value > maxPossible) {
+      context.invalid(
+        value: value,
+        message: 'Not an unsigned 8-bit integer.',
+      );
+    }
+    super.instanceValidateConstraints(context, value);
+  }
 
   @override
   List<int> newList(int length, {bool growable = false, bool reactive = true}) {
@@ -650,6 +730,9 @@ abstract class IntKindBase extends NumericKind<int> {
 ///     * [Int64FixNumKind]
 @sealed
 class Uint16Kind extends IntKindBase {
+  /// Maximum possible value (`2^17 - 1`).
+  static const int maxPossible = 0xFFFF;
+
   /// [Kind] for [Int16Kind].
   ///
   /// The purpose of annotation `@protected` is reducing accidental use.
@@ -657,19 +740,19 @@ class Uint16Kind extends IntKindBase {
   static final EntityKind<Uint16Kind> kind = EntityKind<Uint16Kind>(
     name: 'Uint16Kind',
     build: (c) {
-      final minProp = c.optionalUint32(
+      final min = c.optionalUint32(
         id: 1,
         name: 'min',
         getter: (t) => t.min,
       );
-      final maxProp = c.optionalUint32(
+      final max = c.optionalUint32(
         id: 2,
         name: 'max',
         getter: (t) => t.max,
       );
       c.constructorFromData = (data) => Uint16Kind(
-            min: data.get(minProp),
-            max: data.get(maxProp),
+            min: data.get(min),
+            max: data.get(max),
           );
     },
   );
@@ -705,6 +788,17 @@ class Uint16Kind extends IntKindBase {
 
   @override
   EntityKind<Uint16Kind> getKind() => kind;
+
+  @override
+  void instanceValidateConstraints(ValidateContext context, int value) {
+    if (value < 0 || value > maxPossible) {
+      context.invalid(
+        value: value,
+        message: 'Not an unsigned 32-bit integer.',
+      );
+    }
+    super.instanceValidateConstraints(context, value);
+  }
 
   @override
   List<int> newList(int length, {bool growable = false, bool reactive = true}) {
@@ -761,6 +855,9 @@ class Uint16Kind extends IntKindBase {
 ///     * [Int64FixNumKind]
 @sealed
 class Uint32Kind extends IntKindBase {
+  /// Maximum possible value (`2^33-1`).
+  static const int maxPossible = 0xFFFFFFFF;
+
   /// [Kind] for [Uint32Kind].
   ///
   /// The purpose of annotation `@protected` is reducing accidental use.
@@ -768,19 +865,19 @@ class Uint32Kind extends IntKindBase {
   static final EntityKind<Uint32Kind> kind = EntityKind<Uint32Kind>(
     name: 'Uint32Kind',
     build: (c) {
-      final minProp = c.optionalUint32(
+      final min = c.optionalUint32(
         id: 1,
         name: 'min',
         getter: (t) => t.min,
       );
-      final maxProp = c.optionalUint32(
+      final max = c.optionalUint32(
         id: 2,
         name: 'max',
         getter: (t) => t.max,
       );
       c.constructorFromData = (data) => Uint32Kind(
-            min: data.get(minProp),
-            max: data.get(maxProp),
+            min: data.get(min),
+            max: data.get(max),
           );
     },
   );
@@ -818,6 +915,17 @@ class Uint32Kind extends IntKindBase {
   EntityKind<Uint32Kind> getKind() => kind;
 
   @override
+  void instanceValidateConstraints(ValidateContext context, int value) {
+    if (value < 0 || value > maxPossible) {
+      context.invalid(
+        value: value,
+        message: 'Not an unsigned 32-bit integer.',
+      );
+    }
+    super.instanceValidateConstraints(context, value);
+  }
+
+  @override
   List<int> newList(int length, {bool growable = false, bool reactive = true}) {
     if (growable) {
       return super.newList(
@@ -836,16 +944,16 @@ class Uint32Kind extends IntKindBase {
 
 /// [Kind] for 64-bit unsigned integers.
 ///
-/// Note that [int] is actually [double] in browsers, which means that you get
-/// precision issues if your integer has more than 48 bits.
-/// Use [Int64FixNumKind] if you want to avoid this issue.
+/// In browsers [int] is actually [double], which means that integers with more
+/// than 52 bits can't be reliably stored / handled. Use [Int64FixNumKind] if
+/// you want to avoid this issue.
 ///
 /// ## Serialization
 /// ### JSON
 /// You can encode/decode JSON with [jsonEncode] and [jsonDecode].
 ///
 /// The JSON representation is JSON number. You will run into precision issues
-/// if your integer has more than 48 bits.
+/// if your integer has more than 52 bits.
 ///
 /// ### Protocol Buffers
 /// Instances are encoded as variable-length 64-bit unsigned integers (_int64_).
@@ -877,6 +985,9 @@ class Uint32Kind extends IntKindBase {
 ///     * [Int64FixNumKind]
 @sealed
 class Uint64Kind extends IntKindBase {
+  /// Maximum safe value in Javascript (`2^53 - 1`).
+  static const int maxSafeInJs = Int64Kind.maxSafeInJs;
+
   /// [Kind] for [Uint64Kind].
   ///
   /// The purpose of annotation `@protected` is reducing accidental use.
@@ -884,27 +995,37 @@ class Uint64Kind extends IntKindBase {
   static final EntityKind<Uint64Kind> kind = EntityKind<Uint64Kind>(
     name: 'Uint64Kind',
     build: (c) {
-      final minProp = c.optionalUint64(
+      final min = c.optionalUint64(
         id: 1,
         name: 'min',
         getter: (t) => t.min,
       );
-      final maxProp = c.optionalUint64(
+      final max = c.optionalUint64(
         id: 2,
         name: 'max',
         getter: (t) => t.max,
       );
+      final safeInJs = c.requiredBool(
+        id: 3,
+        name: 'safeInJs',
+        getter: (t) => t.safeInJs,
+      );
       c.constructorFromData = (data) => Uint64Kind(
-            min: data.get(minProp),
-            max: data.get(maxProp),
+            min: data.get(min),
+            max: data.get(max),
+            safeInJs: data.get(safeInJs),
           );
     },
   );
+
+  /// Whether the value must be between 0 and [maxSafeInJs].
+  final bool safeInJs;
 
   @literal
   const Uint64Kind({
     int? min,
     int? max,
+    this.safeInJs = false,
   }) : super(
           min: min,
           max: max,
@@ -932,6 +1053,29 @@ class Uint64Kind extends IntKindBase {
 
   @override
   EntityKind<Uint64Kind> getKind() => kind;
+
+  @override
+  void instanceValidateConstraints(ValidateContext context, int value) {
+    if (value < 0 && !safeInJs) {
+      final min = this.min;
+      final max = this.max;
+      if ((min == null || min < 0) && (max != null && max <= maxSafeInJs)) {
+        context.invalid(
+          value: value,
+          message: 'Not an unsigned 64-bit integer.',
+        );
+        super.instanceValidateConstraints(context, value);
+        return;
+      }
+    }
+    if (safeInJs && !(value >= 0 && value <= maxSafeInJs)) {
+      context.invalid(
+        value: value,
+        message: 'Value is outside the safe range in Javascript (52 bits)',
+      );
+    }
+    super.instanceValidateConstraints(context, value);
+  }
 
   @override
   List<int> newList(int length, {bool growable = false, bool reactive = true}) {
@@ -990,6 +1134,9 @@ class Uint64Kind extends IntKindBase {
 ///     * [Int64FixNumKind]
 @sealed
 class Uint8Kind extends IntKindBase {
+  /// Maximum possible value (`2^9 - 1`).
+  static const int maxPossible = 0xFF;
+
   /// [Kind] for [Uint8Kind].
   ///
   /// The purpose of annotation `@protected` is reducing accidental use.
@@ -997,19 +1144,19 @@ class Uint8Kind extends IntKindBase {
   static final EntityKind<Uint8Kind> kind = EntityKind<Uint8Kind>(
     name: 'Uint8Kind',
     build: (c) {
-      final minProp = c.optionalUint32(
+      final min = c.optionalUint32(
         id: 1,
         name: 'min',
         getter: (t) => t.min,
       );
-      final maxProp = c.optionalUint32(
+      final max = c.optionalUint32(
         id: 2,
         name: 'max',
         getter: (t) => t.max,
       );
       c.constructorFromData = (data) => Uint8Kind(
-            min: data.get(minProp),
-            max: data.get(maxProp),
+            min: data.get(min),
+            max: data.get(max),
           );
     },
   );
@@ -1045,6 +1192,17 @@ class Uint8Kind extends IntKindBase {
 
   @override
   EntityKind<Uint8Kind> getKind() => kind;
+
+  @override
+  void instanceValidateConstraints(ValidateContext context, int value) {
+    if (value < 0 || value > maxPossible) {
+      context.invalid(
+        value: value,
+        message: 'Not an unsigned 8-bit integer.',
+      );
+    }
+    super.instanceValidateConstraints(context, value);
+  }
 
   @override
   List<int> newList(int length, {bool growable = false, bool reactive = true}) {

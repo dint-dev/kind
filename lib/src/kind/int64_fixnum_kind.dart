@@ -81,9 +81,21 @@ class Int64FixNumKind extends NumericKind<Int64> {
         name: 'max',
         getter: (t) => t.max,
       );
+      final unsigned = c.requiredBool(
+        id: 3,
+        name: 'unsigned',
+        getter: (t) => t.unsigned,
+      );
+      final fixed = c.requiredBool(
+        id: 4,
+        name: 'fixed',
+        getter: (t) => t.fixed,
+      );
       c.constructorFromData = (data) => Int64FixNumKind(
             min: data.get(minProp),
             max: data.get(maxProp),
+            unsigned: data.get(unsigned),
+            fixed: data.get(fixed),
           );
     },
   );
@@ -94,7 +106,10 @@ class Int64FixNumKind extends NumericKind<Int64> {
   @override
   final Int64? max;
 
-  /// Whether to use signed values in Prootocol Buffers.
+  /// Whether to use unsigned values in Protocol Buffers.
+  ///
+  /// Note that negative values are allowed even when [unsigned] is `true`.
+  /// If you want to disallow negative values, specify [min].
   final bool unsigned;
 
   /// Whether to use fixed-length values in Protocol Buffers.
@@ -110,10 +125,12 @@ class Int64FixNumKind extends NumericKind<Int64> {
   }) : min = min ?? (unsigned ? Int64.ZERO : null);
 
   @override
-  int get bitsPerListElement => 64;
-
-  @override
-  int get hashCode => (Int64FixNumKind).hashCode ^ min.hashCode ^ max.hashCode;
+  int get hashCode =>
+      (Int64FixNumKind).hashCode ^
+      min.hashCode ^
+      max.hashCode ^
+      (fixed.hashCode << 1) ^
+      unsigned.hashCode;
 
   @override
   String get name => 'Int64FixNum';
@@ -138,8 +155,23 @@ class Int64FixNumKind extends NumericKind<Int64> {
       other is Int64FixNumKind &&
       min == other.min &&
       max == other.max &&
-      unsigned == other.unsigned &&
-      fixed == other.fixed;
+      fixed == other.fixed &&
+      unsigned == other.unsigned;
+
+  @override
+  void instanceValidateConstraints(ValidateContext context, Int64 value) {
+    final min = this.min;
+    if (min != null && value < min) {
+      context.invalid(
+          value: value, message: 'Value must be greater than or equal to $min');
+    }
+    final max = this.max;
+    if (max != null && value > max) {
+      context.invalid(
+          value: value, message: 'Value must be less than or equal to $max');
+    }
+    super.instanceValidateConstraints(context, value);
+  }
 
   @override
   EntityKind<Int64FixNumKind> getKind() => kind;
@@ -147,7 +179,15 @@ class Int64FixNumKind extends NumericKind<Int64> {
   @override
   Int64 jsonTreeDecode(Object? value, {JsonDecodingContext? context}) {
     if (value is String) {
-      return Int64.parseInt(value);
+      try {
+        return Int64.parseInt(value);
+      } on FormatException {
+        context ??= JsonDecodingContext();
+        throw context.newGraphNodeError(
+          value: value,
+          reason: 'The string does not contain a 64-bit integer.',
+        );
+      }
     } else {
       context ??= JsonDecodingContext();
       throw context.newGraphNodeError(
@@ -202,6 +242,12 @@ class Int64FixNumKind extends NumericKind<Int64> {
     }
     if (unsigned) {
       arguments.add('unsigned: true');
+    }
+    if (min != null) {
+      arguments.add('min: $min');
+    }
+    if (max != null) {
+      arguments.add('max: $max');
     }
     return 'Int64FixNumKind(${arguments.join(', ')})';
   }

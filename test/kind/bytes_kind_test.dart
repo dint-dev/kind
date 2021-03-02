@@ -16,11 +16,14 @@ import 'dart:convert';
 
 import 'package:kind/kind.dart';
 import 'package:test/test.dart';
+import 'dart:convert';
 
 void main() {
   group('BytesKind', () {
+    final kind = const BytesKind();
+
     test('name', () {
-      expect(const BytesKind().name, 'bytes');
+      expect(kind.name, 'bytes');
     });
 
     test('== / hashCode', () {
@@ -61,10 +64,46 @@ void main() {
     });
 
     test('newInstance() returns empty, unmodifiable list', () {
-      final kind = const BytesKind();
       final value = kind.newInstance();
       expect(value, []);
       expect(() => value.add(1), throwsUnsupportedError);
+    });
+
+    test('instanceIsDefaultValue', () {
+      expect(
+        kind.instanceIsDefaultValue(<int>[]),
+        isTrue,
+      );
+    });
+
+    test('jsonTreeEncode()', () {
+      expect(
+        kind.jsonTreeEncode([1, 2, 3]),
+        base64.encode([1, 2, 3]),
+      );
+    });
+
+    test('jsonTreeEncode() when jsonCodec is different', () {
+      final kind = const BytesKind(jsonCodec: Base64Codec.urlSafe());
+      expect(
+        kind.jsonTreeEncode([1, 2, 3]),
+        Base64Codec.urlSafe().encode([1, 2, 3]),
+      );
+    });
+
+    test('jsonTreeDecode()', () {
+      expect(
+        kind.jsonTreeDecode(base64.encode([1, 2, 3])),
+        [1, 2, 3],
+      );
+    });
+
+    test('jsonTreeDecode() when kind is different', () {
+      final kind = const BytesKind(jsonCodec: Base64Codec.urlSafe());
+      expect(
+        kind.jsonTreeDecode(Base64Codec.urlSafe().encode([1, 2, 3])),
+        [1, 2, 3],
+      );
     });
   });
 }

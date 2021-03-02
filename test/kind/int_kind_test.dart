@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:typed_data';
+
 import 'package:kind/kind.dart';
 import 'package:test/test.dart';
-import 'dart:typed_data';
 
 void main() {
   group('IntKindBase', () {
@@ -52,6 +53,106 @@ void main() {
           set.add(kind.randomExample());
         }
         expect(set.toList()..sort(), hasLength(7));
+      });
+    });
+  });
+
+  group('Int8Kind', () {
+    test('name', () {
+      expect(const Int8Kind().name, 'Int8');
+    });
+
+    test('minPossible', () {
+      expect(Int8Kind.minPossible, -0x7F - 1);
+    });
+
+    test('maxPossible', () {
+      expect(Int8Kind.maxPossible, 0x7F);
+    });
+
+    test('newList(reactive:false)', () {
+      final list = const Int8Kind().newList(2, reactive: false);
+      expect(list, isA<Int8List>());
+      expect(list, hasLength(2));
+    });
+
+    group('validation:', () {
+      test('no constraints', () {
+        const kind = Int8Kind();
+        expect(kind.instanceIsValid(Int8Kind.minPossible - 1), isFalse);
+        expect(kind.instanceIsValid(Int8Kind.minPossible), isTrue);
+        expect(kind.instanceIsValid(Int8Kind.minPossible + 1), isTrue);
+        expect(kind.instanceIsValid(-2), isTrue);
+        expect(kind.instanceIsValid(-1), isTrue);
+        expect(kind.instanceIsValid(0), isTrue);
+        expect(kind.instanceIsValid(1), isTrue);
+        expect(kind.instanceIsValid(Int8Kind.maxPossible - 1), isTrue);
+        expect(kind.instanceIsValid(Int8Kind.maxPossible), isTrue);
+        expect(kind.instanceIsValid(Int8Kind.maxPossible + 1), isFalse);
+      });
+
+      test('min: 3', () {
+        const kind = Int8Kind(min: 3);
+        expect(kind.instanceIsValid(2), isFalse);
+        expect(kind.instanceIsValid(3), isTrue);
+        expect(kind.instanceIsValid(4), isTrue);
+      });
+
+      test('max: 3', () {
+        const kind = Int8Kind(max: 3);
+        expect(kind.instanceIsValid(2), isTrue);
+        expect(kind.instanceIsValid(3), isTrue);
+        expect(kind.instanceIsValid(4), isFalse);
+      });
+    });
+  });
+
+  group('Int16Kind', () {
+    test('name', () {
+      expect(const Int16Kind().name, 'Int16');
+    });
+
+    test('minPossible', () {
+      expect(Int16Kind.minPossible, -0x7FFF - 1);
+    });
+
+    test('maxPossible', () {
+      expect(Int16Kind.maxPossible, 0x7FFF);
+    });
+
+    test('newList(reactive:false)', () {
+      final list = const Int16Kind().newList(2, reactive: false);
+      expect(list, isA<Int16List>());
+      expect(list, hasLength(2));
+    });
+
+    group('validation:', () {
+      test('no constraints', () {
+        const kind = Int16Kind();
+        expect(kind.instanceIsValid(Int16Kind.minPossible - 1), isFalse);
+        expect(kind.instanceIsValid(Int16Kind.minPossible), isTrue);
+        expect(kind.instanceIsValid(Int16Kind.minPossible + 1), isTrue);
+        expect(kind.instanceIsValid(-2), isTrue);
+        expect(kind.instanceIsValid(-1), isTrue);
+        expect(kind.instanceIsValid(0), isTrue);
+        expect(kind.instanceIsValid(1), isTrue);
+        expect(kind.instanceIsValid(Int16Kind.maxPossible - 1), isTrue);
+        expect(kind.instanceIsValid(Int16Kind.maxPossible), isTrue);
+        expect(kind.instanceIsValid(Int16Kind.maxPossible + 1), isFalse);
+      });
+
+      test('min: 3', () {
+        const kind = Int16Kind(min: 3);
+        expect(kind.instanceIsValid(2), isFalse);
+        expect(kind.instanceIsValid(3), isTrue);
+        expect(kind.instanceIsValid(4), isTrue);
+      });
+
+      test('max: 3', () {
+        const kind = Int16Kind(max: 3);
+        expect(kind.instanceIsValid(2), isTrue);
+        expect(kind.instanceIsValid(3), isTrue);
+        expect(kind.instanceIsValid(4), isFalse);
       });
     });
   });
@@ -97,29 +198,8 @@ void main() {
       expect(value.hashCode, isNot(other2.hashCode));
     });
 
-    test('defaultValue', () {
+    test('newInstance', () {
       expect(const Int32Kind().newInstance(), 0);
-    });
-
-    test('validation #1', () {
-      const kind = Int32Kind();
-      expect(kind.instanceIsValid(-2), isTrue);
-      expect(kind.instanceIsValid(0), isTrue);
-      expect(kind.instanceIsValid(2), isTrue);
-    });
-
-    test('validation #2', () {
-      const kind = Int32Kind(min: 2);
-      expect(kind.instanceIsValid(1), isFalse);
-      expect(kind.instanceIsValid(2), isTrue);
-      expect(kind.instanceIsValid(3), isTrue);
-    });
-
-    test('validation #2', () {
-      const kind = Int32Kind(max: 2);
-      expect(kind.instanceIsValid(1), isTrue);
-      expect(kind.instanceIsValid(2), isTrue);
-      expect(kind.instanceIsValid(3), isFalse);
     });
 
     test('newList()', () {
@@ -144,6 +224,44 @@ void main() {
       expect(list, isA<Int32List>());
       expect(list, hasLength(2));
       expect(() => list.add(42), throwsUnsupportedError);
+    });
+
+    test('minPossible', () {
+      expect(Int32Kind.minPossible, -0x7FFFFFFF - 1);
+    });
+
+    test('maxPossible', () {
+      expect(Int32Kind.maxPossible, 0x7FFFFFFF);
+    });
+
+    group('validation:', () {
+      test('no constraints', () {
+        const kind = Int32Kind();
+        expect(kind.instanceIsValid(Int32Kind.minPossible - 1), isFalse);
+        expect(kind.instanceIsValid(Int32Kind.minPossible), isTrue);
+        expect(kind.instanceIsValid(Int32Kind.minPossible + 1), isTrue);
+        expect(kind.instanceIsValid(-2), isTrue);
+        expect(kind.instanceIsValid(-1), isTrue);
+        expect(kind.instanceIsValid(0), isTrue);
+        expect(kind.instanceIsValid(1), isTrue);
+        expect(kind.instanceIsValid(Int32Kind.maxPossible - 1), isTrue);
+        expect(kind.instanceIsValid(Int32Kind.maxPossible), isTrue);
+        expect(kind.instanceIsValid(Int32Kind.maxPossible + 1), isFalse);
+      });
+
+      test('min: 3', () {
+        const kind = Int32Kind(min: 3);
+        expect(kind.instanceIsValid(2), isFalse);
+        expect(kind.instanceIsValid(3), isTrue);
+        expect(kind.instanceIsValid(4), isTrue);
+      });
+
+      test('max: 3', () {
+        const kind = Int32Kind(max: 3);
+        expect(kind.instanceIsValid(2), isTrue);
+        expect(kind.instanceIsValid(3), isTrue);
+        expect(kind.instanceIsValid(4), isFalse);
+      });
     });
   });
 
@@ -228,6 +346,179 @@ void main() {
       expect(list, hasLength(2));
       expect(() => list.add(42), throwsUnsupportedError);
     }, testOn: 'browser');
+
+    test('minSafeInJs', () {
+      expect(Int64Kind.minSafeInJs, -0xFFFFFFFFFFFFF);
+    });
+
+    test('maxSafeInJs', () {
+      expect(Int64Kind.maxSafeInJs, 0xFFFFFFFFFFFFF);
+    });
+
+    group('validation:', () {
+      test('no constraints', () {
+        const kind = Int64Kind();
+        expect(
+          kind.instanceIsValid(0),
+          isTrue,
+        );
+        expect(
+          kind.instanceIsValid(-0x80000000 * bit32 | (bit32 - 1)),
+          isTrue,
+        );
+        expect(
+          kind.instanceIsValid(0x7FFFFFFF * bit32 | (bit32 - 1)),
+          isTrue,
+        );
+      });
+      test('safeInJs: true', () {
+        const kind = Int64Kind(safeInJs: true);
+        expect(
+          kind.instanceIsValid(0),
+          isTrue,
+        );
+        expect(
+          kind.instanceIsValid(Int64Kind.minSafeInJs),
+          isTrue,
+        );
+        expect(
+          kind.instanceIsValid(Int64Kind.maxSafeInJs),
+          isTrue,
+        );
+        expect(
+          kind.instanceIsValid(Int64Kind.minSafeInJs - 1),
+          isFalse,
+        );
+        expect(
+          kind.instanceIsValid(Int64Kind.maxSafeInJs + 1),
+          isFalse,
+        );
+      });
+      test('min: 3', () {
+        const kind = Int64Kind(min: 3);
+        expect(
+          kind.instanceIsValid(-3),
+          isFalse,
+        );
+        expect(
+          kind.instanceIsValid(2),
+          isFalse,
+        );
+        expect(
+          kind.instanceIsValid(3),
+          isTrue,
+        );
+        expect(
+          kind.instanceIsValid(4),
+          isTrue,
+        );
+      });
+      test('max: 3', () {
+        const kind = Int64Kind(max: 3);
+        expect(
+          kind.instanceIsValid(-4),
+          isTrue,
+        );
+        expect(
+          kind.instanceIsValid(2),
+          isTrue,
+        );
+        expect(
+          kind.instanceIsValid(3),
+          isTrue,
+        );
+        expect(
+          kind.instanceIsValid(4),
+          isFalse,
+        );
+      });
+    });
+  });
+
+  group('Uint8Kind', () {
+    test('name', () {
+      expect(const Uint8Kind().name, 'Uint8');
+    });
+
+    test('newList(reactive:false)', () {
+      final list = const Uint8Kind().newList(2, reactive: false);
+      expect(list, isA<Uint8List>());
+      expect(list, hasLength(2));
+    });
+
+    test('maxPossible', () {
+      expect(Uint8Kind.maxPossible, 0xFF);
+    });
+
+    group('validation:', () {
+      test('no constraints', () {
+        const kind = Uint8Kind();
+        expect(kind.instanceIsValid(-2), isFalse);
+        expect(kind.instanceIsValid(-1), isFalse);
+        expect(kind.instanceIsValid(0), isTrue);
+        expect(kind.instanceIsValid(1), isTrue);
+        expect(kind.instanceIsValid(2), isTrue);
+        expect(kind.instanceIsValid(Uint8Kind.maxPossible), isTrue);
+        expect(kind.instanceIsValid(Uint8Kind.maxPossible + 1), isFalse);
+      });
+
+      test('min: 3', () {
+        const kind = Uint8Kind(min: 3);
+        expect(kind.instanceIsValid(2), isFalse);
+        expect(kind.instanceIsValid(3), isTrue);
+        expect(kind.instanceIsValid(4), isTrue);
+      });
+
+      test('max: 3', () {
+        const kind = Uint8Kind(max: 3);
+        expect(kind.instanceIsValid(2), isTrue);
+        expect(kind.instanceIsValid(3), isTrue);
+        expect(kind.instanceIsValid(4), isFalse);
+      });
+    });
+  });
+
+  group('Uint16Kind', () {
+    test('name', () {
+      expect(const Uint16Kind().name, 'Uint16');
+    });
+
+    test('newList(reactive:false)', () {
+      final list = const Uint16Kind().newList(2, reactive: false);
+      expect(list, isA<Uint16List>());
+      expect(list, hasLength(2));
+    });
+
+    test('maxPossible', () {
+      expect(Uint16Kind.maxPossible, 0xFFFF);
+    });
+
+    group('validation:', () {
+      test('no constraints', () {
+        const kind = Uint16Kind();
+        expect(kind.instanceIsValid(-2), isFalse);
+        expect(kind.instanceIsValid(-1), isFalse);
+        expect(kind.instanceIsValid(0), isTrue);
+        expect(kind.instanceIsValid(1), isTrue);
+        expect(kind.instanceIsValid(2), isTrue);
+        expect(kind.instanceIsValid(Uint16Kind.maxPossible), isTrue);
+        expect(kind.instanceIsValid(Uint16Kind.maxPossible + 1), isFalse);
+      });
+
+      test('min: 3', () {
+        const kind = Uint16Kind(min: 3);
+        expect(kind.instanceIsValid(2), isFalse);
+        expect(kind.instanceIsValid(3), isTrue);
+        expect(kind.instanceIsValid(4), isTrue);
+      });
+
+      test('max: 3', () {
+        const kind = Uint16Kind(max: 3);
+        expect(kind.instanceIsValid(2), isTrue);
+        expect(kind.instanceIsValid(3), isTrue);
+        expect(kind.instanceIsValid(4), isFalse);
+      });
+    });
   });
 
   group('Uint32Kind', () {
@@ -297,6 +588,37 @@ void main() {
       expect(list, isA<Uint32List>());
       expect(list, hasLength(2));
       expect(() => list.add(42), throwsUnsupportedError);
+    });
+
+    test('maxPossible', () {
+      expect(Uint32Kind.maxPossible, 0xFFFFFFFF);
+    });
+
+    group('validation:', () {
+      test('no constraints', () {
+        const kind = Uint32Kind();
+        expect(kind.instanceIsValid(-2), isFalse);
+        expect(kind.instanceIsValid(-1), isFalse);
+        expect(kind.instanceIsValid(0), isTrue);
+        expect(kind.instanceIsValid(1), isTrue);
+        expect(kind.instanceIsValid(2), isTrue);
+        expect(kind.instanceIsValid(Uint32Kind.maxPossible), isTrue);
+        expect(kind.instanceIsValid(Uint32Kind.maxPossible + 1), isFalse);
+      });
+
+      test('min: 3', () {
+        const kind = Uint32Kind(min: 3);
+        expect(kind.instanceIsValid(2), isFalse);
+        expect(kind.instanceIsValid(3), isTrue);
+        expect(kind.instanceIsValid(4), isTrue);
+      });
+
+      test('max: 3', () {
+        const kind = Uint32Kind(max: 3);
+        expect(kind.instanceIsValid(2), isTrue);
+        expect(kind.instanceIsValid(3), isTrue);
+        expect(kind.instanceIsValid(4), isFalse);
+      });
     });
   });
 
@@ -381,5 +703,83 @@ void main() {
       expect(list, hasLength(2));
       expect(() => list.add(42), throwsUnsupportedError);
     }, testOn: 'browser');
+
+    group('validation:', () {
+      test('no constraints', () {
+        const kind = Uint64Kind();
+        expect(
+          kind.instanceIsValid(-1),
+          isTrue,
+        );
+        expect(
+          kind.instanceIsValid(0),
+          isTrue,
+        );
+        expect(
+          kind.instanceIsValid(0xFFFFFFFF * bit32 | (bit32 - 1)),
+          isTrue,
+        );
+      });
+
+      test('safeInJs: true', () {
+        const kind = Uint64Kind(safeInJs: true);
+        expect(
+          kind.instanceIsValid(-1),
+          isFalse,
+        );
+        expect(
+          kind.instanceIsValid(0),
+          isTrue,
+        );
+        expect(
+          kind.instanceIsValid(Uint64Kind.maxSafeInJs),
+          isTrue,
+        );
+        expect(
+          kind.instanceIsValid(Uint64Kind.maxSafeInJs + 1),
+          isFalse,
+        );
+      });
+      test('min: 3', () {
+        const kind = Uint64Kind(min: 3);
+        expect(
+          kind.instanceIsValid(-3),
+          isFalse,
+        );
+        expect(
+          kind.instanceIsValid(2),
+          isFalse,
+        );
+        expect(
+          kind.instanceIsValid(3),
+          isTrue,
+        );
+        expect(
+          kind.instanceIsValid(4),
+          isTrue,
+        );
+      });
+      test('max: 3', () {
+        const kind = Uint64Kind(max: 3);
+        expect(
+          kind.instanceIsValid(-4),
+          isFalse,
+        );
+        expect(
+          kind.instanceIsValid(2),
+          isTrue,
+        );
+        expect(
+          kind.instanceIsValid(3),
+          isTrue,
+        );
+        expect(
+          kind.instanceIsValid(4),
+          isFalse,
+        );
+      });
+    });
   });
 }
+
+final bit32 = 0x100000000;

@@ -19,15 +19,15 @@ class JsonSettings {
   final String? defaultDiscriminatorName;
   final String? defaultValueName;
   final String? nan;
-  final String? inf;
-  final String? negativeInf;
+  final String? infinity;
+  final String? negativeInfinity;
 
   const JsonSettings({
     this.defaultDiscriminatorName,
     this.defaultValueName,
     this.nan,
-    this.inf,
-    this.negativeInf,
+    this.infinity,
+    this.negativeInfinity,
   });
 
   @override
@@ -39,6 +39,6 @@ class JsonSettings {
       defaultDiscriminatorName == other.defaultDiscriminatorName &&
       defaultValueName == other.defaultValueName &&
       nan == other.nan &&
-      inf == other.inf &&
-      negativeInf == other.negativeInf;
+      infinity == other.infinity &&
+      negativeInfinity == other.negativeInfinity;
 }

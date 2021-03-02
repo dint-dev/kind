@@ -18,14 +18,14 @@ import 'package:kind/kind.dart';
 abstract class NumericKind<T> extends PrimitiveKind<T> {
   const NumericKind();
 
-  /// Maximum value (inclusive).
+  /// Maximum valid value (inclusive).
   T? get max;
 
-  /// Minimum value (inclusive).
+  /// Minimum valid value (inclusive).
   T? get min;
 }
 
-/// Superkind for objects that don't have references to other objects.
+/// Superclass for kinds of primitives values such as [int] and [String].
 abstract class PrimitiveKind<T> extends Kind<T> {
   const PrimitiveKind();
 

@@ -404,8 +404,6 @@ class _ReactiveFunction<T> {
 
 // TODO: Prevent cyclic mutations by keeping causal chain
 class _ReactiveSystem implements ReactiveSystem {
-  static const int _bit48 = 0x1000000000000;
-
   _ReactiveFunction? _firstReadListener;
   _ReactiveFunction? _firstWriteListener;
 
@@ -568,9 +566,9 @@ class _ReactiveSystem implements ReactiveSystem {
     // Increment optimization code.
     var optimizationCode = writeOptimizationCode;
     if (optimizationCode >= 1) {
-      // The unique code space is 48 bits (because of Javascript).
-      // Have we used every code?
-      if (optimizationCode == _bit48 - 1) {
+      // Integers should have maximum 52 bits in browsers
+      // (because of Javascript).
+      if (optimizationCode == Uint64Kind.maxSafeInJs) {
         optimizationCode = 0;
       } else {
         optimizationCode++;
@@ -586,9 +584,9 @@ class _ReactiveSystem implements ReactiveSystem {
     // Increment optimization code.
     var optimizationCode = readOptimizationCode;
     if (optimizationCode >= 1) {
-      // The unique code space is 48 bits (because of Javascript).
-      // Have we used every code?
-      if (optimizationCode == _bit48 - 1) {
+      // Integers should have maximum 52 bits in browsers
+      // (because of Javascript).
+      if (optimizationCode == Uint64Kind.maxSafeInJs) {
         optimizationCode = 0;
       } else {
         optimizationCode++;
@@ -605,9 +603,9 @@ class _ReactiveSystem implements ReactiveSystem {
     // Increment optimization code.
     var optimizationCode = readOptimizationCode;
     if (optimizationCode >= 1) {
-      // The unique code space is 48 bits (because of Javascript).
-      // Have we used every code?
-      if (optimizationCode == _bit48 - 1) {
+      // Integers should have maximum 52 bits in browsers
+      // (because of Javascript).
+      if (optimizationCode == Uint64Kind.maxSafeInJs) {
         optimizationCode = 0;
       } else {
         optimizationCode++;
@@ -634,9 +632,9 @@ class _ReactiveSystem implements ReactiveSystem {
     // Increment optimization code.
     var optimizationCode = writeOptimizationCode;
     if (optimizationCode >= 1) {
-      // The unique code space is 48 bits (because of Javascript).
-      // Have we used every code?
-      if (optimizationCode == _bit48 - 1) {
+      // Integers should have maximum 52 bits in browsers
+      // (because of Javascript).
+      if (optimizationCode == Uint64Kind.maxSafeInJs) {
         optimizationCode = 0;
       } else {
         optimizationCode++;

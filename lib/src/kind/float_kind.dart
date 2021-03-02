@@ -34,6 +34,8 @@ import 'package:protobuf/protobuf.dart' as protobuf;
 ///   * [Float32Kind]
 ///   * [Float64Kind]
 class Float32Kind extends FloatKindBase {
+  static final Float32List _float32list = Float32List(1);
+
   /// [Kind] for [Float32Kind].
   ///
   /// The purpose of annotation `@protected` is reducing accidental use.
@@ -45,12 +47,12 @@ class Float32Kind extends FloatKindBase {
         name: 'specialValues',
         getter: (t) => t.specialValues,
       );
-      final min = c.optionalFloat64(
+      final min = c.optionalFloat32(
         id: 2,
         name: 'min',
         getter: (t) => t.min,
       );
-      final max = c.optionalFloat64(
+      final max = c.optionalFloat32(
         id: 3,
         name: 'max',
         getter: (t) => t.max,
@@ -96,7 +98,7 @@ class Float32Kind extends FloatKindBase {
   int get bitsPerListElement => 32;
 
   @override
-  int get hashCode => (Float32Kind).hashCode ^ min.hashCode ^ max.hashCode;
+  int get hashCode => (Float32Kind).hashCode ^ super.hashCode;
 
   @override
   String get name => 'Float32';
@@ -108,7 +110,12 @@ class Float32Kind extends FloatKindBase {
 
   @override
   bool operator ==(other) {
-    return other is Float32Kind && min == other.min && max == other.max;
+    return other is Float32Kind &&
+        specialValues == other.specialValues &&
+        min == other.min &&
+        max == other.max &&
+        exclusiveMin == other.exclusiveMin &&
+        exclusiveMax == other.exclusiveMax;
   }
 
   @override
@@ -129,6 +136,13 @@ class Float32Kind extends FloatKindBase {
 
   @override
   String toString() => 'Float32Kind()';
+
+  /// Reduces precision of (64-bit) [double] to 32-bit floating point value.
+  static double losePrecision(double value) {
+    final list = _float32list;
+    list[0] = value;
+    return list[0];
+  }
 }
 
 /// [Kind] for 64-bit floating-point values ([double] in Dart).
@@ -209,7 +223,7 @@ class Float64Kind extends FloatKindBase {
   int get bitsPerListElement => 64;
 
   @override
-  int get hashCode => (Float64Kind).hashCode ^ min.hashCode ^ max.hashCode;
+  int get hashCode => (Float64Kind).hashCode ^ super.hashCode;
 
   @override
   String get name => 'Float64';
@@ -221,7 +235,12 @@ class Float64Kind extends FloatKindBase {
 
   @override
   bool operator ==(other) {
-    return other is Float64Kind && min == other.min && max == other.max;
+    return other is Float64Kind &&
+        specialValues == other.specialValues &&
+        min == other.min &&
+        max == other.max &&
+        exclusiveMin == other.exclusiveMin &&
+        exclusiveMax == other.exclusiveMax;
   }
 
   @override
@@ -264,6 +283,14 @@ abstract class FloatKindBase extends NumericKind<double> {
   });
 
   @override
+  int get hashCode =>
+      specialValues.hashCode ^
+      min.hashCode ^
+      max.hashCode ^
+      (exclusiveMin.hashCode << 1) ^
+      (exclusiveMax.hashCode << 2);
+
+  @override
   void instanceValidateConstraints(ValidateContext context, double value) {
     if (value.isNaN || value.isInfinite) {
       if (specialValues) {
@@ -303,17 +330,64 @@ abstract class FloatKindBase extends NumericKind<double> {
   double jsonTreeDecode(Object? json, {JsonDecodingContext? context}) {
     if (json is double) {
       return json;
-    } else {
-      context ??= JsonDecodingContext();
-      throw context.newGraphNodeError(
-        value: json,
-        reason: 'Expected JSON number',
-      );
     }
+    context ??= JsonDecodingContext();
+    if (json is String) {
+      final settings = context.jsonSettings;
+      if (json == settings.nan) {
+        return double.nan;
+      }
+      if (json == settings.negativeInfinity) {
+        return double.negativeInfinity;
+      }
+      if (json == settings.infinity) {
+        return double.infinity;
+      }
+    }
+    throw context.newGraphNodeError(
+      value: json,
+      reason: 'Expected JSON number',
+    );
   }
 
   @override
   Object? jsonTreeEncode(double value, {JsonEncodingContext? context}) {
+    if (value.isNaN) {
+      context ??= JsonEncodingContext();
+      final settings = context.jsonSettings;
+      final s = settings.nan;
+      if (s != null) {
+        return s;
+      }
+      throw context.newGraphNodeError(
+        value: value,
+        reason: 'JSON does not support `double.nan`.',
+      );
+    }
+    if (value == double.negativeInfinity) {
+      context ??= JsonEncodingContext();
+      final settings = context.jsonSettings;
+      final s = settings.negativeInfinity;
+      if (s != null) {
+        return s;
+      }
+      throw context.newGraphNodeError(
+        value: value,
+        reason: 'JSON does not support `double.negativeInfinity`.',
+      );
+    }
+    if (value == double.infinity) {
+      context ??= JsonEncodingContext();
+      final settings = context.jsonSettings;
+      final s = settings.infinity;
+      if (s != null) {
+        return s;
+      }
+      throw context.newGraphNodeError(
+        value: value,
+        reason: 'JSON does not support `double.infinity`.',
+      );
+    }
     return value;
   }
 

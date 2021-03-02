@@ -1,5 +1,5 @@
 name: kind
-version: 0.2.1
+version: 0.2.2
 description:
   An unified data layer framework that enables serialization / persistence / state management for
   any Dart class (without code generation!). Contains common primitives such as GeoPoint and UUID.

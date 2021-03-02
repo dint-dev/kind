@@ -1,3 +1,7 @@
+## 0.2.2
+
+  * Fixes issues in numeric kinds and others.
+
 ## 0.2.1
 
   * Fixes small issues.

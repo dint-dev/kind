@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:typed_data';
+
 import 'package:kind/kind.dart';
-import 'package:test/test.dart';
 import 'package:protobuf/protobuf.dart' as protobuf;
+import 'package:test/test.dart';
 
 void main() {
   group('FloatKindBase', () {
@@ -33,7 +35,7 @@ void main() {
         expect(set, isNot(contains(double.negativeInfinity)));
       });
 
-      test('no constraints, allow special', () {
+      test('allow special values', () {
         const kind = Float32Kind(specialValues: true);
         final set = <double>{};
         var nans = 0;
@@ -59,7 +61,7 @@ void main() {
       });
 
       test('min:100', () {
-        const kind = Float32Kind(min: 100.0);
+        const kind = Float32Kind(specialValues:false, min: 100.0);
         final set = <double>{};
         for (var i = 0; i < n; i++) {
           set.add(kind.randomExample());
@@ -71,7 +73,7 @@ void main() {
         expect(set, isNot(contains(double.negativeInfinity)));
       });
       test('max:100', () {
-        const kind = Float32Kind(max: 100.0);
+        const kind = Float32Kind(specialValues:false, max: 100.0);
         final set = <double>{};
         for (var i = 0; i < n; i++) {
           set.add(kind.randomExample());
@@ -83,7 +85,7 @@ void main() {
         expect(set, isNot(contains(double.negativeInfinity)));
       });
       test('min:-3, max:3', () {
-        const kind = Float32Kind(min: -3.0, max: 3.0);
+        const kind = Float32Kind(specialValues:false, min: -3.0, max: 3.0);
         final set = <double>{};
         for (var i = 0; i < n; i++) {
           set.add(kind.randomExample());
@@ -120,25 +122,52 @@ void main() {
         max: three,
       );
       final other0 = Float32Kind(
-        min: two + 9999.0,
+        specialValues: true,
+        min: two,
         max: three,
       );
       final other1 = Float32Kind(
+        min: two + 9999.0,
+        max: three,
+      );
+      final other2 = Float32Kind(
         min: two,
         max: three + 9999.0,
+      );
+      final other3 = Float32Kind(
+        min: two,
+        max: three,
+        exclusiveMin: true,
+      );
+      final other4 = Float32Kind(
+        min: two,
+        max: three,
+        exclusiveMax: true,
       );
 
       expect(value, clone);
       expect(value, isNot(other0));
       expect(value, isNot(other1));
+      expect(value, isNot(other2));
+      expect(value, isNot(other3));
+      expect(value, isNot(other4));
 
       expect(value.hashCode, clone.hashCode);
       expect(value.hashCode, isNot(other0.hashCode));
       expect(value.hashCode, isNot(other1.hashCode));
+      expect(value.hashCode, isNot(other2.hashCode));
+      expect(value.hashCode, isNot(other3.hashCode));
+      expect(value.hashCode, isNot(other4.hashCode));
     });
 
     test('newInstance()', () {
       expect(const Float32Kind().newInstance(), 0.0);
+    });
+
+    test('newList(reactive:false)', () {
+      final list = const Float32Kind().newList(2, reactive: false);
+      expect(list, isA<Float32List>());
+      expect(list, hasLength(2));
     });
 
     test('protobufFieldType', () {
@@ -214,25 +243,52 @@ void main() {
         max: three,
       );
       final other0 = Float64Kind(
-        min: two + 9999.0,
+        specialValues: true,
+        min: two,
         max: three,
       );
       final other1 = Float64Kind(
+        min: two + 9999.0,
+        max: three,
+      );
+      final other2 = Float64Kind(
         min: two,
         max: three + 9999.0,
+      );
+      final other3 = Float64Kind(
+        min: two,
+        max: three,
+        exclusiveMin: true,
+      );
+      final other4 = Float64Kind(
+        min: two,
+        max: three,
+        exclusiveMax: true,
       );
 
       expect(value, clone);
       expect(value, isNot(other0));
       expect(value, isNot(other1));
+      expect(value, isNot(other2));
+      expect(value, isNot(other3));
+      expect(value, isNot(other4));
 
       expect(value.hashCode, clone.hashCode);
       expect(value.hashCode, isNot(other0.hashCode));
       expect(value.hashCode, isNot(other1.hashCode));
+      expect(value.hashCode, isNot(other2.hashCode));
+      expect(value.hashCode, isNot(other3.hashCode));
+      expect(value.hashCode, isNot(other4.hashCode));
     });
 
     test('newInstance()', () {
       expect(const Float64Kind().newInstance(), 0.0);
+    });
+
+    test('newList(reactive:false)', () {
+      final list = const Float64Kind().newList(2, reactive: false);
+      expect(list, isA<Float64List>());
+      expect(list, hasLength(2));
     });
 
     test('protobufFieldType', () {
