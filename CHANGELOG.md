@@ -1,3 +1,7 @@
+## 0.3.1
+
+  * Small fixes (dependency constraints, documentation).
+
 ## 0.3.0
 
   * Fixes various issues. Breaking changes in relational database mapping and EnumKind.

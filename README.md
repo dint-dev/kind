@@ -3,40 +3,27 @@
 
 # Overview
 
-An unified data layer framework that enables serialization / persistence / state management for
+An unified data layer framework that enables serialization, persistence, and state management for
 any Dart class. This an early version and the APIs are not frozen. The package requires a null-safe
-version of Dart SDK (currently beta SDKs only).
+Flutter SDK 2.0.0 or later.
 
 ## Links
-  * [API reference](https://pub.dev/documentation/kind/latest/)
+  * [Official API reference](https://pub.dev/documentation/kind/latest/)
   * [Issue tracker](https://github.com/dint-dev/kind/issues)
   * [Github project](https://github.com/dint-dev/kind)
 
-## What it gives you?
-  * __Convert graphs to/from JSON.__
-    * Use [kind.jsonTreeEncode](https://pub.dev/documentation/kind/latest/kind/EntityKind/jsonTreeEncode.html)
-      / [kind.jsonTreeDecode)](https://pub.dev/documentation/kind/latest/kind/EntityKind/jsonTreeDecode.html).
-  * __Convert graphs to/from Protocol Buffers.__
-    * Use [kind.protobufTreeEncode](https://pub.dev/documentation/kind/latest/kind/EntityKind/protobufTreeEncode.html)
-      / [kind.protobufTreeDecode](https://pub.dev/documentation/kind/latest/kind/EntityKind/protobufTreeDecode.html).
+## Features
+  * __Encode/decode JSON.__
+    * The package can handle most JSON serialization requirements.
+  * __Encode/decode Protocol Buffers.__
+    * The package can handle most Protocol Buffers (and GRPC) serialization requirements.
   * __Use databases (upcoming).__
     * Our sibling package [database](https://pub.dev/packages/database) will use this framework in
       future.
   * __Observe views / mutations in graphs__
     * The package has [ReactiveSystem](https://pub.dev/documentation/kind/latest/kind/EntityKind/ReactiveSystem.html)
-      for observing views and mutations of reactive states in the isolate. When you are
-      deserializing JSON or Protocol Buffers, you get reactive objects by default without any
-      further data wrangling.
-  * __Validate instances.__
-    * For instance, if you have `StringKind(minLengthInUtf8:3, singleLine:true)`,
-      you get a debugging-friendly error message when you try to validate instance "a".
-  * __Get meanings.__
-    * Developers can use [kind.meaning](https://pub.dev/documentation/kind/latest/kind/EntityKind/meaning.html)
-      and [prop.meaning](https://pub.dev/documentation/kind/latest/kind/Prop/meaning.html) to
-      describe kinds in terms of other vocabularies (such as [schema.org](https://schema.org)
-      schemas). The information may be utilized in user interfaces or data processing.
-  * __Get generated examples.__
-    * _Kind_ has APIs for obtaining examples of instances.
+      for observing views and mutations of reactive states in the isolate.
+    * When you are deserializing JSON or Protocol Buffers, you get reactive objects by default.
 
 ## Overview of APIs
 ### Built-in kinds
@@ -82,41 +69,35 @@ version of Dart SDK (currently beta SDKs only).
     * [stringKindForPhoneNumber](https://pub.dev/documentation/kind/latest/kind.strings/stringKindForPhoneNumber.html) (phone number)
     * [stringKindForUrl](https://pub.dev/documentation/kind/latest/kind.strings/stringKindForUrl.html) (URL)
 
-### Data primitives
-  * [Date](https://pub.dev/documentation/kind/latest/kind/GeoPoint-class.html) (like _DateTime_, but does not define time)
-  * [DateTimeWithTimeZone](https://pub.dev/documentation/kind/latest/kind/GeoPoint-class.html) (like _DateTime_, but allows any time zone)
+### Other APIs
+  * [Date](https://pub.dev/documentation/kind/latest/kind/GeoPoint-class.html) (unlike _DateTime_, has only date)
+  * [DateTimeWithTimeZone](https://pub.dev/documentation/kind/latest/kind/GeoPoint-class.html) (unlike _DateTime_, allows arbitrary time zone)
   * [GeoPoint](https://pub.dev/documentation/kind/latest/kind/GeoPoint-class.html) (geographical latitude/longitude coordinates)
-  * [Uuid](https://pub.dev/documentation/kind/latest/kind/GeoPoint-class.html) (128-bit object identifier)
-
-### Reactive collection classes
   * [ReactiveIterable](https://pub.dev/documentation/kind/latest/kind/ReactiveIterable-class.html)
   * [ReactiveList](https://pub.dev/documentation/kind/latest/kind/ReactiveList-class.html)
   * [ReactiveMap](https://pub.dev/documentation/kind/latest/kind/ReactiveMap-class.html)
   * [ReactiveSet](https://pub.dev/documentation/kind/latest/kind/ReactiveSet-class.html)
+  * [Uuid](https://pub.dev/documentation/kind/latest/kind/GeoPoint-class.html) (128-bit object identifier)
 
 ## Some alternatives
-### For serialization
-  * [built_value](https://pub.dev/packages/json_serializable)
-    * Generates code for immutable values and JSON serialization.
-  * [json_serializable](https://pub.dev/packages/json_serializable)
-    * Generates code for JSON serialization.
-  * [protobuf](https://pub.dev/packages/protobuf)
-    * Generates code for Protocol Buffers serialization.
-
-### For state management
-  * [get](https://pub.dev/packages/get)
-  * [get_it](https://pub.dev/packages/get_it)
-  * [fish_redux](https://pub.dev/packages/fish_redux)
-  * [flutter_redux](https://pub.dev/packages/flutter_redux)
-  * [mobx](https://pub.dev/packages/mobx)
-  * [riverpod](https://pub.dev/packages/riverpod)
+  * For serialization
+    * [built_value](https://pub.dev/packages/json_serializable)
+    * [json_serializable](https://pub.dev/packages/json_serializable)
+    * [protobuf](https://pub.dev/packages/protobuf)
+  * For state management
+    * [get](https://pub.dev/packages/get)
+    * [get_it](https://pub.dev/packages/get_it)
+    * [fish_redux](https://pub.dev/packages/fish_redux)
+    * [flutter_redux](https://pub.dev/packages/flutter_redux)
+    * [mobx](https://pub.dev/packages/mobx)
+    * [riverpod](https://pub.dev/packages/riverpod)
 
 # Getting started
 ## 1.Adding dependency
 In _pubspec.yaml_, you should have something like:
 ```yaml
 environment:
-  sdk: '>=2.12.0-0 <3.0.0'
+  sdk: '>=2.12.0 <3.0.0'
 
 dependencies:
   kind: ^0.3.0
@@ -162,26 +143,42 @@ class Person extends Entity {
 
 # Serialization
 ## JSON
+Use [jsonTreeEncode(...)](https://pub.dev/documentation/kind/latest/kind/EntityKind/jsonTreeEncode.html)
+and [jsonTreeDecode(...)](https://pub.dev/documentation/kind/latest/kind/EntityKind/jsonTreeDecode.html):
 
 ```dart
-// Encode
+// Person --> JSON tree
 final json = person.getKind().jsonTreeEncode(person);
 
-// Decode
+// JSON tree --> Person
 final person = Person.kind.jsonTreeDecode(json);
 ```
 
-
 ## Protocol Buffers
+For encoding/decoding Protocol Buffers bytes,
+use [protobufBytesEncode(...)](https://pub.dev/documentation/kind/latest/kind/EntityKind/protobufBytesEncode.html)
+and [protobufBytesDecode(...)](https://pub.dev/documentation/kind/latest/kind/EntityKind/protobufBytesDecode.html):
 
 ```dart
-// Encode
-final generatedMessage = person.getKind().protobufTreeEncode(person);
+// Person --> bytes
+final generatedMessage = Person.kind.protobufBytesEncode(person);
 
-// Decode
+// bytes --> Person
+final person = Person.kind.protobufBytesDecode(bytes);
+```
+
+For encoding/decoding _package:protobuf_ [GeneratedMessage](https://pub.dev/documentation/protobuf/latest/protobuf/GeneratedMessage-class.html),
+use [protobufTreeEncode(...)](https://pub.dev/documentation/kind/latest/kind/EntityKind/protobufTreeEncode.html)
+and [protobufTreeDecode(...)](https://pub.dev/documentation/kind/latest/kind/EntityKind/protobufTreeDecode.html):
+```dart
+// Person --> GeneratedMessage
+final generatedMessage = Person.kind.protobufTreeEncode(person);
+
+// GeneratedMessage --> Person
 final person = Person.kind.protobufTreeDecode(generatedMessage);
 ```
 
+You can also generate _GeneratedMessage_ classes with GRPC tooling and merge messages.
 
 # Alternative approaches to specifying data classes
 ### Why / why not?
@@ -194,7 +191,7 @@ The alternative approaches:
       inevitably going to be some complexity unless Dart language designers decide to support
       something like decorator annotations.
 
-## Mutable class, without reactive state management
+## Mutable and non-reactive
 You just define `getter` and `setter` in [Prop](https://pub.dev/documentation/kind/latest/kind/Prop-class.html)
 for ordinary Dart fields:
 ```dart
@@ -227,7 +224,7 @@ final EntityKind<Person> personKind = EntityKind<Person>(
 );
 ```
 
-## Mutable class, with reactive state management
+## Mutable and reactive
 You can use [ReactiveMixin](https://pub.dev/documentation/kind/latest/kind/ReactiveMixin-class.html)
 for implementing getters and setters that send notifications to
 [ReactiveSystem](https://pub.dev/documentation/kind/latest/kind/ReactiveSystem-class.html):
@@ -252,7 +249,7 @@ class Person extends Entity with ReactiveMixin {
 ```
 
 
-## Immutable class, without reactive state management
+## Immutable and non-reactive
 ```dart
 // Extending Entity is optional, but recommended.
 class Person {
@@ -293,7 +290,7 @@ final EntityKind<Person> personKind = EntityKind<Person>(
 );
 ```
 
-## Immutable class, with reactive state management
+## Immutable and reactive
 You can use [ReactiveMixin](https://pub.dev/documentation/kind/latest/kind/ReactiveMixin-class.html)
 for implementing getters and setters that send notifications to
 [ReactiveSystem](https://pub.dev/documentation/kind/latest/kind/ReactiveSystem-class.html):
