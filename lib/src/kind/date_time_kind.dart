@@ -20,9 +20,7 @@ import 'package:protobuf/protobuf.dart';
 
 /// [Kind] for [DateTime].
 ///
-/// By default, values must in the range from
-/// 0001-01-01T00:00:00Z to
-/// 9999-12-31T23:59:59Z (inclusive).
+/// Values must in the range from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59Z.
 ///
 /// ## Example
 /// ```
@@ -177,13 +175,13 @@ class DateTimeKind extends PrimitiveKind<DateTime> {
   }
 }
 
-// "DateTimeWithTimeZone" in "well-known types" of Protocol Buffers:
-//     https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#google.protobuf.DateTimeWithTimeZone
+// "Timestamp" in "well-known types" of Protocol Buffers:
+//     https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#google.protobuf.Timestamp
 class _DateTimeGeneratedMessage extends GeneratedMessage {
   static final BuilderInfo _info = () {
     final builderInfo = BuilderInfo(
       // Protocol Buffers message declaration name.
-      'DateTimeWithTimeZone',
+      'Timestamp',
       createEmptyInstance: () => _DateTimeGeneratedMessage(),
     );
     builderInfo.a(1, 'seconds', PbFieldType.OS6);
@@ -196,8 +194,7 @@ class _DateTimeGeneratedMessage extends GeneratedMessage {
 
   @override
   GeneratedMessage clone() {
-    _DateTimeGeneratedMessage();
-    throw UnimplementedError();
+    return _DateTimeGeneratedMessage()..mergeFromMessage(this);
   }
 
   @override

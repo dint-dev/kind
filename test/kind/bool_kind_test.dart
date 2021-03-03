@@ -21,6 +21,15 @@ void main() {
       expect(const BoolKind().name, 'bool');
     });
 
+    test('BoolKind.kind', () {
+      // ignore: invalid_use_of_protected_member
+      final kind = BoolKind.kind;
+      expect(kind.name, 'BoolKind');
+
+      expect(kind.jsonTreeEncode(const BoolKind()), {});
+      expect(kind.jsonTreeDecode({}), const BoolKind());
+    });
+
     test('== / hashCode', () {
       // ignore: non_const_call_to_literal_constructor
       final value = BoolKind();

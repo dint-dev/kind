@@ -21,6 +21,38 @@ void main() {
       expect(const StringKind().name, 'String');
     });
 
+    test('StringKind.kind', () {
+      // ignore: invalid_use_of_protected_member
+      final kind = StringKind.kind;
+      expect(kind.name, 'StringKind');
+      expect(
+        kind.jsonTreeEncode(const StringKind()),
+        {},
+      );
+      expect(
+        kind.jsonTreeEncode(const StringKind(minLengthInUtf8: 2)),
+        {'minLengthInUtf8': 2.0},
+      );
+      expect(
+        kind.jsonTreeEncode(const StringKind(maxLengthInUtf8: 2)),
+        {'maxLengthInUtf8': 2.0},
+      );
+      expect(
+        kind.jsonTreeEncode(
+         const StringKind(singleLine: true),
+        ),
+        {'singleLine': true},
+      );
+      expect(
+        kind.jsonTreeEncode(
+          StringKind(
+            regExpProvider: () => RegExp('abc'),
+          ),
+        ),
+        {'pattern': 'abc'},
+      );
+    });
+
     test('== / hashCode', () {
       // Prevents `const` suggestions by the analyzer.
       final one = 1;

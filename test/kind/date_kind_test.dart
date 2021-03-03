@@ -21,6 +21,15 @@ void main() {
       expect(const DateKind().name, 'Date');
     });
 
+    test('Date.kind', () {
+      // ignore: invalid_use_of_protected_member
+      final kind = DateKind.kind;
+      expect(kind.name, 'DateKind');
+
+      expect(kind.jsonTreeEncode(const DateKind()), {});
+      expect(kind.jsonTreeDecode({}), const DateKind());
+    });
+
     test('== / hashCode', () {
       // ignore: non_const_call_to_literal_constructor
       final value = DateKind();

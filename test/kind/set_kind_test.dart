@@ -20,6 +20,49 @@ void main() {
     test('name', () {
       expect(const SetKind(StringKind()).name, 'Set');
     });
+    test('SetKind.kind', () {
+      // ignore: invalid_use_of_protected_member
+      final kind = SetKind.kind;
+      expect(kind.name, 'SetKind');
+
+      expect(
+        kind.jsonTreeEncode(const SetKind(StringKind())),
+        {
+          'itemsKind': {'type': 'StringKind'},
+        },
+      );
+      expect(
+        kind.jsonTreeDecode({
+          'itemsKind': {'type': 'StringKind'},
+        }),
+        const SetKind(StringKind()),
+      );
+
+      expect(
+        kind.jsonTreeEncode(const SetKind(
+          StringKind(maxLengthInUtf8: 2),
+          minLength: 3,
+          maxLength: 4,
+        )),
+        {
+          'itemsKind': {'type': 'StringKind', 'maxLengthInUtf8': 2.0},
+          'minLength': 3,
+          'maxLength': 4,
+        },
+      );
+      expect(
+        kind.jsonTreeDecode({
+          'itemsKind': {'type': 'StringKind', 'maxLengthInUtf8': 2.0},
+          'minLength': 3,
+          'maxLength': 4,
+        }),
+        const SetKind(
+          StringKind(maxLengthInUtf8: 2),
+          minLength: 3,
+          maxLength: 4,
+        ),
+      );
+    });
 
     test('== / hashCode', () {
       // Helper for eliminating suggestions to use constants.
@@ -60,6 +103,13 @@ void main() {
       expect(value.hashCode, isNot(other0.hashCode));
       expect(value.hashCode, isNot(other1.hashCode));
       expect(value.hashCode, isNot(other2.hashCode));
+    });
+
+    test('newInstance()', () {
+      final instance = const SetKind(StringKind()).newInstance();
+      expect(instance, isA<ReactiveSet>());
+      instance.add('abc');
+      expect(instance, hasLength(1));
     });
 
     group('randomExample', () {

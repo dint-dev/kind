@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'package:collection/collection.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:kind/kind.dart';
-import 'package:kind/src/kind/relations.dart';
 import 'package:meta/meta.dart';
 import 'package:protobuf/protobuf.dart' as protobuf;
 import 'package:protobuf/protobuf.dart' show BuilderInfo;
@@ -218,12 +218,12 @@ abstract class EntityKind<T extends Object> extends Kind<T> {
   static final EntityKind<EntityKind> kind = EntityKind<EntityKind>(
     name: 'EntityKind',
     build: (c) {
-      final name = c.requiredString(
+      final nameProp = c.requiredString(
         id: 1,
         name: 'name',
         getter: (t) => t.name,
       );
-      final packageName = c.optionalString(
+      final packageNameProp = c.optionalString(
         id: 2,
         name: 'packageName',
         getter: (t) => t.packageName,
@@ -235,15 +235,38 @@ abstract class EntityKind<T extends Object> extends Kind<T> {
         itemsKind: Prop.kind_,
         getter: (t) => t.props,
       );
+      final primaryKeyProps = c.optionalList<String>(
+        id: 4,
+        name: 'primaryKeyProps',
+        itemsKind: Prop.namePropKind,
+        getter: (t) => t.primaryKeyProps,
+      );
+      final meaningsProp = c.requiredList<KindMeaning>(
+        id: 5,
+        name: 'meanings',
+        itemsKind: KindMeaning.kind_,
+        getter: (t) => t.meanings,
+      );
+      final description = c.optionalString(
+        id: 6,
+        name: 'description',
+        getter: (t) => t.description,
+      );
       c.constructorFromData = (data) {
-        return EntityKind(
-          name: data.get(name),
-          packageName: data.get(packageName),
+        final name = data.get(nameProp);
+        final packageName = data.get(packageNameProp);
+        return EntityKind<Object>(
+          name: name,
+          packageName: packageName,
+          meanings: data.get(meaningsProp),
+          description: data.get(description),
           build: (c) {
             final propsList = data.get(props);
             for (var prop in propsList) {
               c.addProp(prop);
             }
+            c.primaryKeyProps = data.get(primaryKeyProps);
+            c.constructorFromData = (data) => data;
           },
         );
       };
@@ -261,25 +284,28 @@ abstract class EntityKind<T extends Object> extends Kind<T> {
   ///       we are able to avoid dependency cycles.
   ///
   /// ## Optional parameters
-  ///   * [packageName]
-  ///   * [meanings]
-  ///   * [extendsKind]
-  ///   * [withKinds]
+  ///   * [packageName] - Package name for debugging purposes.
+  ///   * [extendsClause] - Extended kind.
+  ///   * [meanings] - Semantic meanings of this kind.
+  ///   * [description] - Description of this kind.
   ///
   factory EntityKind({
     required String name,
-    required void Function(EntityKindBuilder<T> builder) build,
+    required void Function(EntityKindDeclarationContext<T> builder) build,
     String? packageName,
     List<KindMeaning> meanings,
-    EntityKind? extendsKind,
-    List<EntityKind> withKinds,
+    EntityKindExtendsClause extendsClause,
+    String? description,
   }) = EntityKindImpl<T>;
 
   @protected
   EntityKind.constructor();
 
-  /// Kinds that this kind extends using `extends` clause.
-  EntityKind? get extendsKind;
+  /// Description of the kind.
+  String? get description;
+
+  /// Specifies a superclass.
+  EntityKindExtendsClause? get extendsClause;
 
   /// Describes meanings in other vocabularies.
   ///
@@ -305,10 +331,10 @@ abstract class EntityKind<T extends Object> extends Kind<T> {
   String? get packageName;
 
   /// Primary key properties.
-  KeyProps? get primaryKeyProps;
+  List<String>? get primaryKeyProps;
 
   /// Properties.
-  List<Prop<T, dynamic>> get props;
+  List<Prop<Object, Object?>> get props;
 
   /// Kinds that this kind extends using `with` clause.
   List<EntityKind> get withKinds;
@@ -316,21 +342,41 @@ abstract class EntityKind<T extends Object> extends Kind<T> {
   @override
   EntityKind<EntityKind> getKind() => kind;
 
-  bool instanceEquals(T left, Object right, {GraphEquality? context});
+  /// A helper for checking equality for entities.
+  @nonVirtual
+  bool instanceEquals(T left, Object right, {GraphEquality? context}) {
+    try {
+      if (right is! T) {
+        return false;
+      }
+      for (var prop in props) {
+        final leftValue = prop.get(left);
+        final rightValue = prop.get(right);
+        if (leftValue == null ||
+            leftValue is bool ||
+            leftValue is num ||
+            leftValue is String ||
+            leftValue is Date ||
+            leftValue is DateTime ||
+            leftValue is DateTimeWithTimeZone) {
+          if (leftValue != rightValue) {
+            return false;
+          }
+        } else {
+          context ??= GraphEquality();
+          if (!context.equals(leftValue, rightValue)) {
+            return false;
+          }
+        }
+      }
+      return true;
+    } catch (e) {
+      throw throw StateError('EntityKind.instanceEquals(...) failed: $e');
+    }
+  }
 
-  /// A helper for computing a hash code for entities.
-  ///
-  /// ## Example
-  /// ```
-  /// class Example extends Entity {
-  ///   // ...
-  ///
-  ///   @override
-  ///   int get hashCode => getKind().instanceHash(this);
-  ///
-  ///   // ...
-  /// }
-  /// ```
+  /// A helper for computing [hashCode] for entities.
+  @nonVirtual
   int instanceHash(T a) {
     var h = 0;
     for (var prop in props) {
@@ -345,86 +391,64 @@ abstract class EntityKind<T extends Object> extends Kind<T> {
           value is GeoPoint) {
         h = 11 * h ^ value.hashCode;
       } else if (value is Iterable) {
-        h = 3 * h ^ value.length;
+        h *= 11;
+        if (value is List &&
+            value.every((element) => element is num || element is String)) {
+          h ^= const ListEquality().hash(value);
+        } else if (value is Set &&
+            value.every((element) => element is num || element is String)) {
+          h ^= const SetEquality().hash(value);
+        } else {
+          h ^= value.length;
+        }
       }
     }
     return h;
   }
 
-  /// A helper for computing a debug-friendly string representation for
+  /// A helper for producing a debug-friendly string representation for
   /// entities.
-  ///
-  /// ## Example
-  /// ```
-  /// class Example extends Entity {
-  ///   // ...
-  ///
-  ///   @override
-  ///   String toString() => getKind().instanceToString(this);
-  ///
-  ///   // ...
-  /// }
-  /// ```
+  @nonVirtual
   String instanceToString(T instance) {
     final sb = StringBuffer();
     sb.write(name);
     sb.write('(');
-    var printedAllProps = true;
-    for (var prop in props) {
+    final nonMutableProps = props.where((element) => !element.isMutable);
+    final mutableProps = props.where((element) => element.isMutable);
+    for (var prop in nonMutableProps) {
+      final value = prop.get(instance);
+      if (prop.kind.instanceIsDefaultValue(value)) {
+        continue;
+      }
+        sb.write('\n  ');
+        sb.write(prop.name);
+        sb.write(': ');
+        _valueToStringBuffer(sb, value);
+        sb.write(',');
+    }
+    if (nonMutableProps.isNotEmpty) {
+      sb.write('\n');
+    }
+    sb.write(')');
+    for (var prop in mutableProps) {
       try {
         final value = prop.get(instance);
-        if (value == null ||
-            value is bool ||
-            value is num ||
-            value is Int64 ||
-            value is String ||
-            value is DateTime ||
-            value is DateTimeWithTimeZone ||
-            value is Date ||
-            value is GeoPoint) {
-          sb.write('\n  ');
-          sb.write(prop.name);
-          sb.write(': ');
-          if (value == null ||
-              value is bool ||
-              value is num ||
-              value is Int64) {
-            sb.write(value);
-          } else if (value is String) {
-            sb.write("'");
-            sb.write(value.replaceAll("'", r"\'").replaceAll('\n', "\\n'\n'"));
-            sb.write("'");
-          } else if (value is DateTime) {
-            sb.write("DateTime.parse('");
-            sb.write(value.toIso8601String());
-            sb.write("')");
-          } else if (value is DateTimeWithTimeZone) {
-            sb.write("DateTime.parse('");
-            sb.write(value.toIso8601String());
-            sb.write("')");
-          } else if (value is Date) {
-            sb.write("DateTime.parse('");
-            sb.write(value.year.toString().padLeft(2, '0'));
-            sb.write("')");
-            sb.write(value.month.toString().padLeft(2, '0'));
-            sb.write("')");
-            sb.write(value.day.toString().padLeft(2, '0'));
-            sb.write("')");
-          } else {
-            sb.write(value);
-          }
-        } else {
-          printedAllProps = false;
+        if (prop.kind.instanceIsDefaultValue(value)) {
+          continue;
         }
+        sb.write('\n..');
+        sb.write(prop.name);
+        sb.write(' = ');
+        _valueToStringBuffer(sb, value);
       } catch (e) {
         throw StateError(
-            'Kind "${name}" instanceToString(...) threw error on property "${prop.name}": $e');
+          'Kind "$name" instanceToString(...) threw error on property "${prop.name}": $e',
+        );
       }
     }
-    if (!printedAllProps) {
-      sb.writeln('\n...');
+    if (mutableProps.isNotEmpty) {
+      sb.write('\n');
     }
-    sb.write('\n)');
     return sb.toString();
   }
 
@@ -461,4 +485,108 @@ abstract class EntityKind<T extends Object> extends Kind<T> {
     T instance, {
     ProtobufEncodingContext? context,
   });
+
+  static void _valueToStringBuffer(StringBuffer sb, Object? value) {
+    if (value == null || value is bool || value is num || value is Int64) {
+      sb.write(value);
+    } else if (value is String) {
+      if (value.length < 80) {
+        sb.write('"');
+        sb.write(value.replaceAll(r'\', r'\\').replaceAll('\n', r'\n'));
+        sb.write('"');
+      } else {
+        sb.write('<< string with ');
+        sb.write(value.runes.length);
+        sb.write(' Unicode runes >>');
+      }
+    } else if (value is DateTime) {
+      sb.write("DateTime.parse('");
+      sb.write(value.toIso8601String());
+      sb.write("')");
+    } else if (value is DateTimeWithTimeZone) {
+      sb.write("DateTimeWithTimeZone.parse('");
+      sb.write(value.toIso8601String());
+      sb.write("')");
+    } else if (value is Date) {
+      sb.write("DateTime.parse('");
+      sb.write(value.year.toString().padLeft(2, '0'));
+      sb.write("')");
+      sb.write(value.month.toString().padLeft(2, '0'));
+      sb.write("')");
+      sb.write(value.day.toString().padLeft(2, '0'));
+      sb.write("')");
+    } else if (value is List) {
+      if (value.isEmpty) {
+        sb.write('[]');
+      } else if (value.length < 8 &&
+          value.every((element) => element is String && element.length < 40)) {
+        sb.write('[');
+        sb.writeAll(value.map((e) => '"${e.replaceAll(r'\', r'\\').replaceAll('\n', r'\n')}"'), ', ');
+        sb.write(']');
+      } else {
+        sb.write('[');
+        sb.write('...');
+        sb.write(']');
+      }
+    } else if (value is Set) {
+      if (value.isEmpty) {
+        sb.write('{}');
+      } else if (value.length < 8 &&
+          value.every((element) => element is String && element.length < 40)) {
+        sb.write('{');
+        sb.writeAll(value.map((e) => '"${e.replaceAll(r'\', r'\\').replaceAll('\n', r'\n')}"'), ', ');
+        sb.write('}');
+      } else {
+        sb.write('{');
+        sb.write('...');
+        sb.write('}');
+      }
+    } else {
+      sb.write('<< ${value.runtimeType} >>');
+    }
+  }
+}
+
+class EntityKindExtendsClause<T extends Object> extends Entity {
+  static final EntityKind<EntityKindExtendsClause> kind_ =
+      EntityKind<EntityKindExtendsClause>(
+    name: 'EntityKindInheritanceClause',
+    build: (c) {
+      final kind = c.required<EntityKind>(
+        id: 1,
+        name: 'kind',
+        kind: EntityKind.kind,
+      );
+      final localKey = c.optionalList<String>(
+        id: 2,
+        name: 'localPropNames',
+        itemsKind: Prop.namePropKind,
+      );
+      final foreignKey = c.optionalList<String>(
+        id: 3,
+        name: 'foreignPropNames',
+        itemsKind: Prop.namePropKind,
+      );
+      c.constructorFromData = (data) {
+        return EntityKindExtendsClause(
+          kind: data.get(kind),
+          localPropNames: data.get(localKey),
+          foreignPropNames: data.get(foreignKey),
+        );
+      };
+    },
+  );
+
+  final EntityKind<T> kind;
+  final List<String>? localPropNames;
+  final List<String>? foreignPropNames;
+
+  EntityKindExtendsClause({
+    required this.kind,
+    this.localPropNames,
+    this.foreignPropNames,
+  });
+
+  @override
+  EntityKind<Object> getKind() => kind;
 }

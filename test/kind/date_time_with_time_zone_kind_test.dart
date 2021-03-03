@@ -17,6 +17,19 @@ import 'package:test/test.dart';
 
 void main() {
   group('DateTimeWithTimeZoneKind', () {
+    test('name', () {
+      expect(const DateTimeWithTimeZoneKind().name, 'DateTimeWithTimeZone');
+    });
+
+    test('DateTimeWithTimeZoneKind.kind', () {
+      // ignore: invalid_use_of_protected_member
+      final kind = DateTimeWithTimeZoneKind.kind;
+      expect(kind.name, 'DateTimeWithTimeZoneKind');
+
+      expect(kind.jsonTreeEncode(const DateTimeWithTimeZoneKind()), {});
+      expect(kind.jsonTreeDecode({}), const DateTimeWithTimeZoneKind());
+    });
+
     test('== / hashCode', () {
       // ignore: non_const_call_to_literal_constructor
       final value = DateTimeWithTimeZoneKind();

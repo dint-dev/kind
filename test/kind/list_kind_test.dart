@@ -21,6 +21,50 @@ void main() {
       expect(const ListKind(StringKind()).name, 'List');
     });
 
+    test('ListKind.kind', () {
+      // ignore: invalid_use_of_protected_member
+      final kind = ListKind.kind;
+      expect(kind.name, 'ListKind');
+
+      expect(
+        kind.jsonTreeEncode(const ListKind(StringKind())),
+        {
+          'itemsKind': {'type': 'StringKind'},
+        },
+      );
+      expect(
+        kind.jsonTreeDecode({
+          'itemsKind': {'type': 'StringKind'},
+        }),
+        const ListKind(StringKind()),
+      );
+
+      expect(
+        kind.jsonTreeEncode(const ListKind(
+          StringKind(maxLengthInUtf8: 2),
+          minLength: 3,
+          maxLength: 4,
+        )),
+        {
+          'itemsKind': {'type': 'StringKind', 'maxLengthInUtf8': 2.0},
+          'minLength': 3,
+          'maxLength': 4,
+        },
+      );
+      expect(
+        kind.jsonTreeDecode({
+          'itemsKind': {'type': 'StringKind', 'maxLengthInUtf8': 2.0},
+          'minLength': 3,
+          'maxLength': 4,
+        }),
+        const ListKind(
+          StringKind(maxLengthInUtf8: 2),
+          minLength: 3,
+          maxLength: 4,
+        ),
+      );
+    });
+
     test('== / hashCode', () {
       // Helper for eliminating suggestions to use constants.
       final two = 2;
@@ -62,7 +106,14 @@ void main() {
       expect(value.hashCode, isNot(other2.hashCode));
     });
 
-    group('randomExample', () {
+    test('newInstance()', () {
+      final instance = const ListKind(StringKind()).newInstance();
+      expect(instance, isA<ReactiveList>());
+      instance.add('abc');
+      expect(instance, hasLength(1));
+    });
+
+    group('randomExample()', () {
       const n = 1000;
       const itemsKind = Int32Kind(min: -10000000, max: 10000000);
 

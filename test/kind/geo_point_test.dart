@@ -43,6 +43,7 @@ void main() {
       expect(unit.inMeters, 0.3048);
     });
   });
+
   group('GeoPoint:', () {
     final sanFrancisco = GeoPoint(37.7749, -122.4194);
     final london = GeoPoint(51.5074, -0.1278);

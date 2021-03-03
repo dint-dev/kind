@@ -62,6 +62,24 @@ void main() {
       expect(const Int8Kind().name, 'Int8');
     });
 
+    test('Int8Kind.kind', () {
+      // ignore: invalid_use_of_protected_member
+      final kind = Int8Kind.kind;
+      expect(kind.name, 'Int8Kind');
+      expect(
+        kind.jsonTreeEncode(const Int8Kind()),
+        {},
+      );
+      expect(
+        kind.jsonTreeEncode(const Int8Kind(min: 2)),
+        {'min': 2.0},
+      );
+      expect(
+        kind.jsonTreeEncode(const Int8Kind(max: 2)),
+        {'max': 2.0},
+      );
+    });
+
     test('minPossible', () {
       expect(Int8Kind.minPossible, -0x7F - 1);
     });
@@ -112,6 +130,24 @@ void main() {
       expect(const Int16Kind().name, 'Int16');
     });
 
+    test('Int16Kind.kind', () {
+      // ignore: invalid_use_of_protected_member
+      final kind = Int16Kind.kind;
+      expect(kind.name, 'Int16Kind');
+      expect(
+        kind.jsonTreeEncode(const Int16Kind()),
+        {},
+      );
+      expect(
+        kind.jsonTreeEncode(const Int16Kind(min: 2)),
+        {'min': 2.0},
+      );
+      expect(
+        kind.jsonTreeEncode(const Int16Kind(max: 2)),
+        {'max': 2.0},
+      );
+    });
+
     test('minPossible', () {
       expect(Int16Kind.minPossible, -0x7FFF - 1);
     });
@@ -160,6 +196,24 @@ void main() {
   group('Int32Kind', () {
     test('name', () {
       expect(const Int32Kind().name, 'Int32');
+    });
+
+    test('Int32Kind.kind', () {
+      // ignore: invalid_use_of_protected_member
+      final kind = Int32Kind.kind;
+      expect(kind.name, 'Int32Kind');
+      expect(
+        kind.jsonTreeEncode(const Int32Kind()),
+        {},
+      );
+      expect(
+        kind.jsonTreeEncode(const Int32Kind(min: 2)),
+        {'min': 2.0},
+      );
+      expect(
+        kind.jsonTreeEncode(const Int32Kind(max: 2)),
+        {'max': 2.0},
+      );
     });
 
     test('== / hashCode', () {
@@ -268,6 +322,24 @@ void main() {
   group('Int64Kind', () {
     test('name', () {
       expect(const Int64Kind().name, 'Int64');
+    });
+
+    test('Int64Kind.kind', () {
+      // ignore: invalid_use_of_protected_member
+      final kind = Int64Kind.kind;
+      expect(kind.name, 'Int64Kind');
+      expect(
+        kind.jsonTreeEncode(const Int64Kind()),
+        {},
+      );
+      expect(
+        kind.jsonTreeEncode(const Int64Kind(min: 2)),
+        {'min': 2.0},
+      );
+      expect(
+        kind.jsonTreeEncode(const Int64Kind(max: 2)),
+        {'max': 2.0},
+      );
     });
 
     test('== / hashCode', () {
@@ -440,6 +512,24 @@ void main() {
       expect(const Uint8Kind().name, 'Uint8');
     });
 
+    test('Uint8Kind.kind', () {
+      // ignore: invalid_use_of_protected_member
+      final kind = Uint8Kind.kind;
+      expect(kind.name, 'Uint8Kind');
+      expect(
+        kind.jsonTreeEncode(const Uint8Kind()),
+        {},
+      );
+      expect(
+        kind.jsonTreeEncode(const Uint8Kind(min: 2)),
+        {'min': 2.0},
+      );
+      expect(
+        kind.jsonTreeEncode(const Uint8Kind(max: 2)),
+        {'max': 2.0},
+      );
+    });
+
     test('newList(reactive:false)', () {
       final list = const Uint8Kind().newList(2, reactive: false);
       expect(list, isA<Uint8List>());
@@ -483,6 +573,24 @@ void main() {
       expect(const Uint16Kind().name, 'Uint16');
     });
 
+    test('Uint16Kind.kind', () {
+      // ignore: invalid_use_of_protected_member
+      final kind = Uint16Kind.kind;
+      expect(kind.name, 'Uint16Kind');
+      expect(
+        kind.jsonTreeEncode(const Uint16Kind()),
+        {},
+      );
+      expect(
+        kind.jsonTreeEncode(const Uint16Kind(min: 2)),
+        {'min': 2.0},
+      );
+      expect(
+        kind.jsonTreeEncode(const Uint16Kind(max: 2)),
+        {'max': 2.0},
+      );
+    });
+
     test('newList(reactive:false)', () {
       final list = const Uint16Kind().newList(2, reactive: false);
       expect(list, isA<Uint16List>());
@@ -524,6 +632,24 @@ void main() {
   group('Uint32Kind', () {
     test('name', () {
       expect(const Uint32Kind().name, 'Uint32');
+    });
+
+    test('Uint32Kind.kind', () {
+      // ignore: invalid_use_of_protected_member
+      final kind = Uint32Kind.kind;
+      expect(kind.name, 'Uint32Kind');
+      expect(
+        kind.jsonTreeEncode(const Uint32Kind()),
+        {},
+      );
+      expect(
+        kind.jsonTreeEncode(const Uint32Kind(min: 2)),
+        {'min': 2.0},
+      );
+      expect(
+        kind.jsonTreeEncode(const Uint32Kind(max: 2)),
+        {'max': 2.0},
+      );
     });
 
     test('== / hashCode', () {
@@ -625,6 +751,24 @@ void main() {
   group('Uint64Kind', () {
     test('name', () {
       expect(const Uint64Kind().name, 'Uint64');
+    });
+
+    test('Uint64Kind.kind', () {
+      // ignore: invalid_use_of_protected_member
+      final kind = Uint64Kind.kind;
+      expect(kind.name, 'Uint64Kind');
+      expect(
+        kind.jsonTreeEncode(const Uint64Kind()),
+        {},
+      );
+      expect(
+        kind.jsonTreeEncode(const Uint64Kind(min: 2)),
+        {'min': 2.0},
+      );
+      expect(
+        kind.jsonTreeEncode(const Uint64Kind(max: 2)),
+        {'max': 2.0},
+      );
     });
 
     test('== / hashCode', () {

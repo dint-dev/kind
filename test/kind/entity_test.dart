@@ -70,22 +70,23 @@ void main() {
       final value = _Example()..name.value = 'a';
       expect(
         value.toString(),
-        '_Example()\n'
-        '..name = \'a\'\n'
-        '..example = null\n'
-        '..listOfExamples = << _ReactiveList<_Example> >>\n',
+        '_Example(\n'
+        '  name: "a",\n'
+        ')',
       );
     });
 
     test('toString(), recursive list', () {
       final value = _Example()..name.value = 'a';
+      value.example.value = value;
       value.listOfExamples.add(value);
       expect(
         value.toString(),
-        '_Example()\n'
-        '..name = \'a\'\n'
-        '..example = null\n'
-        '..listOfExamples = << _ReactiveList<_Example> >>\n',
+        '_Example(\n'
+        '  name: "a",\n'
+        '  example: << _Example >>,\n'
+        '  listOfExamples: [...],\n'
+        ')',
       );
     });
   });

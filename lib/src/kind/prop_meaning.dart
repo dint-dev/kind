@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'package:kind/kind.dart';
+
 /// Describes meaning of a [Prop] in some structured data vocabulary.
 ///
 /// ## Example
@@ -40,6 +42,31 @@
 /// }
 /// ```
 class PropMeaning {
+  static final EntityKind<PropMeaning> kind_ = EntityKind<PropMeaning>(
+    name: 'PropMeaning',
+    build: (c) {
+      final schemaUrl = c.requiredString(
+        id: 1,
+        name: 'schemaUrl',
+        getter: (t) => t.schemaUrl,
+      );
+      final kindName = c.requiredString(
+        id: 2,
+        name: 'kindName',
+        getter: (t) => t.kindName,
+      );
+      final propName = c.requiredString(
+        id: 3,
+        name: 'propName',
+        getter: (t) => t.propName,
+      );
+      c.constructorFromData = (data) {
+        return PropMeaning(
+            data.get(schemaUrl), data.get(kindName), data.get(propName));
+      };
+    },
+  );
+
   final String schemaUrl;
   final String kindName;
   final String propName;

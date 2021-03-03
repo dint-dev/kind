@@ -28,14 +28,14 @@ class EntityKindImpl<T extends Object> extends EntityKind<T> {
   final List<KindMeaning> meanings;
 
   @override
-  final EntityKind? extendsKind;
+  final EntityKindExtendsClause? extendsClause;
 
   @override
   final List<EntityKind> withKinds;
 
-  late KeyProps? _primaryKeyDefinition;
+  late List<String>? _primaryKeyDefinition;
 
-  void Function(EntityKindBuilder<T> builder)? _buildFunction;
+  void Function(EntityKindDeclarationContext<T> builder)? _buildFunction;
 
   T Function()? _constructor;
 
@@ -45,17 +45,21 @@ class EntityKindImpl<T extends Object> extends EntityKind<T> {
 
   protobuf.BuilderInfo? _protobufBuilderInfo;
 
-  List<Prop<T, Object?>>? _props;
+  List<Prop<Object, Object?>>? _props;
 
   bool _isBuilding = false;
+
+  @override
+  final String? description;
 
   EntityKindImpl({
     required this.name,
     this.packageName,
     this.meanings = const [],
-    this.extendsKind,
+    this.extendsClause,
     this.withKinds = const [],
-    required void Function(EntityKindBuilder<T> builder) build,
+    this.description,
+    required void Function(EntityKindDeclarationContext<T> builder) build,
   })   : _buildFunction = build,
         super.constructor();
 
@@ -66,13 +70,13 @@ class EntityKindImpl<T extends Object> extends EntityKind<T> {
   }
 
   @override
-  KeyProps? get primaryKeyProps {
+  List<String>? get primaryKeyProps {
     _buildOnce();
     return _primaryKeyDefinition;
   }
 
   @override
-  List<Prop<T, Object?>> get props {
+  List<Prop<Object, Object?>> get props {
     _buildOnce();
     return _props!;
   }
@@ -80,96 +84,6 @@ class EntityKindImpl<T extends Object> extends EntityKind<T> {
   @override
   int get protobufFieldType {
     return protobuf.PbFieldType.OM;
-  }
-
-  @override
-  bool instanceEquals(T left, Object right, {GraphEquality? context}) {
-    try {
-      if (right is! T) {
-        return false;
-      }
-      for (var prop in props) {
-        final leftValue = prop.get(left);
-        final rightValue = prop.get(right);
-        if (leftValue == null ||
-            leftValue is bool ||
-            leftValue is num ||
-            leftValue is String ||
-            leftValue is Date ||
-            leftValue is DateTime ||
-            leftValue is DateTimeWithTimeZone) {
-          if (leftValue != rightValue) {
-            return false;
-          }
-        } else {
-          context ??= GraphEquality();
-          if (!context.equals(leftValue, rightValue)) {
-            return false;
-          }
-        }
-      }
-      return true;
-    } catch (e) {
-      throw throw StateError('EntityKind.instanceEquals(...) failed: $e');
-    }
-  }
-
-  @override
-  int instanceHash(T instance) {
-    var h = 0;
-    for (var prop in props) {
-      final kind = prop.kind;
-      if (kind is BoolKind ||
-          kind is NumericKind ||
-          kind is DateTimeKind ||
-          kind is DateTimeWithTimeZoneKind ||
-          kind is StringKind ||
-          kind is BytesKind) {
-        h ^= prop.get(instance).hashCode;
-      }
-    }
-    return h;
-  }
-
-  @override
-  String instanceToString(T instance) {
-    _buildOnce();
-    final sb = StringBuffer();
-    sb.write(name);
-    sb.write('()\n');
-    for (var prop in props) {
-      sb.write('..');
-      sb.write(prop.name);
-      sb.write(' = ');
-      final value = prop.get(instance);
-      if (value == null || value is bool || value is num) {
-        sb.write(value);
-      } else if (value is DateTime) {
-        sb.write('DateTime.parse(\'');
-        sb.write(value.toIso8601String());
-        sb.write('\')\n');
-      } else if (value is DateTimeWithTimeZone) {
-        sb.write('DateTimeWithTimeZone.parse(\'');
-        sb.write(value.toIso8601String());
-        sb.write('\')\n');
-      } else if (value is String) {
-        if (value.length < 80) {
-          sb.write('\'');
-          sb.write(value.replaceAll(r'\', r'\\').replaceAll('\n', r'\n'));
-          sb.write('\'');
-        } else {
-          sb.write('<< string with ');
-          sb.write(value.runes.length);
-          sb.write(' Unicode runes >>');
-        }
-      } else {
-        sb.write('<< ');
-        sb.write(value.runtimeType);
-        sb.write(' >>');
-      }
-      sb.write('\n');
-    }
-    return sb.toString();
   }
 
   @override
@@ -240,6 +154,9 @@ class EntityKindImpl<T extends Object> extends EntityKind<T> {
       final result = <String, Object?>{};
       for (var prop in props) {
         final dartValue = prop.get(value);
+        if (prop.kind.instanceIsDefaultValue(dartValue)) {
+          continue;
+        }
         final jsonValue = context.encode(dartValue, kind: prop.kind);
         result[prop.name] = jsonValue;
       }
@@ -457,21 +374,21 @@ class EntityKindImpl<T extends Object> extends EntityKind<T> {
       return;
     }
     if (_isBuilding) {
-      throw StateError('Infinite recursion');
+      throw StateError('Building kind "$name" led to infinite recursion');
     }
     _isBuilding = true;
     try {
-      final builder = EntityKindBuilder<T>();
+      final builder = EntityKindDeclarationContext<T>();
+      final extendsClause = this.extendsClause;
+      if (extendsClause!=null) {
+        builder.propList.addAll(extendsClause.kind.props);
+      }
       try {
         buildFunction(builder);
       } catch (e) {
         throw StateError('Building kind "$name" failed: $e');
       }
-      for (var prop in builder.propList) {
-        // ignore: invalid_use_of_protected_member
-        prop.declaredByKind = this;
-      }
-      _props = List<Prop<T, Object?>>.unmodifiable(builder.propList);
+      _props = List<Prop<Object, Object?>>.unmodifiable(builder.propList);
       _constructor = builder.constructor;
       _constructorFromEntityData = builder.constructorFromData;
       _examples = builder.declaredExamples;

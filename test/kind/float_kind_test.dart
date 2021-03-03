@@ -104,6 +104,36 @@ void main() {
       expect(const Float32Kind().name, 'Float32');
     });
 
+    test('Float32Kind.kind', () {
+      // ignore: invalid_use_of_protected_member
+      final kind = Float32Kind.kind;
+      expect(kind.name, 'Float32Kind');
+      expect(
+        kind.jsonTreeEncode(const Float32Kind()),
+        {},
+      );
+      expect(
+        kind.jsonTreeEncode(const Float32Kind(specialValues: true)),
+        {'specialValues': true},
+      );
+      expect(
+        kind.jsonTreeEncode(const Float32Kind(min: 2.0)),
+        {'min': 2.0},
+      );
+      expect(
+        kind.jsonTreeEncode(const Float32Kind(min: 2.0, exclusiveMin: true)),
+        {'min': 2.0, 'exclusiveMin': true},
+      );
+      expect(
+        kind.jsonTreeEncode(const Float32Kind(max: 2.0)),
+        {'max': 2.0},
+      );
+      expect(
+        kind.jsonTreeEncode(const Float32Kind(max: 2.0, exclusiveMax: true)),
+        {'max': 2.0, 'exclusiveMax': true},
+      );
+    });
+
     test('toString()', () {
       expect(const Float32Kind().toString(), 'Float32Kind()');
     });
@@ -223,6 +253,36 @@ void main() {
   group('Float64Kind', () {
     test('name', () {
       expect(const Float64Kind().name, 'Float64');
+    });
+
+    test('Float64Kind.kind', () {
+      // ignore: invalid_use_of_protected_member
+      final kind = Float64Kind.kind;
+      expect(kind.name, 'Float64Kind');
+      expect(
+        kind.jsonTreeEncode(const Float64Kind()),
+        {},
+      );
+      expect(
+        kind.jsonTreeEncode(const Float64Kind(specialValues: true)),
+        {'specialValues': true},
+      );
+      expect(
+        kind.jsonTreeEncode(const Float64Kind(min: 2.0)),
+        {'min': 2.0},
+      );
+      expect(
+        kind.jsonTreeEncode(const Float64Kind(min: 2.0, exclusiveMin: true)),
+        {'min': 2.0, 'exclusiveMin': true},
+      );
+      expect(
+        kind.jsonTreeEncode(const Float64Kind(max: 2.0)),
+        {'max': 2.0},
+      );
+      expect(
+        kind.jsonTreeEncode(const Float64Kind(max: 2.0, exclusiveMax: true)),
+        {'max': 2.0, 'exclusiveMax': true},
+      );
     });
 
     test('toString()', () {

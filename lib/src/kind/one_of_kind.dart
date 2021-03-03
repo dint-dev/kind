@@ -19,18 +19,18 @@ import 'package:meta/meta.dart';
 ///
 /// ## Example
 /// ```
-/// const contactKind = OneOfKind(
+/// const contactKind = OneOfKind<Contact>(
 ///   discriminatorName: 'type',
 ///   entries: [
-///     OneOfKindEntry(
+///     OneOfKindEntry<Contact>(
 ///       id: 1,
 ///       name: 'Person',
-///       kind: personKind,
+///       kind: PersonContact.kind,
 ///     ),
-///     OneOfKindEntry(
+///     OneOfKindEntry<Contact>(
 ///       id: 2,
 ///       name: 'Company',
-///       kind: companyKind,
+///       kind: CompanyContact.kind,
 ///     ),
 ///   ],
 /// );
@@ -168,13 +168,6 @@ class OneOfKind<T> extends Kind<T> {
     }
     final discriminatorName =
         this.discriminatorName ?? context.jsonSettings.defaultDiscriminatorName;
-    if (discriminatorName == null) {
-      throw context.newGraphNodeError(
-        value: json,
-        reason:
-            'Neither `OneOfKind` or `JsonSettings` defines discriminator for JSON values.',
-      );
-    }
     if (!json.containsKey(discriminatorName)) {
       throw context.newGraphNodeError(
         value: json,
@@ -233,26 +226,12 @@ class OneOfKind<T> extends Kind<T> {
     );
     final discriminatorName =
         this.discriminatorName ?? context.jsonSettings.defaultDiscriminatorName;
-    if (discriminatorName == null) {
-      throw context.newGraphNodeError(
-        value: value,
-        reason:
-            'Neither `OneOfKind` or `JsonSettings` defines discriminator for JSON values.',
-      );
-    }
     if (json is Map && entry.kind is! PrimitiveKind) {
       json[discriminatorName] = entry.name;
       return json;
     } else {
       final defaultValueName =
           primitiveValueName ?? context.jsonSettings.defaultValueName;
-      if (defaultValueName == null) {
-        throw context.newGraphNodeError(
-          value: value,
-          reason:
-              'Neither `OneOfKind` or `JsonSettings` defines JSON property for primitive values.',
-        );
-      }
       return <String, Object?>{
         discriminatorName: entry.name,
         defaultValueName: json,
@@ -296,9 +275,22 @@ class OneOfKindEntry<T> {
   static final Kind<OneOfKindEntry> kind_ = EntityKind<OneOfKindEntry>(
     name: 'OneOfKindEntry',
     build: (c) {
-      final idProp = c.requiredUint64(id: 1, name: 'id');
-      final nameProp = c.requiredString(id: 2, name: 'name');
-      final kindProp = c.required(id: 3, name: 'kind', kind: Kind.kind);
+      final idProp = c.requiredUint64(
+        id: 1,
+        name: 'id',
+        getter: (t) => t.id,
+      );
+      final nameProp = c.requiredString(
+        id: 2,
+        name: 'name',
+        getter: (t) => t.name,
+      );
+      final kindProp = c.required(
+        id: 3,
+        name: 'kind',
+        kind: Kind.kind,
+        getter: (t) => t.kind,
+      );
       c.constructorFromData = (data) => OneOfKindEntry(
             id: data.get(idProp),
             name: data.get(nameProp),

@@ -43,7 +43,57 @@ class BytesKind extends PrimitiveKind<List<int>> {
   static final EntityKind<BytesKind> kind = EntityKind<BytesKind>(
     name: 'BytesKind',
     build: (c) {
-      c.constructor = () => const BytesKind();
+      final minLength = c.requiredUint64(
+        id: 1,
+        name: 'minLength',
+        getter: (t) => t.minLength,
+      );
+      final maxLength = c.optionalUint64(
+        id: 2,
+        name: 'maxLength',
+        getter: (t) => t.maxLength,
+      );
+      final jsonCodecProp = c.required<String>(
+        id: 3,
+        name: 'jsonCodec',
+        kind: EnumKind(entries: [
+          EnumKindEntry(id: 1, name: 'base64', value: 'base64'),
+          EnumKindEntry(id: 2, name: 'base64Url', value: 'base64Url'),
+        ]),
+        getter: (t) {
+          final jsonCodec = t.jsonCodec;
+          if (jsonCodec == base64) {
+            return 'base64';
+          }
+          if (jsonCodec == base64Url) {
+            return 'base64Url';
+          }
+          throw StateError('Unsupported JSON codec: $jsonCodec');
+        },
+      );
+      final examples = c.requiredList(
+        id: 4,
+        name: 'examples',
+        itemsKind: const BytesKind(),
+        getter: (t) => t.examples,
+      );
+      c.constructorFromData = (data) {
+        final jsonCodecString = data.get(jsonCodecProp);
+        late Codec<List<int>, String> jsonCodec;
+        if (jsonCodecString == 'base64') {
+          jsonCodec = base64;
+        } else if (jsonCodecString == 'base64uri') {
+          jsonCodec = base64Url;
+        } else {
+          throw ArgumentError('Unsupported JSON codec: "$jsonCodecString"');
+        }
+        return BytesKind(
+          minLength: data.get(minLength),
+          maxLength: data.get(maxLength),
+          jsonCodec: jsonCodec,
+          examples: data.get(examples),
+        );
+      };
     },
   );
 
@@ -58,11 +108,14 @@ class BytesKind extends PrimitiveKind<List<int>> {
   /// Codec used for encoding bytes in JSON. By default, [base64].
   final Codec<List<int>, String> jsonCodec;
 
+  final List<List<int>> examples;
+
   @literal
   const BytesKind({
     this.minLength = 0,
     this.maxLength,
     this.jsonCodec = base64,
+    this.examples = const [],
   })  : assert(minLength >= 0),
         assert(maxLength == null || maxLength >= minLength);
 

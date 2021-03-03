@@ -78,6 +78,11 @@ class NullableKind<T> extends Kind<T?> {
   EntityKind<NullableKind> getKind() => kind;
 
   @override
+  bool instanceIsDefaultValue(Object? value) {
+    return value == null;
+  }
+
+  @override
   bool instanceIsValid(Object? value) {
     if (value == null) {
       return true;

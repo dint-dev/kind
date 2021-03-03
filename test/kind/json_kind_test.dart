@@ -17,6 +17,19 @@ import 'package:test/test.dart';
 
 void main() {
   group('JsonKind', () {
+    test('name', () {
+      expect( const JsonKind().name, 'Json');
+    });
+
+    test('JsonKind.kind', () {
+      // ignore: invalid_use_of_protected_member
+      final kind = JsonKind.kind;
+      expect(kind.name, 'JsonKind');
+
+      expect(kind.jsonTreeEncode(const JsonKind()), {});
+      expect(kind.jsonTreeDecode({}), const JsonKind());
+    });
+
     test('== / hashCode', () {
       // ignore: non_const_call_to_literal_constructor
       final value = JsonKind();
@@ -32,7 +45,7 @@ void main() {
       expect(value.hashCode, isNot(other.hashCode));
     });
 
-    test('defaultValue', () {
+    test('newInstance()', () {
       expect(const JsonKind().newInstance(), isNull);
     });
 

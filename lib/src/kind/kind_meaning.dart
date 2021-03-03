@@ -34,6 +34,25 @@ import 'package:meta/meta.dart';
 /// }
 /// ```
 class KindMeaning {
+  static final EntityKind<KindMeaning> kind_ = EntityKind<KindMeaning>(
+    name: 'KindMeaning',
+    build: (c) {
+      final schemaUrl = c.requiredString(
+        id: 1,
+        name: 'schemaUrl',
+        getter: (t) => t.schemaUrl,
+      );
+      final name = c.requiredString(
+        id: 2,
+        name: 'name',
+        getter: (t) => t.name,
+      );
+      c.constructorFromData = (data) {
+        return KindMeaning(data.get(schemaUrl), data.get(name));
+      };
+    },
+  );
+
   /// [Kind] for [KindMeaning].
   ///
   /// The purpose of annotation `@protected` is reducing accidental use.

@@ -16,7 +16,6 @@ import 'dart:convert';
 
 import 'package:kind/kind.dart';
 import 'package:test/test.dart';
-import 'dart:convert';
 
 void main() {
   group('BytesKind', () {
@@ -61,6 +60,27 @@ void main() {
       expect(value.hashCode, isNot(other0.hashCode));
       expect(value.hashCode, isNot(other1.hashCode));
       expect(value.hashCode, other2.hashCode);
+    });
+
+    test('BytesKind.kind', () {
+      // ignore: invalid_use_of_protected_member
+      final kind = BytesKind.kind;
+      expect(
+        kind.jsonTreeEncode(const BytesKind()),
+        {},
+      );
+      expect(
+        kind.jsonTreeEncode(const BytesKind(minLength: 2)),
+        {'minLength': 2},
+      );
+      expect(
+        kind.jsonTreeEncode(const BytesKind(maxLength: 2)),
+        {'maxLength': 2},
+      );
+      expect(
+        kind.jsonTreeEncode(const BytesKind(jsonCodec: base64Url)),
+        {'jsonCodec': 'base64Url'},
+      );
     });
 
     test('newInstance() returns empty, unmodifiable list', () {

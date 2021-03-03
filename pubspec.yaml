@@ -1,12 +1,12 @@
 name: kind
-version: 0.2.2
+version: 0.3.0
 description:
   An unified data layer framework that enables serialization / persistence / state management for
   any Dart class (without code generation!). Contains common primitives such as GeoPoint and UUID.
 homepage: https://github.com/dint-dev/kind
 
 environment:
-  sdk: '>=2.12.0-0 <3.0.0'
+  sdk: '>=2.12.0-259.16.beta <3.0.0'
 
 dependencies:
   collection: ^1.15.0

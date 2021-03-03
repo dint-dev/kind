@@ -18,9 +18,18 @@ import 'package:kind/kind.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('BytesKind', () {
+  group('UuidKind', () {
     test('name', () {
-      expect(const BytesKind().name, 'bytes');
+      expect(const UuidKind().name, 'Uuid');
+    });
+
+    test('UuidKind.kind', () {
+      // ignore: invalid_use_of_protected_member
+      final kind = UuidKind.kind;
+      expect(kind.name, 'UuidKind');
+
+      expect(kind.jsonTreeEncode(const UuidKind()), {});
+      expect(kind.jsonTreeDecode({}), const UuidKind());
     });
 
     test('== / hashCode', () {

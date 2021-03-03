@@ -21,6 +21,15 @@ void main() {
       expect(const GeoPointKind().name, 'GeoPoint');
     });
 
+    test('GeoPointKind.kind', () {
+      // ignore: invalid_use_of_protected_member
+      final kind = GeoPointKind.kind;
+      expect(kind.name, 'GeoPointKind');
+
+      expect(kind.jsonTreeEncode(const GeoPointKind()), {});
+      expect(kind.jsonTreeDecode({}), const GeoPointKind());
+    });
+
     test('== / hashCode', () {
       // ignore: non_const_call_to_literal_constructor
       final value = GeoPointKind();

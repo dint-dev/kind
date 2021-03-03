@@ -3,9 +3,9 @@
 
 # Overview
 
-This is __Kind framework__ for serialization / persistence / reactive state management.
-
-__This is an initial experimental version. The APIs are not frozen.__
+An unified data layer framework that enables serialization / persistence / state management for
+any Dart class. This an early version and the APIs are not frozen. The package requires a null-safe
+version of Dart SDK (currently beta SDKs only).
 
 ## Links
   * [API reference](https://pub.dev/documentation/kind/latest/)
@@ -13,33 +13,30 @@ __This is an initial experimental version. The APIs are not frozen.__
   * [Github project](https://github.com/dint-dev/kind)
 
 ## What it gives you?
-  * __Convert graphs to/from JSON trees.__
+  * __Convert graphs to/from JSON.__
     * Use [kind.jsonTreeEncode](https://pub.dev/documentation/kind/latest/kind/EntityKind/jsonTreeEncode.html)
       / [kind.jsonTreeDecode)](https://pub.dev/documentation/kind/latest/kind/EntityKind/jsonTreeDecode.html).
-  * __Convert graphs to/from Protocol Buffers (and GRPC) trees.__
+  * __Convert graphs to/from Protocol Buffers.__
     * Use [kind.protobufTreeEncode](https://pub.dev/documentation/kind/latest/kind/EntityKind/protobufTreeEncode.html)
       / [kind.protobufTreeDecode](https://pub.dev/documentation/kind/latest/kind/EntityKind/protobufTreeDecode.html).
   * __Use databases (upcoming).__
     * Our sibling package [database](https://pub.dev/packages/database) will use this framework in
       future.
-  * __Reactive programming__
+  * __Observe views / mutations in graphs__
     * The package has [ReactiveSystem](https://pub.dev/documentation/kind/latest/kind/EntityKind/ReactiveSystem.html)
-      for observing views and mutations of reactive states in the isolate. JSON / Protobuf
-      deserialization methods construct reactive objects by default.
-  * __Various small helpers for data layer programming.__
-    * Use [kind.instanceValidate](https://pub.dev/documentation/kind/latest/kind/Kind/instanceValidate.html) to
-      validate instances. For instance, if you have `StringKind(minLengthInRunes:3, maxLines:1)`,
-      you get a debugging-friendly error message when you validate instance "a".
-    * Use [kind.randomExample](https://pub.dev/documentation/kind/latest/kind/Kind/randomExample.html)
-      to generate random instances of the kind.
-    * Frameworks may use [kind.newList](https://pub.dev/documentation/kind/latest/kind/Kind/randomExample.html)
-      to construct a memory-efficient lists without knowing the type. For instance,
-      [Float32Kind](https://pub.dev/documentation/kind/latest/kind/Kind/randomExample.html), will
-      give you a _dart:typed_data_ [Float32List](https://api.flutter.dev/flutter/dart-typed_data/Float32List-class.html)
-      rather than normal `List<double>` when you ask for a non-growable list.
-    * Frameworks may use [entityKind.meaning](https://pub.dev/documentation/kind/latest/kind/EntityKind/meaning.html)
-      to understand kinds and properties in terms of other vocabularies (such as [schema.org](https://schema.org)
-      schemas).
+      for observing views and mutations of reactive states in the isolate. When you are
+      deserializing JSON or Protocol Buffers, you get reactive objects by default without any
+      further data wrangling.
+  * __Validate instances.__
+    * For instance, if you have `StringKind(minLengthInUtf8:3, singleLine:true)`,
+      you get a debugging-friendly error message when you try to validate instance "a".
+  * __Get meanings.__
+    * Developers can use [kind.meaning](https://pub.dev/documentation/kind/latest/kind/EntityKind/meaning.html)
+      and [prop.meaning](https://pub.dev/documentation/kind/latest/kind/Prop/meaning.html) to
+      describe kinds in terms of other vocabularies (such as [schema.org](https://schema.org)
+      schemas). The information may be utilized in user interfaces or data processing.
+  * __Get generated examples.__
+    * _Kind_ has APIs for obtaining examples of instances.
 
 ## Overview of APIs
 ### Built-in kinds
@@ -122,12 +119,14 @@ environment:
   sdk: '>=2.12.0-0 <3.0.0'
 
 dependencies:
-  kind: ^0.2.2
+  kind: ^0.3.0
 ```
 
 ## 2.Write data models
-In this example, we use [Field](https://pub.dev/documentation/kind/latest/kind/Field-class.html)
-helper to avoid writing reactive getters / setters:
+In the following example, we use [Field](https://pub.dev/documentation/kind/latest/kind/Field-class.html).
+Wrapping values inside _Field<T>_ simplifies state observation. If you want to use normal Dart
+getters / setters, see "Alternative approaches" section below.
+
 ```dart
 class Person extends Entity {
   static final EntityKind<Person> kind = EntityKind<Person>(

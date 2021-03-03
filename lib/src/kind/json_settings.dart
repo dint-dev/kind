@@ -16,22 +16,22 @@ import 'package:kind/kind.dart';
 
 /// Serialization settings used by [JsonEncodingContext] and [JsonDecodingContext].
 class JsonSettings {
-  final String? defaultDiscriminatorName;
-  final String? defaultValueName;
+  final String defaultDiscriminatorName;
+  final String defaultValueName;
   final String? nan;
   final String? infinity;
   final String? negativeInfinity;
 
   const JsonSettings({
-    this.defaultDiscriminatorName,
-    this.defaultValueName,
+    this.defaultDiscriminatorName = 'type',
+    this.defaultValueName = 'value',
     this.nan,
     this.infinity,
     this.negativeInfinity,
   });
 
   @override
-  int get hashCode => nan.hashCode;
+  int get hashCode => defaultDiscriminatorName.hashCode;
 
   @override
   bool operator ==(other) =>

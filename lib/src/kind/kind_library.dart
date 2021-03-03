@@ -16,15 +16,30 @@ import 'package:collection/collection.dart';
 import 'package:kind/kind.dart';
 
 /// A collection of [Kind] instances.
-class KindLibrary {
-  final List<Kind> items;
-
-  KindLibrary(this.items);
+class KindLibrary extends Entity {
+  static final EntityKind<KindLibrary> kind = EntityKind<KindLibrary>(
+    name: 'KindLibrary',
+    build: (c) {
+      c.requiredList(
+        id: 1,
+        name: 'kinds',
+        itemsKind: Kind.kind,
+        getter: (t) => t.kinds,
+      );
+    },
+  );
 
   @override
-  int get hashCode => const ListEquality().hash(items);
+  EntityKind<Object> getKind() => kind;
+
+  final List<Kind> kinds;
+
+  KindLibrary(this.kinds);
+
+  @override
+  int get hashCode => const ListEquality().hash(kinds);
 
   @override
   bool operator ==(Object other) =>
-      other is KindLibrary && const ListEquality().equals(items, other.items);
+      other is KindLibrary && const ListEquality().equals(kinds, other.kinds);
 }

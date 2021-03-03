@@ -14,18 +14,37 @@
 
 import 'package:kind/kind.dart';
 
+/// A kind that's lazily resolved using the available [KindLibrary].
+///
+/// # Example
+/// ```
+/// final kind = ObjectKind<Example>(name:'Example');
+/// ```
 class ObjectKind<T extends Object> extends PrimitiveKind<T> {
   static final EntityKind<ObjectKind> kind = EntityKind<ObjectKind>(
     name: 'ObjectKind',
     build: (c) {
-      c.constructor = () => const ObjectKind();
+      final name = c.optionalString(
+        id: 1,
+        name: 'name',
+        getter: (t) {
+          final value = t.name;
+          if (value=='Object') {
+            return null;
+          }
+          return value;
+        }
+      );
+      c.constructorFromData = (data) => ObjectKind(
+            name: data.get(name) ?? 'Object',
+          );
     },
   );
 
-  const ObjectKind();
+  const ObjectKind({this.name = 'Object'});
 
   @override
-  String get name => 'Object';
+  final String name;
 
   @override
   int get protobufFieldType => throw UnimplementedError();
@@ -37,18 +56,29 @@ class ObjectKind<T extends Object> extends PrimitiveKind<T> {
 
   @override
   T jsonTreeDecode(Object? value, {JsonDecodingContext? context}) {
-    if (context != null) {
-      final kindLibrary = context.kindLibrary;
-      if (kindLibrary != null) {
-        for (var kind in kindLibrary.items) {
-          if (kind is Kind<T>) {
-            return kind.jsonTreeDecode(value, context: context);
-          }
-        }
+    if (context == null) {
+      context ??= JsonDecodingContext();
+      throw context.newGraphNodeError(
+        value: value,
+        reason: 'Context is null',
+      );
+    }
+    final kindLibrary = context.kindLibrary;
+    if (kindLibrary == null) {
+      throw context.newGraphNodeError(
+        value: value,
+        reason: 'Context has null `kindLibrary`.',
+      );
+    }
+    for (var kind in kindLibrary.kinds) {
+      if (kind is Kind<T>) {
+        return kind.jsonTreeDecode(value, context: context);
       }
     }
-    // TODO: implement jsonToDart
-    throw UnimplementedError();
+    throw context.newGraphNodeError(
+      value: value,
+      reason: 'Context `kindLibrary` does not have kind for this object.`',
+    );
   }
 
   @override
@@ -56,17 +86,29 @@ class ObjectKind<T extends Object> extends PrimitiveKind<T> {
     if (instance is Entity) {
       return instance.getKind().jsonTreeEncode(instance);
     }
-    if (context != null) {
-      final kindLibrary = context.kindLibrary;
-      if (kindLibrary != null) {
-        for (var kind in kindLibrary.items) {
-          if (kind is Kind<T>) {
-            return kind.jsonTreeEncode(instance, context: context);
-          }
-        }
+    if (context == null) {
+      context ??= JsonEncodingContext();
+      throw context.newGraphNodeError(
+        value: instance,
+        reason: 'Context is null',
+      );
+    }
+    final kindLibrary = context.kindLibrary;
+    if (kindLibrary == null) {
+      throw context.newGraphNodeError(
+        value: instance,
+        reason: 'Context has null `kindLibrary`.',
+      );
+    }
+    for (var kind in kindLibrary.kinds) {
+      if (kind is Kind<T>) {
+        return kind.jsonTreeEncode(instance, context: context);
       }
     }
-    throw UnimplementedError();
+    throw context.newGraphNodeError(
+      value: instance,
+      reason: 'Context `kindLibrary` does not have kind for this object.`',
+    );
   }
 
   @override
@@ -76,18 +118,29 @@ class ObjectKind<T extends Object> extends PrimitiveKind<T> {
 
   @override
   T protobufTreeDecode(Object? value, {ProtobufDecodingContext? context}) {
-    if (context != null) {
-      final kindLibrary = context.kindLibrary;
-      if (kindLibrary != null) {
-        for (var kind in kindLibrary.items) {
-          if (kind is Kind<T>) {
-            return kind.protobufTreeDecode(value, context: context);
-          }
-        }
+    if (context == null) {
+      context ??= ProtobufDecodingContext();
+      throw context.newGraphNodeError(
+        value: value,
+        reason: 'Context is null',
+      );
+    }
+    final kindLibrary = context.kindLibrary;
+    if (kindLibrary == null) {
+      throw context.newGraphNodeError(
+        value: value,
+        reason: 'Context has null `kindLibrary`.',
+      );
+    }
+    for (var kind in kindLibrary.kinds) {
+      if (kind is Kind<T>) {
+        return kind.protobufTreeDecode(value, context: context);
       }
     }
-    // TODO: implement protobufValueToDart
-    throw UnimplementedError();
+    throw context.newGraphNodeError(
+      value: value,
+      reason: 'Context `kindLibrary` does not have kind for this object.`',
+    );
   }
 
   @override
@@ -95,16 +148,28 @@ class ObjectKind<T extends Object> extends PrimitiveKind<T> {
     if (instance is Entity) {
       return instance.getKind().protobufTreeEncode(instance);
     }
-    if (context != null) {
-      final kindLibrary = context.kindLibrary;
-      if (kindLibrary != null) {
-        for (var kind in kindLibrary.items) {
-          if (kind is Kind<T>) {
-            return kind.protobufTreeEncode(instance, context: context);
-          }
-        }
+    if (context == null) {
+      context ??= ProtobufEncodingContext();
+      throw context.newGraphNodeError(
+        value: instance,
+        reason: 'Context is null',
+      );
+    }
+    final kindLibrary = context.kindLibrary;
+    if (kindLibrary == null) {
+      throw context.newGraphNodeError(
+        value: instance,
+        reason: 'Context has null `kindLibrary`.',
+      );
+    }
+    for (var kind in kindLibrary.kinds) {
+      if (kind is Kind<T>) {
+        return kind.protobufTreeEncode(instance, context: context);
       }
     }
-    throw UnimplementedError();
+    throw context.newGraphNodeError(
+      value: instance,
+      reason: 'Context `kindLibrary` does not have kind for this object.`',
+    );
   }
 }

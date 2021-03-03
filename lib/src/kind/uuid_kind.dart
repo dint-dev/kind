@@ -40,7 +40,7 @@ class UuidKind extends PrimitiveKind<Uuid> {
   int get hashCode => (UuidKind).hashCode;
 
   @override
-  String get name => 'uuid';
+  String get name => 'Uuid';
 
   @override
   int get protobufFieldType {

@@ -17,6 +17,46 @@ import 'package:test/test.dart';
 
 void main() {
   group('Prop', () {
+    test('Prop.kind_', () {
+      // ignore: invalid_use_of_protected_member
+      final kind = Prop.kind_;
+      expect(kind.name, 'Prop');
+
+      final prop = Prop(
+        id: 1,
+        name: 'x',
+        kind: const StringKind(
+          minLengthInUtf8: 1,
+        ),
+        meanings: [
+          PropMeaning.schemaOrg('schemaKindName', 'schemaPropName'),
+        ],
+        relation: EntityRelation.oneToOne('local_key', 'foreign_key'),
+        getter: (t) => throw UnimplementedError(),
+      );
+      final json = {
+        'id': 1.0,
+        'name': 'x',
+        'kind': {
+          'type': 'StringKind',
+          'minLengthInUtf8': 1.0,
+        },
+        'meanings': [
+          {
+            'schemaUrl': 'https://schema.org/',
+            'kindName': 'schemaKindName',
+            'propName': 'schemaPropName',
+          },
+        ],
+        'relation': {
+          'localPropNames': ['local_key'],
+          'foreignPropNames': ['foreign_key'],
+        },
+      };
+      expect(kind.jsonTreeEncode(prop), json);
+      expect(kind.jsonTreeDecode(json), prop);
+    });
+
     test('== / hashCode', () {
       // Helper for eliminating suggestions to use constants.
       final one = 1;

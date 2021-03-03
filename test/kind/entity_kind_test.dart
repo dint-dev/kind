@@ -29,6 +29,54 @@ void main() {
       expect(kind.name, 'x');
     });
 
+    test('EntityKind.kind', () {
+      // ignore: invalid_use_of_protected_member
+      final kind = EntityKind.kind;
+      expect(kind.name, 'EntityKind');
+
+      final entityKind = EntityKind(
+        name: 'Example',
+        build: (c) {
+          c.requiredString(
+            id: 1,
+            name: 'x',
+            minLengthInUtf8: 1,
+            getter: (t) => throw UnimplementedError(),
+            setter: (t, v) => throw UnimplementedError(),
+          );
+        },
+      );
+      final json = {
+        'name': 'Example',
+        'props': [
+          {
+            'id': 1.0,
+            'name': 'x',
+            'kind': {
+              'type': 'StringKind',
+              'minLengthInUtf8': 1.0,
+            },
+          },
+        ],
+      };
+      expect(kind.jsonTreeEncode(entityKind), json);
+      expect(
+        kind.jsonTreeDecode(json),
+        EntityKind<EntityData>(
+          name: 'Example',
+          build: (c) {
+            c.requiredString(
+              id: 1,
+              name: 'x',
+              minLengthInUtf8: 1,
+              getter: (t) => throw UnimplementedError(),
+              setter: (t, v) => throw UnimplementedError(),
+            );
+          },
+        ),
+      );
+    });
+
     test('== / hashCode', () {
       final value = _Example.kind;
       final other = EntityKind<_Example>(
@@ -39,6 +87,14 @@ void main() {
       );
       expect(value, isNot(other));
       expect(value.hashCode, isNot(other.hashCode));
+    });
+
+    test('Inheritance', () {
+      final customerKind = _Customer.kind;
+      expect(customerKind.props, hasLength(1));
+
+      final personKind = _Person.kind;
+      expect(personKind.props, hasLength(2));
     });
 
     group('Protocol Buffers support', () {
@@ -763,4 +819,37 @@ class _Example extends Entity {
 
   @override
   EntityKind<Object> getKind() => kind;
+}
+
+class _Customer {
+  static final EntityKind<_Customer> kind = EntityKind<_Customer>(
+    name: 'Customer',
+    build: (c) {
+      c.optionalString(
+        id: 1,
+        name: 'name',
+        getter: (t) => t.name,
+        setter: (t, v) => t.name = v,
+      );
+    },
+  );
+
+  String? name;
+}
+
+class _Person extends _Customer {
+  static final EntityKind<_Person> kind = EntityKind<_Person>(
+    name: 'Person',
+    extendsClause: EntityKindExtendsClause(kind: _Customer.kind),
+    build: (c) {
+      c.optionalDate(
+        id: 2,
+        name: 'birthDate',
+        getter: (t) => t.birthDate,
+        setter: (t, v) => t.birthDate = v,
+      );
+    },
+  );
+
+  Date? birthDate;
 }

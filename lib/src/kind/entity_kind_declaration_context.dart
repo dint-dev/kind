@@ -15,8 +15,8 @@
 import 'package:kind/kind.dart';
 import 'package:protobuf/protobuf.dart' show BuilderInfo;
 
-/// Builds instances of [EntityKind].
-class EntityKindBuilder<T extends Object> with PropDeclarationHelperMixin<T> {
+/// Context for building [EntityKind].
+class EntityKindDeclarationContext<T extends Object> with PropDeclarationHelperMixin<T> {
   /// List of properties.
   final List<Prop<Object, Object?>> propList = [];
 
@@ -43,18 +43,20 @@ class EntityKindBuilder<T extends Object> with PropDeclarationHelperMixin<T> {
   final List<T> declaredExamples = [];
 
   /// Primary key properties.
-  KeyProps? primaryKeyProps;
+  List<String>? primaryKeyProps;
 
   @override
   void addProp(Prop<Object, Object?> prop) {
     for (var existingProp in propList) {
       if (existingProp.id == prop.id) {
         throw StateError(
-            'A prop already has id ${prop.id}:\n  ${existingProp.toString().replaceAll('\n', '\n  ')}');
+          'Two or more properties have ID ${prop.id} (names: "${existingProp.name}", ${prop.name})',
+        );
       }
       if (existingProp.name == prop.name) {
         throw StateError(
-            'A prop already has name \'${prop.name}\':\n  ${existingProp.toString().replaceAll('\n', '\n  ')}');
+          'Two or more properties have name "${prop.name}" (IDs: ${existingProp.id}, ${prop.id})',
+        );
       }
     }
     propList.add(prop);

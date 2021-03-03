@@ -165,7 +165,7 @@ class Float64Kind extends FloatKindBase {
   ///
   /// The purpose of annotation `@protected` is reducing accidental use.
   static final EntityKind<Float64Kind> kind = EntityKind<Float64Kind>(
-    name: 'Float32Kind',
+    name: 'Float64Kind',
     build: (c) {
       final specialValues = c.requiredBool(
         id: 1,

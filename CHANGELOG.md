@@ -1,3 +1,8 @@
+## 0.3.0
+
+  * Fixes various issues. Breaking changes in relational database mapping and EnumKind.
+  * The 0.3.x API is still experimental and even major changes are possible.
+
 ## 0.2.2
 
   * Fixes issues in numeric kinds and others.

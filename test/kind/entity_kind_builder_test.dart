@@ -17,9 +17,9 @@ import 'package:test/test.dart';
 
 void main() {
   group('EntityKindBuilder', () {
-    late EntityKindBuilder builder;
+    late EntityKindDeclarationContext builder;
     setUp(() {
-      builder = EntityKindBuilder();
+      builder = EntityKindDeclarationContext();
     });
     test('optionalBool()', () {
       final prop = builder.optionalBool(

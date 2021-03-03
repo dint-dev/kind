@@ -333,7 +333,7 @@ class Int64Kind extends IntKindBase {
   /// The purpose of annotation `@protected` is reducing accidental use.
   @protected
   static final EntityKind<Int64Kind> kind = EntityKind<Int64Kind>(
-    name: 'Int16Kind',
+    name: 'Int64Kind',
     build: (c) {
       final min = c.optionalInt64(
         id: 1,

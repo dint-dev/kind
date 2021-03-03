@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'package:collection/collection.dart';
 import 'package:kind/kind.dart';
 import 'package:kind/src/kind/reactive_system.dart';
 import 'package:meta/meta.dart';
@@ -21,6 +22,11 @@ import 'package:meta/meta.dart';
 /// ## Examples
 /// See documentation for [EntityKind].
 class Prop<T extends Object, V> {
+  static const StringKind namePropKind = StringKind(
+    minLengthInUtf8: 1,
+    maxLengthInUtf8: 63,
+  );
+
   /// [Kind] for [Prop].
   ///
   /// The purpose of annotation `@protected` is reducing accidental use.
@@ -28,20 +34,85 @@ class Prop<T extends Object, V> {
   static final Kind<Prop> kind_ = EntityKind<Prop>(
     name: 'Prop',
     build: (c) {
-      final idProp = c.requiredUint64(id: 1, name: 'id');
-      final nameProp = c.requiredString(id: 2, name: 'name');
-      final kindProp = c.required(id: 3, name: 'kind', kind: Kind.kind);
+      final idProp = c.requiredUint64(
+        id: 1,
+        name: 'id',
+        getter: (t) => t.id,
+      );
+      final nameProp = c.required<String>(
+        id: 2,
+        name: 'name',
+        kind: namePropKind,
+        getter: (t) => t.name,
+      );
+      final kindProp = c.required(
+        id: 3,
+        name: 'kind',
+        kind: Kind.kind,
+        getter: (t) => t.kind,
+      );
+      final defaultValueProp = c.optional<Object>(
+        id: 4,
+        name: 'defaultValue',
+        kind: ObjectKind(),
+        getter: (t) => t.defaultValue,
+      );
+      final meaningsProp = c.requiredList<PropMeaning>(
+        id: 5,
+        name: 'meanings',
+        itemsKind: PropMeaning.kind_,
+        getter: (t) => t.meanings,
+      );
+      final relationProp = c.optional<EntityRelation>(
+        id: 6,
+        name: 'relation',
+        kind: EntityRelation.kind,
+        getter: (t) => t.relation,
+      );
+      final descriptionProp = c.optionalString(
+        id: 7,
+        name: 'description',
+        getter: (t) => t.description,
+      );
       c.constructorFromData = (data) {
-        return Prop(
-          id: data.get(idProp),
-          name: data.get(nameProp),
-          kind: data.get(kindProp),
+        final id = data.get(idProp);
+        final name = data.get(nameProp);
+        final kind = data.get(kindProp);
+        final defaultValue = data.get(Prop<Prop, Object?>(
+          id: defaultValueProp.id,
+          name: defaultValueProp.name,
+          kind: kind.toNullable(),
+          getter: (t) => throw UnimplementedError(),
+        ));
+        final meanings = data.get(meaningsProp);
+        final relation = data.get(relationProp);
+        final description = data.get(descriptionProp);
+        late Prop selfProp;
+        selfProp = Prop(
+          id: id,
+          name: name,
+          kind: kind,
+          defaultValue: defaultValue,
+          meanings: meanings,
+          relation: relation,
+          description: description,
+          getter: (t) {
+            if (t is Entity) {
+              final prop = t
+                  .getKind()
+                  .props
+                  .firstWhere((element) => element.name == name);
+              if (!identical(prop, selfProp)) {
+                return prop.get(t);
+              }
+            }
+            throw UnsupportedError('Deserialized prop');
+          },
         );
+        return selfProp;
       };
     },
   );
-
-  EntityKind? _declaredByKind;
 
   /// Numeric ID of the property. Must be 1 or greater.
   ///
@@ -110,12 +181,10 @@ class Prop<T extends Object, V> {
 
   /// Relation to the other row (in a relational database). Null if [kind] is
   /// something else than [EntityKind].
-  ///
-  /// ## Types of relations
-  ///   * [OneToOne]
-  ///   * [OneToMany]
-  ///   * [ManyToMany] (requires a surrogate table)
-  final Relation? relation;
+  final EntityRelation? relation;
+
+  /// Description of the property.
+  final String? description;
 
   /// Constructs a new property declaration.
   ///
@@ -145,24 +214,15 @@ class Prop<T extends Object, V> {
     void Function(T target, V value)? setter,
     this.meanings = const [],
     this.relation,
+    this.description,
   })  : _field = field,
         _getter = getter,
         _setter = setter {
     if (field == null && getter == null) {
       throw ArgumentError(
-          'Property "$name" (id: $id) defines neither `getter` or `field`.');
+        'Property "$name" (id: $id) defines neither `getter` or `field`.',
+      );
     }
-  }
-
-  @protected
-  EntityKind get declaredByKind => _declaredByKind!;
-
-  @protected
-  set declaredByKind(EntityKind kind) {
-    if (_declaredByKind != null) {
-      throw StateError('`declaredByKind` has already been set');
-    }
-    _declaredByKind = kind;
   }
 
   @override
@@ -170,21 +230,16 @@ class Prop<T extends Object, V> {
 
   bool get isMutable => _setter != null || _field is Field;
 
-  String get _declaredByKindName {
-    final declaredByKind = _declaredByKind;
-    if (declaredByKind == null) {
-      return '<< unknown kind >>';
-    }
-    return declaredByKind.name;
-  }
-
   @override
   bool operator ==(other) =>
       other is Prop &&
       id == other.id &&
       name == other.name &&
       kind == other.kind &&
-      defaultValue == other.defaultValue;
+      defaultValue == other.defaultValue &&
+      const ListEquality<PropMeaning>().equals(meanings, other.meanings) &&
+      relation == other.relation &&
+      description == other.description;
 
   /// Returns value of the prop.
   V get(T target) {
@@ -198,7 +253,7 @@ class Prop<T extends Object, V> {
         return getter(target);
       } catch (e) {
         throw StateError(
-          'Calling getter of kind "$_declaredByKindName" property "$name" (id: $id) failed: $e',
+          'Calling getter of kind "${_kindName(target)}" property "$name" (id: $id) failed: $e',
         );
       }
     }
@@ -212,7 +267,7 @@ class Prop<T extends Object, V> {
         fieldInstance = field(target);
       } catch (e) {
         throw StateError(
-          'Calling field getter of kind "$_declaredByKindName" property "$name" (id: $id) failed: $e',
+          'Calling field getter of kind "${_kindName(target)}" property "$name" (id: $id) failed: $e',
         );
       }
 
@@ -223,7 +278,7 @@ class Prop<T extends Object, V> {
           return value;
         } else {
           throw StateError(
-            'Kind "$_declaredByKindName" property "$name" (id: $id) has an instance of unexpected type.',
+            'Kind "${_kindName(target)}" property "$name" (id: $id) has an instance of unexpected type.',
           );
         }
       }
@@ -235,18 +290,18 @@ class Prop<T extends Object, V> {
           return value;
         } else {
           throw StateError(
-            'Kind "$_declaredByKindName" property "$name" (id: $id) has an instance of unexpected type.',
+            'Kind "${_kindName(target)}" property "$name" (id: $id) has an instance of unexpected type.',
           );
         }
       }
 
       // This should be impossible
       throw StateError(
-        'Kind "$_declaredByKindName" property "$name" (id: $id) has unsupported FieldLike: $fieldInstance',
+        'Kind "${_kindName(target)}" property "$name" (id: $id) has unsupported FieldLike: $fieldInstance',
       );
     }
     throw StateError(
-      'Kind "$_declaredByKindName" property "$name" (id: $id) has no `field` or `getter`.',
+      'Kind "${_kindName(target)}" property "$name" (id: $id) has no `field` or `getter`.',
     );
   }
 
@@ -286,11 +341,11 @@ class Prop<T extends Object, V> {
 
       // This should be impossible
       throw StateError(
-        'Kind "${declaredByKind.name}" property "$name" (id: $id) has unsupported FieldLike: $fieldInstance',
+        'Kind "${_kindName(target)}" property "$name" (id: $id) has unsupported FieldLike: $fieldInstance',
       );
     }
     throw StateError(
-      'Kind "${declaredByKind.name}" property "$name" (id: $id) has no `field` or `setter`.',
+      'Kind "${_kindName(target)}" property "$name" (id: $id) has no `field` or `setter`.',
     );
   }
 
@@ -323,5 +378,9 @@ class Prop<T extends Object, V> {
     }
     sb.write(')');
     return sb.toString();
+  }
+
+  static String _kindName(Object target) {
+    return target is Entity ? target.getKind().name : '${target.runtimeType}';
   }
 }
