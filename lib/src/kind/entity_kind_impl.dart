@@ -104,6 +104,7 @@ class EntityKindImpl<T extends Object> extends EntityKind<T> {
   T jsonTreeDecode(Object? json, {JsonDecodingContext? context}) {
     _buildOnce();
     context ??= JsonDecodingContext();
+    final namer = context.namer;
     if (json is Map) {
       final constructorFromEntityData = _constructorFromEntityData;
       if (constructorFromEntityData == null) {
@@ -111,7 +112,10 @@ class EntityKindImpl<T extends Object> extends EntityKind<T> {
 
         // For each property...
         for (var prop in props) {
-          final jsonKey = prop.name;
+          var jsonKey = prop.name;
+          if (namer != null) {
+            jsonKey = namer.fromEntityKindPropName(this, prop, jsonKey);
+          }
 
           // Property does not exist (in the JSON object)?
           if (!json.containsKey(jsonKey)) {
@@ -131,7 +135,10 @@ class EntityKindImpl<T extends Object> extends EntityKind<T> {
         final entityData = EntityData();
 
         for (var prop in props) {
-          final jsonKey = prop.name;
+          var jsonKey = prop.name;
+          if (namer != null) {
+            jsonKey = namer.fromEntityKindPropName(this, prop, jsonKey);
+          }
 
           // Property does not exist (in the JSON object)?
           if (!json.containsKey(jsonKey)) {
@@ -164,6 +171,7 @@ class EntityKindImpl<T extends Object> extends EntityKind<T> {
     _buildOnce();
     context ??= JsonEncodingContext();
     context.enter(value);
+    final namer = context.namer;
     try {
       final result = <String, Object?>{};
       for (var prop in props) {
@@ -172,7 +180,11 @@ class EntityKindImpl<T extends Object> extends EntityKind<T> {
           continue;
         }
         final jsonValue = context.encode(dartValue, kind: prop.kind);
-        result[prop.name] = jsonValue;
+        var jsonKey = prop.name;
+        if (namer != null) {
+          jsonKey = namer.fromEntityKindPropName(this, prop, jsonKey);
+        }
+        result[jsonKey] = jsonValue;
       }
       return result;
     } finally {

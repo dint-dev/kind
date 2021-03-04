@@ -22,7 +22,10 @@ import 'package:kind/kind.dart';
 /// final value = deserializer.deserialize(jsonValue, kind:kind);
 /// ```
 class JsonDecodingContext with GraphNodeContext {
+  /// JSON serialization settings.
   final JsonSettings jsonSettings;
+
+  /// Optional library of available kinds.
   final KindLibrary? kindLibrary;
 
   /// Whether to construct reactive objects.
@@ -31,10 +34,14 @@ class JsonDecodingContext with GraphNodeContext {
   /// you don't care about reactivity).
   final bool reactive;
 
+  /// Translates names of kinds and properties.
+  final Namer? namer;
+
   JsonDecodingContext({
     this.jsonSettings = const JsonSettings(),
     this.reactive = true,
     this.kindLibrary,
+    this.namer,
   });
 
   @override
@@ -54,7 +61,10 @@ class JsonDecodingContext with GraphNodeContext {
 /// final jsonValue = deserializer.serialize(value, kind:kind);
 /// ```
 class JsonEncodingContext with GraphNodeContext {
+  /// JSON serialization settings.
   final JsonSettings jsonSettings;
+
+  /// Optional library of available kinds.
   final KindLibrary? kindLibrary;
 
   /// Whether to construct reactive objects.
@@ -63,10 +73,14 @@ class JsonEncodingContext with GraphNodeContext {
   /// you don't care about reactivity).
   final bool reactive;
 
+  /// Translates names of kinds and properties.
+  final Namer? namer;
+
   JsonEncodingContext({
     this.jsonSettings = const JsonSettings(),
     this.kindLibrary,
     this.reactive = true,
+    this.namer,
   });
 
   @override

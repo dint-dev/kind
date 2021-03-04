@@ -1,3 +1,7 @@
+## 0.4.0
+
+  * Adds support for namers.
+
 ## 0.3.2
 
   * Fixes encountered issues such as those related to instanceIsDefault and validation.

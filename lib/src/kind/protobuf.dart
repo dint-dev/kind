@@ -28,9 +28,13 @@ class ProtobufDecodingContext with GraphNodeContext {
   /// you don't care about reactivity).
   final bool reactive;
 
+  /// Translates names of kinds and properties.
+  final Namer? namer;
+
   ProtobufDecodingContext({
     this.kindLibrary,
     this.reactive = true,
+    this.namer,
   });
 
   @override
@@ -54,7 +58,13 @@ class ProtobufEncodingContext with GraphNodeContext {
   /// Optional library of available kinds.
   final KindLibrary? kindLibrary;
 
-  ProtobufEncodingContext({this.kindLibrary});
+  /// Translates names of kinds and properties.
+  final Namer? namer;
+
+  ProtobufEncodingContext({
+    this.kindLibrary,
+    this.namer,
+  });
 
   @override
   String get errorPrimaryLabel => 'Protocol Buffers serialization error';

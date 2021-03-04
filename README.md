@@ -104,7 +104,8 @@ dependencies:
 ```
 
 ## 2.Write data models
-In the following example, we use [Field](https://pub.dev/documentation/kind/latest/kind/Field-class.html).
+In the following example, we use [Field](https://pub.dev/documentation/kind/latest/kind/Field-class.html)
+and [ListField](https://pub.dev/documentation/kind/latest/kind/ListField-class.html).
 Wrapping values inside _Field<T>_ simplifies state observation. If you want to use normal Dart
 getters / setters, see "Alternative approaches" section below.
 
@@ -121,7 +122,7 @@ class Person extends Entity {
         minLength: 1,
         field: (e) => e.fullName,
       );
-      b.requiredSet<Person>(
+      b.requiredList<Person>(
         id: 2,
         name: 'friends',
         itemsKind: Person.kind,
@@ -135,7 +136,7 @@ class Person extends Entity {
   late final Field<String?> fullName = Field<String?>(this);
 
   /// Friends.
-  late final SetField<Person> friends = SetField<Person>(this);
+  late final ListField<Person> friends = ListField<Person>(this);
 
   @override
   EntityKind getKind() => kind;
@@ -151,7 +152,7 @@ void main() {
     alice.friends.add(bob);
     bob.friends.add(alice);
 
-    // You objects have:
+    // Your objects have:
     //   * `==` (that supports cyclic graphs)
     //   * `hashCode`
     //   * `toString()``
@@ -165,13 +166,56 @@ Use [jsonTreeEncode(...)](https://pub.dev/documentation/kind/latest/kind/EntityK
 and [jsonTreeDecode(...)](https://pub.dev/documentation/kind/latest/kind/EntityKind/jsonTreeDecode.html):
 
 ```dart
+final alice = Person();
+final bob = Person();
+alice.name.value = 'Alice';
+bob.name.value = 'Bob';
+alice.friends.add(bob);
+
 // Person --> JSON tree
-final json = person.getKind().jsonTreeEncode(person);
+final aliceJson = person.getKind().jsonTreeEncode(alice);
+// JSON tree:
+//   {
+//     "fullName": "Alice",
+//     "friends": [
+//       {
+//         "fullName": "Bob",
+//       }
+//     ]
+//   }
 
 // JSON tree --> Person
-final person = Person.kind.jsonTreeDecode(json);
+final decodedAlice = Person.kind.jsonTreeDecode(aliceJson);
 ```
 
+## Mapping identifiers
+If you want to use underscore naming convention, simply pass
+[UnderscoreNamer](https://pub.dev/documentation/kind/latest/kind/UnderscoreNamer-class.html)
+in the context object:
+```dart
+final namer = UnderscoreNamer();
+
+// Person --> JSON tree
+final aliceJson = person.getKind().jsonTreeEncode(
+  alice,
+  context: JsonEncodingContext(namer: namer),
+);
+
+// JSON tree --> Person
+final decodedAlice = Person.kind.jsonTreeDecode(
+  aliceJson,
+  context: JsonDecodingContext(namer: namer),
+);
+```
+
+You can also declare special rules:
+```dart
+final namer = UnderscoreNamer(
+  rules: {
+    'fullName': 'real_name',
+  },
+);
+```
 
 # Protocol Buffers serialization
 For encoding/decoding Protocol Buffers bytes,

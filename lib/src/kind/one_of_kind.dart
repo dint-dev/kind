@@ -193,8 +193,8 @@ class OneOfKind<T> extends Kind<T> {
             'JSON object does not have discriminator property "$discriminatorName".',
       );
     }
-    final typeName = json[discriminatorName];
-    if (typeName is! String) {
+    final discriminatorValue = json[discriminatorName];
+    if (discriminatorValue is! String) {
       context.pathEdges.add(discriminatorName);
       throw context.newGraphNodeError(
         value: json,
@@ -202,8 +202,13 @@ class OneOfKind<T> extends Kind<T> {
             'Expected JSON object discriminator property "$discriminatorName" to be JSON string.',
       );
     }
+    final namer = context.namer;
     for (var entry in entries) {
-      if (entry.name == typeName) {
+      var name = entry.name;
+      if (namer != null) {
+        name = namer.fromName(name);
+      }
+      if (name == discriminatorValue) {
         final kind = entry.kind;
         if (kind is PrimitiveKind) {
           final primitiveValueName = this.primitiveValueName ?? 'value';
@@ -221,7 +226,7 @@ class OneOfKind<T> extends Kind<T> {
     }
     context.pathEdges.add(discriminatorName);
     throw context.newGraphNodeError(
-      value: typeName,
+      value: discriminatorValue,
       reason:
           'Expected JSON object discriminator property "$discriminatorName" value "$primitiveValueName" to be one of the following:\n'
           '  * "${entries.map((e) => e.name).join('"\n  * "')}"\n',
@@ -244,14 +249,19 @@ class OneOfKind<T> extends Kind<T> {
     );
     final discriminatorName =
         this.discriminatorName ?? context.jsonSettings.defaultDiscriminatorName;
+    var discriminatorValue = entry.name;
+    var namer = context.namer;
+    if (namer != null) {
+      discriminatorValue = namer.fromName(discriminatorValue);
+    }
     if (json is Map && entry.kind is! PrimitiveKind) {
-      json[discriminatorName] = entry.name;
+      json[discriminatorName] = discriminatorValue;
       return json;
     } else {
       final defaultValueName =
           primitiveValueName ?? context.jsonSettings.defaultValueName;
       return <String, Object?>{
-        discriminatorName: entry.name,
+        discriminatorName: discriminatorValue,
         defaultValueName: json,
       };
     }

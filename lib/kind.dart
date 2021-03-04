@@ -55,6 +55,7 @@ export 'src/kind/kind_library.dart';
 export 'src/kind/kind_meaning.dart';
 export 'src/kind/list_kind.dart';
 export 'src/kind/map_kind.dart';
+export 'src/kind/namer.dart';
 export 'src/kind/nullable_kind.dart';
 export 'src/kind/object_kind.dart';
 export 'src/kind/one_of_kind.dart';

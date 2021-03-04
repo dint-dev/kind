@@ -140,8 +140,13 @@ class EnumKind<T> extends PrimitiveKind<T> {
   @override
   T jsonTreeDecode(Object? jsonValue, {JsonDecodingContext? context}) {
     if (jsonValue is String) {
+      final namer = context?.namer;
       for (var entry in entries) {
-        if (jsonValue == entry.name) {
+        var name = entry.name;
+        if (namer != null) {
+          name = namer.fromEnumKindEntryName(this, entry, name);
+        }
+        if (jsonValue == name) {
           return entry.value;
         }
       }
@@ -163,7 +168,12 @@ class EnumKind<T> extends PrimitiveKind<T> {
   String jsonTreeEncode(T instance, {JsonEncodingContext? context}) {
     for (var entry in entries) {
       if (entry.value == instance) {
-        return entry.name;
+        var name = entry.name;
+        final namer = context?.namer;
+        if (namer != null) {
+          return namer.fromEnumKindEntryName(this, entry, name);
+        }
+        return name;
       }
     }
     context ??= JsonEncodingContext();
