@@ -78,15 +78,124 @@ void main() {
     });
 
     test('== / hashCode', () {
-      final value = _Example.kind;
-      final other = EntityKind<_Example>(
+      final object = EntityKind<_Example>(
         name: 'Example',
-        build: (b) {
-          b.constructor = () => _Example();
+        build: (c) {
+          c.optionalString(
+            id: 1,
+            name: 'prop1',
+            getter: (t) => throw UnimplementedError(),
+          );
+          c.constructor = () => throw UnimplementedError();
         },
       );
-      expect(value, isNot(other));
-      expect(value.hashCode, isNot(other.hashCode));
+      final clone = EntityKind<_Example>(
+        name: 'Example',
+        build: (c) {
+          c.optionalString(
+            id: 1,
+            name: 'prop1',
+            getter: (t) => throw UnimplementedError(),
+          );
+          c.constructor = () => throw UnimplementedError();
+        },
+      );
+      final other0 = EntityKind<_Example>(
+        name: 'OTHER',
+        build: (c) {
+          c.optionalString(
+            id: 1,
+            name: 'prop1',
+            getter: (t) => throw UnimplementedError(),
+          );
+          c.constructor = () => throw UnimplementedError();
+        },
+      );
+      final other1 = EntityKind<_Example>(
+        name: 'Example',
+        build: (c) {
+          c.optionalString(
+            id: 1,
+            name: 'OTHER',
+            getter: (t) => throw UnimplementedError(),
+          );
+          c.constructor = () => throw UnimplementedError();
+        },
+      );
+
+      expect(object, clone);
+      expect(object, isNot(other0));
+      expect(object, isNot(other1));
+
+      expect(object.hashCode, clone.hashCode);
+      expect(object.hashCode, isNot(other0.hashCode));
+      expect(object.hashCode, isNot(other1.hashCode));
+    });
+
+    test('instanceIsDefault', () {
+      var getterCallCounter = 0;
+      final kind = EntityKind<_Person>(
+        name: 'Kind for instanceIsDefault test',
+        build: (c) {
+          c.optionalString(
+            id: 1,
+            name: 'name',
+            getter: (t) {
+              getterCallCounter++;
+              return t.name;
+            },
+          );
+          c.constructor = () {
+            fail('Should not be called');
+          };
+        },
+      );
+      final person = _Person();
+      person.birthDate = Date(2020, 1, 1); // <-- This should be ignored
+
+      // Default value
+      expect(kind.instanceIsDefaultValue(person), isTrue);
+      expect(getterCallCounter, 1);
+
+      // Not default value
+      person.name = 'Something else';
+      expect(kind.instanceIsDefaultValue(person), isFalse);
+      expect(getterCallCounter, 2);
+    });
+
+    test('instanceIsValid', () {
+      var getterCallCounter = 0;
+      final kind = EntityKind<_Person>(
+        name: 'Kind for instanceIsValid test',
+        build: (c) {
+          c.optionalString(
+            id: 1,
+            name: 'name',
+            minLengthInUtf8: 2,
+            getter: (t) {
+              getterCallCounter++;
+              return t.name;
+            },
+          );
+
+          c.constructor = () {
+            fail('Should not be called');
+          };
+        },
+      );
+      final person = _Person();
+
+      // Invalid name
+      person.name = '';
+      expect(kind.props.single.kind.instanceIsValid(''), isFalse);
+      expect(kind.instanceIsValid(person), isFalse);
+      expect(getterCallCounter, 1);
+
+      // Valid name
+      person.name = 'John Doe';
+      expect(kind.props.single.kind.instanceIsValid('John Doe'), isTrue);
+      expect(kind.instanceIsValid(person), isTrue);
+      expect(getterCallCounter, 2);
     });
 
     test('Inheritance', () {
@@ -681,6 +790,22 @@ void main() {
   });
 }
 
+class _Customer {
+  static final EntityKind<_Customer> kind = EntityKind<_Customer>(
+    name: 'Customer',
+    build: (c) {
+      c.optionalString(
+        id: 1,
+        name: 'name',
+        getter: (t) => t.name,
+        setter: (t, v) => t.name = v,
+      );
+    },
+  );
+
+  String? name;
+}
+
 class _Example extends Entity {
   static late Prop _boolProp;
   static late Prop _boolOrNullProp;
@@ -819,22 +944,6 @@ class _Example extends Entity {
 
   @override
   EntityKind<Object> getKind() => kind;
-}
-
-class _Customer {
-  static final EntityKind<_Customer> kind = EntityKind<_Customer>(
-    name: 'Customer',
-    build: (c) {
-      c.optionalString(
-        id: 1,
-        name: 'name',
-        getter: (t) => t.name,
-        setter: (t, v) => t.name = v,
-      );
-    },
-  );
-
-  String? name;
 }
 
 class _Person extends _Customer {

@@ -18,8 +18,7 @@ import 'package:kind/kind.dart';
 ///
 /// See [EntityRelation]
 class EntityJunction extends Entity {
-  static final EntityKind<EntityJunction> kind =
-  EntityKind<EntityJunction>(
+  static final EntityKind<EntityJunction> kind = EntityKind<EntityJunction>(
     name: 'EntityJunction',
     build: (c) {
       final tableName = c.requiredString(

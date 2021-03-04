@@ -66,10 +66,11 @@ void main() {
     });
 
     test('== / hashCode', () {
-      // Helper for eliminating suggestions to use constants.
+      // Prevents `const` suggestions from the analyzer.
+      // Constants could reduce test coverage.
       final two = 2;
 
-      final value = ListKind(
+      final object = ListKind(
         StringKind(minLengthInUtf8: two),
         minLength: two,
         maxLength: 3,
@@ -95,15 +96,15 @@ void main() {
         maxLength: 99999,
       );
 
-      expect(value, clone);
-      expect(value, isNot(other0));
-      expect(value, isNot(other1));
-      expect(value, isNot(other2));
+      expect(object, clone);
+      expect(object, isNot(other0));
+      expect(object, isNot(other1));
+      expect(object, isNot(other2));
 
-      expect(value.hashCode, clone.hashCode);
-      expect(value.hashCode, isNot(other0.hashCode));
-      expect(value.hashCode, isNot(other1.hashCode));
-      expect(value.hashCode, isNot(other2.hashCode));
+      expect(object.hashCode, clone.hashCode);
+      expect(object.hashCode, isNot(other0.hashCode));
+      expect(object.hashCode, isNot(other1.hashCode));
+      expect(object.hashCode, isNot(other2.hashCode));
     });
 
     test('newInstance()', () {

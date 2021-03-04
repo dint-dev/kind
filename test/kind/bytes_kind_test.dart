@@ -19,49 +19,6 @@ import 'package:test/test.dart';
 
 void main() {
   group('BytesKind', () {
-    final kind = const BytesKind();
-
-    test('name', () {
-      expect(kind.name, 'bytes');
-    });
-
-    test('== / hashCode', () {
-      // Helper for eliminating suggestions to use constants.
-      final two = 2;
-
-      final value = BytesKind(
-        minLength: two,
-        maxLength: 3,
-      );
-      final clone = BytesKind(
-        minLength: two,
-        maxLength: 3,
-      );
-      final other0 = const BytesKind(
-        minLength: 0,
-        maxLength: 3,
-      );
-      final other1 = const BytesKind(
-        minLength: 2,
-        maxLength: 99999,
-      );
-      final other2 = const BytesKind(
-        minLength: 2,
-        maxLength: 3,
-        jsonCodec: base64Url,
-      );
-
-      expect(value, clone);
-      expect(value, isNot(other0));
-      expect(value, isNot(other1));
-      expect(value, isNot(other2));
-
-      expect(value.hashCode, clone.hashCode);
-      expect(value.hashCode, isNot(other0.hashCode));
-      expect(value.hashCode, isNot(other1.hashCode));
-      expect(value.hashCode, other2.hashCode);
-    });
-
     test('BytesKind.kind', () {
       // ignore: invalid_use_of_protected_member
       final kind = BytesKind.kind;
@@ -83,13 +40,63 @@ void main() {
       );
     });
 
+    test('name', () {
+      final kind = const BytesKind();
+      expect(kind.name, 'Bytes');
+    });
+
+    test('== / hashCode', () {
+      // Helper for eliminating suggestions to use constants.
+      const two = 2;
+      const three = 3;
+
+      // ignore: non_const_call_to_literal_constructor
+      final object = BytesKind(
+        minLength: two,
+        maxLength: three,
+      );
+      final clone = const BytesKind(
+        minLength: two,
+        maxLength: three,
+      );
+      final other0 = const BytesKind(
+        minLength: 0,
+        maxLength: three,
+      );
+      final other1 = const BytesKind(
+        minLength: two,
+        maxLength: 99999,
+      );
+      final other2 = const BytesKind(
+        minLength: two,
+        maxLength: three,
+        jsonCodec: base64Url,
+      );
+
+      expect(object, clone);
+      expect(object, isNot(other0));
+      expect(object, isNot(other1));
+      expect(object, isNot(other2));
+
+      expect(object.hashCode, clone.hashCode);
+      expect(object.hashCode, isNot(other0.hashCode));
+      expect(object.hashCode, isNot(other1.hashCode));
+      expect(object.hashCode, other2.hashCode);
+    });
+
     test('newInstance() returns empty, unmodifiable list', () {
-      final value = kind.newInstance();
-      expect(value, []);
-      expect(() => value.add(1), throwsUnsupportedError);
+      final kind = const BytesKind();
+      final instance = kind.newInstance();
+      expect(instance, []);
+      expect(() => instance.add(1), throwsUnsupportedError);
     });
 
     test('instanceIsDefaultValue', () {
+      final kind = const BytesKind();
+      expect(
+        kind.instanceIsDefaultValue(<int>[1, 2, 3]),
+        isFalse,
+      );
       expect(
         kind.instanceIsDefaultValue(<int>[]),
         isTrue,
@@ -97,6 +104,7 @@ void main() {
     });
 
     test('jsonTreeEncode()', () {
+      final kind = const BytesKind();
       expect(
         kind.jsonTreeEncode([1, 2, 3]),
         base64.encode([1, 2, 3]),
@@ -112,6 +120,7 @@ void main() {
     });
 
     test('jsonTreeDecode()', () {
+      final kind = const BytesKind();
       expect(
         kind.jsonTreeDecode(base64.encode([1, 2, 3])),
         [1, 2, 3],

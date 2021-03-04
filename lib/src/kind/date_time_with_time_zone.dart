@@ -30,6 +30,21 @@ class DateTimeWithTimeZone implements Comparable<DateTimeWithTimeZone> {
   final Timezone timezone;
 
   /// Constructs dateTimeWithTimeZone from [DateTime].
+  factory DateTimeWithTimeZone.fromDateTime(DateTime dateTime) {
+    final timezone = dateTime.isUtc ? Timezone.utc : Timezone.local;
+    return DateTimeWithTimeZone.fromMicrosecondsSinceEpoch(
+      dateTime.toUtc().microsecondsSinceEpoch,
+      timezone,
+    );
+  }
+
+  /// Constructs dateTimeWithTimeZone from microseconds since [epoch].
+  DateTimeWithTimeZone.fromMicrosecondsSinceEpoch(
+    this.microsecondsSinceEpochInUtc, [
+    this.timezone = Timezone.utc,
+  ]);
+
+  /// Constructs dateTimeWithTimeZone from [DateTime].
   ///
   /// The API is identical to [DateTime()] constructor.
   factory DateTimeWithTimeZone.utc(
@@ -54,21 +69,6 @@ class DateTimeWithTimeZone implements Comparable<DateTimeWithTimeZone> {
     );
     return DateTimeWithTimeZone.fromDateTime(dateTime);
   }
-
-  /// Constructs dateTimeWithTimeZone from [DateTime].
-  factory DateTimeWithTimeZone.fromDateTime(DateTime dateTime) {
-    final timezone = dateTime.isUtc ? Timezone.utc : Timezone.local;
-    return DateTimeWithTimeZone.fromMicrosecondsSinceEpoch(
-      dateTime.toUtc().microsecondsSinceEpoch,
-      timezone,
-    );
-  }
-
-  /// Constructs dateTimeWithTimeZone from microseconds since [epoch].
-  DateTimeWithTimeZone.fromMicrosecondsSinceEpoch(
-    this.microsecondsSinceEpochInUtc, [
-    this.timezone = Timezone.utc,
-  ]);
 
   /// Day of the month (1 ... 31).
   int get day => toDateTime().add(timezone.differenceToUtc).day;

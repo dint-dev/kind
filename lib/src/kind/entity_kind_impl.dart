@@ -87,6 +87,20 @@ class EntityKindImpl<T extends Object> extends EntityKind<T> {
   }
 
   @override
+  bool instanceIsDefaultValue(Object? value) {
+    if (value is! T) {
+      return false;
+    }
+    for (var prop in props) {
+      final propValue = prop.get(value);
+      if (!prop.kind.instanceIsDefaultValue(propValue)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  @override
   T jsonTreeDecode(Object? json, {JsonDecodingContext? context}) {
     _buildOnce();
     context ??= JsonDecodingContext();
@@ -380,7 +394,7 @@ class EntityKindImpl<T extends Object> extends EntityKind<T> {
     try {
       final builder = EntityKindDeclarationContext<T>();
       final extendsClause = this.extendsClause;
-      if (extendsClause!=null) {
+      if (extendsClause != null) {
         builder.propList.addAll(extendsClause.kind.props);
       }
       try {

@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:convert' show utf8;
+
 import 'package:kind/kind.dart';
 import 'package:test/test.dart';
 
@@ -39,7 +41,7 @@ void main() {
       );
       expect(
         kind.jsonTreeEncode(
-         const StringKind(singleLine: true),
+          const StringKind(singleLine: true),
         ),
         {'singleLine': true},
       );
@@ -54,55 +56,54 @@ void main() {
     });
 
     test('== / hashCode', () {
-      // Prevents `const` suggestions by the analyzer.
-      final one = 1;
-      final value = StringKind(
-        minLengthInUtf8: one,
-        maxLengthInUtf8: 2,
+      // ignore: non_const_call_to_literal_constructor
+      final object = StringKind(
+        minLengthInUtf8: 2,
+        maxLengthInUtf8: 3,
         singleLine: true,
         examples: ['example'],
       );
-      final clone = StringKind(
-        minLengthInUtf8: one,
-        maxLengthInUtf8: 2,
+      final clone = const StringKind(
+        minLengthInUtf8: 2,
+        maxLengthInUtf8: 3,
         singleLine: true,
         examples: ['example'],
       );
-      final other0 = StringKind(
-        minLengthInUtf8: 9999,
-        maxLengthInUtf8: one + 1,
+      final other0 = const StringKind(
+        minLengthInUtf8: 0,
+        maxLengthInUtf8: 3,
         singleLine: true,
         examples: ['example'],
       );
-      final other1 = StringKind(
-        minLengthInUtf8: one,
+      final other1 = const StringKind(
+        minLengthInUtf8: 2,
         maxLengthInUtf8: 99999,
         singleLine: true,
         examples: ['example'],
       );
-      final other2 = StringKind(
-        minLengthInUtf8: one,
-        maxLengthInUtf8: 2,
+      final other2 = const StringKind(
+        minLengthInUtf8: 2,
+        maxLengthInUtf8: 3,
         singleLine: false,
         examples: ['example'],
       );
-      final other3 = StringKind(
-        minLengthInUtf8: one,
-        maxLengthInUtf8: 2,
+      final other3 = const StringKind(
+        minLengthInUtf8: 2,
+        maxLengthInUtf8: 3,
         singleLine: true,
         examples: ['other'],
       );
 
-      expect(value, clone);
-      expect(value, isNot(other0));
-      expect(value, isNot(other1));
-      expect(value, isNot(other2));
-      expect(value, isNot(other3));
+      expect(object, clone);
+      expect(object, isNot(other0));
+      expect(object, isNot(other1));
+      expect(object, isNot(other2));
+      expect(object, isNot(other3));
 
-      expect(value.hashCode, clone.hashCode);
-      expect(value.hashCode, isNot(other0.hashCode));
-      expect(value.hashCode, isNot(other1.hashCode));
-      expect(value.hashCode, isNot(other2.hashCode));
+      expect(object.hashCode, clone.hashCode);
+      expect(object.hashCode, isNot(other0.hashCode));
+      expect(object.hashCode, isNot(other1.hashCode));
+      expect(object.hashCode, isNot(other2.hashCode));
     });
 
     test('newInstance()', () {
@@ -114,35 +115,64 @@ void main() {
         const kind = StringKind(minLengthInUtf8: 3);
         expect(kind.instanceIsValid(''), isFalse);
 
+        // Runes that take 1 byte in UTF-8
         expect(kind.instanceIsValid('ab'), isFalse);
         expect(kind.instanceIsValid('abc'), isTrue);
         expect(kind.instanceIsValid('abcd'), isTrue);
 
+        // Runes that take 2 bytes in UTF-8
         expect(kind.instanceIsValid('ö'), isFalse);
         expect(kind.instanceIsValid('öö'), isTrue);
 
-        expect(kind.instanceIsValid('😃'), isTrue);
+        // Rune that takes 4 bytes in UTF-8
+        final emoji = '😃';
+        expect(emoji.length, 2);
+        expect(utf8.encode(emoji).length, 4);
+        expect(kind.instanceIsValid(emoji), isTrue);
       });
 
       test('maxLengthInUtf8: 3', () {
         const kind = StringKind(maxLengthInUtf8: 3);
         expect(kind.instanceIsValid(''), isTrue);
 
+        // Runes that take 1 byte in UTF-8
         expect(kind.instanceIsValid('ab'), isTrue);
         expect(kind.instanceIsValid('abc'), isTrue);
         expect(kind.instanceIsValid('abcd'), isFalse);
 
+        // Runes that take 2 bytes in UTF-8
         expect(kind.instanceIsValid('ö'), isTrue);
         expect(kind.instanceIsValid('öö'), isFalse);
 
-        expect(kind.instanceIsValid('😃'), isFalse);
+        // Rune that takes 4 bytes in UTF-8
+        final emoji = '😃';
+        expect(emoji.length, 2);
+        expect(utf8.encode(emoji).length, 4);
+        expect(kind.instanceIsValid(emoji), isFalse);
+      });
+
+      test('singleLine: false', () {
+        const kind = StringKind(singleLine: false);
+
+        // Valid examples
+        expect(kind.instanceIsValid(''), isTrue);
+        expect(kind.instanceIsValid('abc'), isTrue);
+        expect(kind.instanceIsValid(' 😃 '), isTrue);
+        expect(kind.instanceIsValid('\n'), isTrue);
+        expect(kind.instanceIsValid('\n\n'), isTrue);
+        expect(kind.instanceIsValid('\n\n\n'), isTrue);
+        expect(kind.instanceIsValid(' \n'), isTrue);
       });
 
       test('singleLine: true', () {
         const kind = StringKind(singleLine: true);
+
+        // Valid examples
         expect(kind.instanceIsValid(''), isTrue);
         expect(kind.instanceIsValid('abc'), isTrue);
+        expect(kind.instanceIsValid(' 😃 '), isTrue);
 
+        // Invalid examples
         expect(kind.instanceIsValid('\n'), isFalse);
         expect(kind.instanceIsValid('\n\n'), isFalse);
         expect(kind.instanceIsValid('\n\n\n'), isFalse);

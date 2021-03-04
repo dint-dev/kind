@@ -30,6 +30,11 @@ abstract class PrimitiveKind<T> extends Kind<T> {
   const PrimitiveKind();
 
   @override
+  bool instanceIsDefaultValue(Object? value) {
+    return value is T && value == newInstance();
+  }
+
+  @override
   T newInstance();
 
   @override

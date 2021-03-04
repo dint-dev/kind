@@ -307,6 +307,18 @@ abstract class EntityKind<T extends Object> extends Kind<T> {
   /// Specifies a superclass.
   EntityKindExtendsClause? get extendsClause;
 
+  @override
+  int get hashCode {
+    var h = name.hashCode;
+    for (var prop in props) {
+      h = (0xFFFFFFF & (h << 4)) ^ (h >> 28);
+      h ^= prop.id.hashCode;
+      h ^= prop.name.hashCode;
+      h ^= prop.kind.name.hashCode;
+    }
+    return h;
+  }
+
   /// Describes meanings in other vocabularies.
   ///
   /// ## Example
@@ -420,11 +432,11 @@ abstract class EntityKind<T extends Object> extends Kind<T> {
       if (prop.kind.instanceIsDefaultValue(value)) {
         continue;
       }
-        sb.write('\n  ');
-        sb.write(prop.name);
-        sb.write(': ');
-        _valueToStringBuffer(sb, value);
-        sb.write(',');
+      sb.write('\n  ');
+      sb.write(prop.name);
+      sb.write(': ');
+      _valueToStringBuffer(sb, value);
+      sb.write(',');
     }
     if (nonMutableProps.isNotEmpty) {
       sb.write('\n');
@@ -450,6 +462,15 @@ abstract class EntityKind<T extends Object> extends Kind<T> {
       sb.write('\n');
     }
     return sb.toString();
+  }
+
+  @override
+  void instanceValidateConstraints(ValidateContext context, T target) {
+    super.instanceValidateConstraints(context, target);
+    for (var prop in props) {
+      final propValue = prop.get(target);
+      context.validateProp(prop.name, propValue, kind: prop.kind);
+    }
   }
 
   /// Constructs a new instance from the entity data.
@@ -521,7 +542,10 @@ abstract class EntityKind<T extends Object> extends Kind<T> {
       } else if (value.length < 8 &&
           value.every((element) => element is String && element.length < 40)) {
         sb.write('[');
-        sb.writeAll(value.map((e) => '"${e.replaceAll(r'\', r'\\').replaceAll('\n', r'\n')}"'), ', ');
+        sb.writeAll(
+            value.map((e) =>
+                '"${e.replaceAll(r'\', r'\\').replaceAll('\n', r'\n')}"'),
+            ', ');
         sb.write(']');
       } else {
         sb.write('[');
@@ -534,7 +558,10 @@ abstract class EntityKind<T extends Object> extends Kind<T> {
       } else if (value.length < 8 &&
           value.every((element) => element is String && element.length < 40)) {
         sb.write('{');
-        sb.writeAll(value.map((e) => '"${e.replaceAll(r'\', r'\\').replaceAll('\n', r'\n')}"'), ', ');
+        sb.writeAll(
+            value.map((e) =>
+                '"${e.replaceAll(r'\', r'\\').replaceAll('\n', r'\n')}"'),
+            ', ');
         sb.write('}');
       } else {
         sb.write('{');

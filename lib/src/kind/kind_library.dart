@@ -29,9 +29,6 @@ class KindLibrary extends Entity {
     },
   );
 
-  @override
-  EntityKind<Object> getKind() => kind;
-
   final List<Kind> kinds;
 
   KindLibrary(this.kinds);
@@ -42,4 +39,7 @@ class KindLibrary extends Entity {
   @override
   bool operator ==(Object other) =>
       other is KindLibrary && const ListEquality().equals(kinds, other.kinds);
+
+  @override
+  EntityKind<Object> getKind() => kind;
 }

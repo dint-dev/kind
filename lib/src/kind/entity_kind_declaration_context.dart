@@ -16,7 +16,8 @@ import 'package:kind/kind.dart';
 import 'package:protobuf/protobuf.dart' show BuilderInfo;
 
 /// Context for building [EntityKind].
-class EntityKindDeclarationContext<T extends Object> with PropDeclarationHelperMixin<T> {
+class EntityKindDeclarationContext<T extends Object>
+    with PropDeclarationHelperMixin<T> {
   /// List of properties.
   final List<Prop<Object, Object?>> propList = [];
 

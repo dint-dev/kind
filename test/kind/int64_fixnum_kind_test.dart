@@ -14,57 +14,87 @@
 
 import 'package:fixnum/fixnum.dart';
 import 'package:kind/kind.dart';
-import 'package:test/test.dart';
 import 'package:protobuf/protobuf.dart' as protobuf;
+import 'package:test/test.dart';
 
 void main() {
   group('Int64FixNumKind', () {
+    test('Int64FixNumKind.kind', () {
+      // ignore: invalid_use_of_protected_member
+      final kind = Int64FixNumKind.kind;
+      expect(kind.name, 'Int64FixNumKind');
+      expect(
+        kind.jsonTreeEncode(const Int64FixNumKind()),
+        {},
+      );
+      expect(
+        kind.jsonTreeEncode(Int64FixNumKind(min: Int64(2))),
+        {'min': '2'},
+      );
+      expect(
+        kind.jsonTreeEncode(Int64FixNumKind(max: Int64(2))),
+        {'max': '2'},
+      );
+    });
+
     test('name', () {
       expect(const Int64FixNumKind().name, 'Int64FixNum');
     });
 
     test('== / hashCode', () {
-      // Helper for eliminating suggestions to use constants.
-      final two = 2;
+      final two = Int64(2);
+      final three = Int64(3);
 
-      final value = Int64FixNumKind(
-        min: Int64(two),
-        max: Int64(3),
+      final object = Int64FixNumKind(
+        min: two,
+        max: three,
       );
       final clone = Int64FixNumKind(
-        min: Int64(two),
-        max: Int64(3),
+        min: two,
+        max: three,
       );
       final other0 = Int64FixNumKind(
         fixed: true,
-        min: Int64(two),
-        max: Int64(3),
+        min: two,
+        max: three,
       );
       final other1 = Int64FixNumKind(
         unsigned: true,
-        min: Int64(two),
-        max: Int64(3),
+        min: two,
+        max: three,
       );
       final other2 = Int64FixNumKind(
-        min: Int64(two + 9999),
-        max: Int64(3),
+        min: two + Int64(9999),
+        max: three,
       );
       final other3 = Int64FixNumKind(
-        min: Int64(two),
-        max: Int64(3 + 9999),
+        min: two,
+        max: three + Int64(9999),
       );
 
-      expect(value, clone);
-      expect(value, isNot(other0));
-      expect(value, isNot(other1));
-      expect(value, isNot(other2));
-      expect(value, isNot(other3));
+      expect(object, clone);
+      expect(object, isNot(other0));
+      expect(object, isNot(other1));
+      expect(object, isNot(other2));
+      expect(object, isNot(other3));
 
-      expect(value.hashCode, clone.hashCode);
-      expect(value.hashCode, isNot(other0.hashCode));
-      expect(value.hashCode, isNot(other1.hashCode));
-      expect(value.hashCode, isNot(other2.hashCode));
-      expect(value.hashCode, isNot(other3.hashCode));
+      expect(object.hashCode, clone.hashCode);
+      expect(object.hashCode, isNot(other0.hashCode));
+      expect(object.hashCode, isNot(other1.hashCode));
+      expect(object.hashCode, isNot(other2.hashCode));
+      expect(object.hashCode, isNot(other3.hashCode));
+    });
+
+    test('JSON encoding', () {
+      const kind = Int64FixNumKind();
+      expect(kind.jsonTreeEncode(Int64(-123456789)), '-123456789');
+      expect(kind.jsonTreeEncode(Int64(123456789)), '123456789');
+    });
+
+    test('JSON decoding', () {
+      const kind = Int64FixNumKind();
+      expect(kind.jsonTreeDecode('-123456789'), Int64(-123456789));
+      expect(kind.jsonTreeDecode('123456789'), Int64(123456789));
     });
 
     test('newInstance()', () {

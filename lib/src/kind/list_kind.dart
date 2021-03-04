@@ -127,6 +127,7 @@ class ListKind<T> extends Kind<List<T>> {
 
   @override
   void instanceValidateConstraints(ValidateContext context, List<T> value) {
+    super.instanceValidateConstraints(context, value);
     context.validateLength(
       value: value,
       length: value.length,
@@ -136,7 +137,6 @@ class ListKind<T> extends Kind<List<T>> {
     for (var i = 0; i < value.length; i++) {
       context.validateIndex(i, value[i], kind: itemsKind);
     }
-    super.instanceValidateConstraints(context, value);
   }
 
   @override

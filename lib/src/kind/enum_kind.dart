@@ -75,15 +75,21 @@ class EnumKind<T> extends PrimitiveKind<T> {
         id: 2,
         name: 'entries',
         itemsKind: EnumKindEntry.kind,
+        getter: (t) => t.entries,
       );
-      c.constructorFromData = (data) => EnumKind(
-            name: data.get(nameProp) ?? 'Enum',
-            entries: data.get(entriesProp),
-          );
+      c.constructorFromData = (data) {
+        return EnumKind(
+          name: data.get(nameProp) ?? 'Enum',
+          entries: data.get(entriesProp),
+        );
+      };
     },
   );
 
   final List<EnumKindEntry<T>> entries;
+
+  @override
+  final String name;
 
   EnumKind({this.name = 'Enum', required this.entries}) {
     final entryIds = <int>{};
@@ -104,9 +110,6 @@ class EnumKind<T> extends PrimitiveKind<T> {
   int get hashCode => (EnumKind).hashCode ^ const ListEquality().hash(entries);
 
   @override
-  final String name;
-
-  @override
   int get protobufFieldType {
     return protobuf.PbFieldType.OS3;
   }
@@ -115,8 +118,23 @@ class EnumKind<T> extends PrimitiveKind<T> {
   EntityKind<EnumKind> getKind() => kind;
 
   @override
+  // ignore: invalid_override_of_non_virtual_member
   bool instanceIsValid(Object? value) {
     return value is T && entries.any((element) => element.value == value);
+  }
+
+  @override
+  void instanceValidateConstraints(ValidateContext context, T value) {
+    super.instanceValidateConstraints(context, value);
+    for (var entry in entries) {
+      if (entry.value == value) {
+        return;
+      }
+    }
+    context.invalid(
+      value: value,
+      message: 'Not one of the valid values.',
+    );
   }
 
   @override
@@ -127,16 +145,16 @@ class EnumKind<T> extends PrimitiveKind<T> {
           return entry.value;
         }
       }
-      throw ArgumentError.value(
-        jsonValue,
-        'jsonValue',
-        'Not one of the supported enum names',
+      context ??= JsonDecodingContext();
+      throw context.newGraphNodeError(
+        value: jsonValue,
+        reason: 'Not one of the ${entries.length} supported names.',
       );
     } else {
       context ??= JsonDecodingContext();
       throw context.newGraphNodeError(
         value: jsonValue,
-        reason: 'Expected JSON string',
+        reason: 'Expected JSON string.',
       );
     }
   }
@@ -148,10 +166,10 @@ class EnumKind<T> extends PrimitiveKind<T> {
         return entry.name;
       }
     }
-    throw ArgumentError.value(
-      instance,
-      'instance',
-      'Not one of the supported enum values',
+    context ??= JsonEncodingContext();
+    throw context.newGraphNodeError(
+      value: instance,
+      reason: 'Not one of the ${entries.length} supported values.',
     );
   }
 
@@ -167,7 +185,8 @@ class EnumKind<T> extends PrimitiveKind<T> {
   }
 
   @override
-  T protobufTreeDecode(Object? protobufValue, {ProtobufDecodingContext? context}) {
+  T protobufTreeDecode(Object? protobufValue,
+      {ProtobufDecodingContext? context}) {
     if (protobufValue is int) {
       for (var entry in entries) {
         if (protobufValue == entry.id) {
@@ -218,15 +237,18 @@ class EnumKindEntry<T> extends Entity {
       final idProp = c.requiredUint32(
         id: 1,
         name: 'id',
+        getter: (t) => t.id,
       );
       final nameProp = c.requiredString(
         id: 2,
         name: 'name',
+        getter: (t) => t.name,
       );
-      final valueProp = c.required<Object>(
+      final valueProp = c.required<Object?>(
         id: 3,
         name: 'value',
         kind: const ObjectKind(),
+        getter: (t) => t.value,
       );
       c.constructorFromData = (data) => EnumKindEntry(
             id: data.get(idProp),

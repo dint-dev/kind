@@ -17,10 +17,6 @@ import 'package:test/test.dart';
 
 void main() {
   group('DateTimeKind', () {
-    test('name', () {
-      expect(const DateTimeKind().name, 'dateTime');
-    });
-
     test('DateTimeKind.kind', () {
       // ignore: invalid_use_of_protected_member
       final kind = DateTimeKind.kind;
@@ -30,19 +26,21 @@ void main() {
       expect(kind.jsonTreeDecode({}), const DateTimeKind());
     });
 
+    test('name', () {
+      expect(const DateTimeKind().name, 'DateTime');
+    });
+
     test('== / hashCode', () {
       // ignore: non_const_call_to_literal_constructor
-      final value = DateTimeKind();
-      // ignore: non_const_call_to_literal_constructor
-      final clone = DateTimeKind();
-      // ignore: non_const_call_to_literal_constructor
-      final other = StringKind();
+      final object = DateTimeKind();
+      final clone = const DateTimeKind();
+      final other = const StringKind();
 
-      expect(value, clone);
-      expect(value, isNot(other));
+      expect(object, clone);
+      expect(object, isNot(other));
 
-      expect(value.hashCode, clone.hashCode);
-      expect(value.hashCode, isNot(other.hashCode));
+      expect(object.hashCode, clone.hashCode);
+      expect(object.hashCode, isNot(other.hashCode));
     });
 
     test('newInstance()', () {

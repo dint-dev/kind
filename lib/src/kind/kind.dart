@@ -229,9 +229,7 @@ abstract class Kind<T> extends Entity {
   /// NullableKind(ListKind()).instanceIsDefaultValue(null); // --> true
   /// NullableKind(ListKind()).instanceIsDefaultValue([]); // --> false
   /// ```
-  bool instanceIsDefaultValue(Object? value) {
-    return value is T && value == newInstance();
-  }
+  bool instanceIsDefaultValue(Object? value);
 
   /// A shorthand for checking validity with [instanceValidate].
   ///
@@ -243,19 +241,22 @@ abstract class Kind<T> extends Entity {
   /// print(kind.instanceIsValid('ab')); // --> true
   /// print(kind.instanceIsValid('abc')); // --> false
   /// ```
+  @nonVirtual
   bool instanceIsValid(Object? value) {
-    if (value is T) {
-      if (value == null) {
-        return true;
-      }
-      try {
-        instanceValidateOrThrow(value);
-        return true;
-      } on ValidationError {
-        // Ignore
-      }
+    if (value is! T) {
+      return false;
     }
-    return false;
+    // Null is valid
+    // (in that case, T is nullable)
+    if (value == null) {
+      return true;
+    }
+    try {
+      instanceValidateOrThrow(value);
+      return true;
+    } on ValidationError {
+      return false;
+    }
   }
 
   /// Checks that the type is correct and then validates constraints with
@@ -275,11 +276,14 @@ abstract class Kind<T> extends Entity {
   /// ```
   @nonVirtual
   void instanceValidate(ValidateContext context, Object? value) {
-    if (value is T) {
-      instanceValidateConstraints(context, value);
-    } else {
-      context.invalid(value: value, message: 'Invalid type');
+    if (value is! T) {
+      context.invalid(
+        value: value,
+        message: 'Invalid type',
+      );
+      return;
     }
+    instanceValidateConstraints(context, value);
   }
 
   /// Validates that the argument matches constraints (minimum length, etc.).

@@ -17,10 +17,6 @@ import 'package:test/test.dart';
 
 void main() {
   group('JsonKind', () {
-    test('name', () {
-      expect( const JsonKind().name, 'Json');
-    });
-
     test('JsonKind.kind', () {
       // ignore: invalid_use_of_protected_member
       final kind = JsonKind.kind;
@@ -30,19 +26,21 @@ void main() {
       expect(kind.jsonTreeDecode({}), const JsonKind());
     });
 
+    test('name', () {
+      expect(const JsonKind().name, 'Json');
+    });
+
     test('== / hashCode', () {
       // ignore: non_const_call_to_literal_constructor
-      final value = JsonKind();
-      // ignore: non_const_call_to_literal_constructor
-      final clone = JsonKind();
-      // ignore: non_const_call_to_literal_constructor
-      final other = StringKind();
+      final object = JsonKind();
+      final clone = const JsonKind();
+      final other = const StringKind();
 
-      expect(value, clone);
-      expect(value, isNot(other));
+      expect(object, clone);
+      expect(object, isNot(other));
 
-      expect(value.hashCode, clone.hashCode);
-      expect(value.hashCode, isNot(other.hashCode));
+      expect(object.hashCode, clone.hashCode);
+      expect(object.hashCode, isNot(other.hashCode));
     });
 
     test('newInstance()', () {

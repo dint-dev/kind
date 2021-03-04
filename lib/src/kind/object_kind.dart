@@ -25,26 +25,25 @@ class ObjectKind<T extends Object> extends PrimitiveKind<T> {
     name: 'ObjectKind',
     build: (c) {
       final name = c.optionalString(
-        id: 1,
-        name: 'name',
-        getter: (t) {
-          final value = t.name;
-          if (value=='Object') {
-            return null;
-          }
-          return value;
-        }
-      );
+          id: 1,
+          name: 'name',
+          getter: (t) {
+            final value = t.name;
+            if (value == 'Object') {
+              return null;
+            }
+            return value;
+          });
       c.constructorFromData = (data) => ObjectKind(
             name: data.get(name) ?? 'Object',
           );
     },
   );
 
-  const ObjectKind({this.name = 'Object'});
-
   @override
   final String name;
+
+  const ObjectKind({this.name = 'Object'});
 
   @override
   int get protobufFieldType => throw UnimplementedError();

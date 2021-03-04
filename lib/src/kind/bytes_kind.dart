@@ -124,7 +124,7 @@ class BytesKind extends PrimitiveKind<List<int>> {
       (BytesKind).hashCode ^ minLength.hashCode ^ maxLength.hashCode;
 
   @override
-  String get name => 'bytes';
+  String get name => 'Bytes';
 
   @override
   int get protobufFieldType {

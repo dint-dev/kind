@@ -83,6 +83,7 @@ class NullableKind<T> extends Kind<T?> {
   }
 
   @override
+  // ignore: invalid_override_of_non_virtual_member
   bool instanceIsValid(Object? value) {
     if (value == null) {
       return true;

@@ -18,24 +18,22 @@ import 'package:test/test.dart';
 void main() {
   group('NullableKind', () {
     test('== / hashCode', () {
-      // Helpers for eliminating suggestions to use constants.
-      final one = 1;
-      final two = 2;
+      // ignore: non_const_call_to_literal_constructor
+      final object = NullableKind(StringKind());
+      final clone = const NullableKind(StringKind());
+      final other = const NullableKind(Int64Kind());
 
-      final value = NullableKind(StringKind(minLengthInUtf8: two));
-      final clone = NullableKind(StringKind(minLengthInUtf8: two));
-      final other = NullableKind(StringKind(minLengthInUtf8: one));
+      expect(object, clone);
+      expect(object, isNot(other));
 
-      expect(value, clone);
-      expect(value, isNot(other));
-
-      expect(value.hashCode, clone.hashCode);
-      expect(value.hashCode, isNot(other.hashCode));
+      expect(object.hashCode, clone.hashCode);
+      expect(object.hashCode, isNot(other.hashCode));
     });
 
-    test('isDefaultValue', () {
+    test('instanceIsDefaultValue', () {
       const kind = NullableKind(StringKind());
       expect(kind.instanceIsDefaultValue(null), isTrue);
+      expect(kind.instanceIsDefaultValue(''), isFalse);
     });
 
     test('newInstance()', () {
@@ -73,9 +71,12 @@ void main() {
 
     test('toNullable(...) / toNonNullable(...)', () {
       final kind = const StringKind();
-      expect(kind.toNullable(), isA<NullableKind<String>>());
-      expect(kind.toNullable().toNullable(), isA<NullableKind<String>>());
-      expect(kind.toNullable().toNullable().toNonNullable(), isA<StringKind>());
+      expect(kind.toNonNullable(), same(kind));
+
+      final nullableKind = kind.toNullable();
+      expect(nullableKind, isA<NullableKind<String>>());
+      expect(nullableKind.toNullable(), same(nullableKind));
+      expect(nullableKind.toNonNullable(), same(kind));
     });
   });
 }

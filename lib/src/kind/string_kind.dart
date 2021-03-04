@@ -148,7 +148,7 @@ class StringKind extends PrimitiveKind<String> implements Entity {
     this.normalizer,
     String Function(RandomExampleContext context)? randomExample,
   })  : assert(minLengthInUtf8 >= 0),
-        assert(maxLengthInUtf8 == null || maxLengthInUtf8 >= 0),
+        assert(maxLengthInUtf8 == null || maxLengthInUtf8 >= minLengthInUtf8),
         _regExpProvider = regExpProvider,
         _examples = examples,
         _randomExampleGenerator = randomExample;
@@ -206,8 +206,9 @@ class StringKind extends PrimitiveKind<String> implements Entity {
     }
     if (singleLine && value.contains('\n')) {
       context.invalid(
-          value: value,
-          message: 'Strings with multiple lines are not allowed.');
+        value: value,
+        message: 'Strings with multiple lines are not allowed.',
+      );
     }
     final regExp = this.regExp;
     if (regExp != null) {

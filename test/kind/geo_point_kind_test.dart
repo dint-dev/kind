@@ -17,6 +17,15 @@ import 'package:test/test.dart';
 
 void main() {
   group('GeoPointKind', () {
+    test('GeoPointKind.kind', () {
+      // ignore: invalid_use_of_protected_member
+      final kind = GeoPointKind.kind;
+      expect(kind.name, 'GeoPointKind');
+
+      expect(kind.jsonTreeEncode(const GeoPointKind()), {});
+      expect(kind.jsonTreeDecode({}), const GeoPointKind());
+    });
+
     test('name', () {
       expect(const GeoPointKind().name, 'GeoPoint');
     });
@@ -32,17 +41,15 @@ void main() {
 
     test('== / hashCode', () {
       // ignore: non_const_call_to_literal_constructor
-      final value = GeoPointKind();
-      // ignore: non_const_call_to_literal_constructor
-      final clone = GeoPointKind();
-      // ignore: non_const_call_to_literal_constructor
-      final other = StringKind();
+      final object = GeoPointKind();
+      final clone = const GeoPointKind();
+      final other = const StringKind();
 
-      expect(value, clone);
-      expect(value, isNot(other));
+      expect(object, clone);
+      expect(object, isNot(other));
 
-      expect(value.hashCode, clone.hashCode);
-      expect(value.hashCode, isNot(other.hashCode));
+      expect(object.hashCode, clone.hashCode);
+      expect(object.hashCode, isNot(other.hashCode));
     });
 
     test('newInstance()', () {

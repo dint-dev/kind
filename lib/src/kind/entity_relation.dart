@@ -75,24 +75,31 @@ class EntityRelation extends Entity {
   }) {
     if (junctions.isEmpty) {
       if (localPropNames.length != foreignPropNames.length) {
-        throw ArgumentError('Database keys have inconsistent number of columns.');
+        throw ArgumentError(
+            'Database keys have inconsistent number of columns.');
       }
     } else {
       if (localPropNames.length != junctions.first.localPropNames.length) {
-        throw ArgumentError('Database keys have inconsistent number of columns.');
+        throw ArgumentError(
+            'Database keys have inconsistent number of columns.');
       }
       var previousAssociation = junctions.first;
       for (var association in junctions.skip(1)) {
-        if (association.localPropNames.length != previousAssociation.foreignPropNames.length) {
-          throw ArgumentError('Database keys have inconsistent number of columns.');
+        if (association.localPropNames.length !=
+            previousAssociation.foreignPropNames.length) {
+          throw ArgumentError(
+              'Database keys have inconsistent number of columns.');
         }
         previousAssociation = association;
       }
-      if (foreignPropNames.length != previousAssociation.foreignPropNames.length) {
-        throw ArgumentError('Database keys have inconsistent number of columns.');
+      if (foreignPropNames.length !=
+          previousAssociation.foreignPropNames.length) {
+        throw ArgumentError(
+            'Database keys have inconsistent number of columns.');
       }
     }
   }
+
   /// Constructs an instance of many-to-many relation.
   ///
   /// # Example
@@ -143,6 +150,7 @@ class EntityRelation extends Entity {
       foreignPropNames: [destinationName],
     );
   }
+
   /// Constructs an instance of one-to-many relation.
   ///
   /// # Example
@@ -168,7 +176,8 @@ class EntityRelation extends Entity {
   ///   late final Field<Employee?> bestEmployee = Field<Employee?>();
   /// }
   /// ```
-  factory EntityRelation.oneToMany(String localPropName, String foreignPropName) {
+  factory EntityRelation.oneToMany(
+      String localPropName, String foreignPropName) {
     return EntityRelation(
       localPropNames: [localPropName],
       foreignPropNames: [foreignPropName],
@@ -200,7 +209,8 @@ class EntityRelation extends Entity {
   ///   late final Field<Employee?> bestEmployee = Field<Employee?>();
   /// }
   /// ```
-  factory EntityRelation.oneToOne(String localPropName, String foreignPropName) {
+  factory EntityRelation.oneToOne(
+      String localPropName, String foreignPropName) {
     return EntityRelation(
       localPropNames: [localPropName],
       foreignPropNames: [foreignPropName],

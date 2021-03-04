@@ -63,7 +63,7 @@ class DateTimeKind extends PrimitiveKind<DateTime> {
   int get hashCode => (DateTimeKind).hashCode;
 
   @override
-  String get name => 'dateTime';
+  String get name => 'DateTime';
 
   @override
   int get protobufFieldType {

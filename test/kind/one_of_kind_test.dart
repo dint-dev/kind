@@ -18,10 +18,11 @@ import 'package:test/test.dart';
 void main() {
   group('OneOfKind', () {
     test('== / hashCode', () {
-      // Helper for eliminating suggestions to use constants.
+      // Prevents `const` suggestions from the analyzer.
+      // Constants could reduce test coverage.
       final two = 2;
 
-      final value = OneOfKind(
+      final object = OneOfKind(
         discriminatorName: 'type',
         primitiveValueName: 'value',
         entries: [
@@ -102,12 +103,12 @@ void main() {
         ],
       );
 
-      expect(value, clone);
-      expect(value, isNot(other0));
-      expect(value, isNot(other1));
-      expect(value, isNot(other2));
+      expect(object, clone);
+      expect(object, isNot(other0));
+      expect(object, isNot(other1));
+      expect(object, isNot(other2));
 
-      expect(value.hashCode, clone.hashCode);
+      expect(object.hashCode, clone.hashCode);
       // expect(value.hashCode, isNot(other0.hashCode));
       // expect(value.hashCode, isNot(other1.hashCode));
       // expect(value.hashCode, isNot(other2.hashCode));
@@ -293,6 +294,47 @@ void main() {
           expect(e.reason, 'Values of the given type are unsupported.');
         }
       });
+    });
+
+    test('validation', () {
+      final kind = OneOfKind(
+        entries: [
+          OneOfKindEntry(
+            id: 1,
+            name: 'entry1',
+            kind: StringKind(regExpProvider: () => RegExp(r'^value1$')),
+          ),
+          OneOfKindEntry(
+            id: 2,
+            name: 'entry2',
+            kind: const DateTimeKind(),
+          ),
+          OneOfKindEntry(
+            id: 3,
+            name: 'entry3',
+            kind: StringKind(regExpProvider: () => RegExp(r'^value3$')),
+          ),
+        ],
+      );
+
+      expect(kind.instanceIsValid(null), isFalse);
+      expect(kind.instanceIsValid(''), isFalse);
+      expect(kind.instanceIsValid('other'), isFalse);
+      expect(kind.instanceIsValid('value1'), isTrue);
+      expect(kind.instanceIsValid(DateTime(2020)), isTrue);
+      expect(kind.instanceIsValid('value3'), isTrue);
+
+      expect(
+        () => kind.instanceValidateOrThrow(null),
+        throwsA(isA<ValidationError>()),
+      );
+      expect(
+        () => kind.instanceValidateOrThrow(''),
+        throwsA(isA<ValidationError>()),
+      );
+      kind.instanceValidateOrThrow('value1');
+      kind.instanceValidateOrThrow(DateTime(2020));
+      kind.instanceValidateOrThrow('value3');
     });
   });
 }

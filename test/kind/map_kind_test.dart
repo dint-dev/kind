@@ -18,10 +18,11 @@ import 'package:test/test.dart';
 void main() {
   group('MapKind', () {
     test('== / hashCode', () {
-      // Helper for eliminating suggestions to use constants.
+      // Prevents `const` suggestions from the analyzer.
+      // Constants could reduce test coverage.
       final two = 2;
 
-      final value = MapKind(
+      final object = MapKind(
         StringKind(minLengthInUtf8: two),
         StringKind(minLengthInUtf8: two),
       );
@@ -38,13 +39,13 @@ void main() {
         StringKind(minLengthInUtf8: two, maxLengthInUtf8: 9999),
       );
 
-      expect(value, clone);
-      expect(value, isNot(other0));
-      expect(value, isNot(other1));
+      expect(object, clone);
+      expect(object, isNot(other0));
+      expect(object, isNot(other1));
 
-      expect(value.hashCode, clone.hashCode);
-      expect(value.hashCode, isNot(other0.hashCode));
-      expect(value.hashCode, isNot(other1.hashCode));
+      expect(object.hashCode, clone.hashCode);
+      expect(object.hashCode, isNot(other0.hashCode));
+      expect(object.hashCode, isNot(other1.hashCode));
     });
 
     test('jsonTreeDecode', () {

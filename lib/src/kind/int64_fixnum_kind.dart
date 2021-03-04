@@ -159,6 +159,9 @@ class Int64FixNumKind extends NumericKind<Int64> {
       unsigned == other.unsigned;
 
   @override
+  EntityKind<Int64FixNumKind> getKind() => kind;
+
+  @override
   void instanceValidateConstraints(ValidateContext context, Int64 value) {
     final min = this.min;
     if (min != null && value < min) {
@@ -172,9 +175,6 @@ class Int64FixNumKind extends NumericKind<Int64> {
     }
     super.instanceValidateConstraints(context, value);
   }
-
-  @override
-  EntityKind<Int64FixNumKind> getKind() => kind;
 
   @override
   Int64 jsonTreeDecode(Object? value, {JsonDecodingContext? context}) {

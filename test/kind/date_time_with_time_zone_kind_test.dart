@@ -17,10 +17,6 @@ import 'package:test/test.dart';
 
 void main() {
   group('DateTimeWithTimeZoneKind', () {
-    test('name', () {
-      expect(const DateTimeWithTimeZoneKind().name, 'DateTimeWithTimeZone');
-    });
-
     test('DateTimeWithTimeZoneKind.kind', () {
       // ignore: invalid_use_of_protected_member
       final kind = DateTimeWithTimeZoneKind.kind;
@@ -30,19 +26,21 @@ void main() {
       expect(kind.jsonTreeDecode({}), const DateTimeWithTimeZoneKind());
     });
 
+    test('name', () {
+      expect(const DateTimeWithTimeZoneKind().name, 'DateTimeWithTimeZone');
+    });
+
     test('== / hashCode', () {
       // ignore: non_const_call_to_literal_constructor
-      final value = DateTimeWithTimeZoneKind();
-      // ignore: non_const_call_to_literal_constructor
-      final clone = DateTimeWithTimeZoneKind();
-      // ignore: non_const_call_to_literal_constructor
-      final other = StringKind();
+      final object = DateTimeWithTimeZoneKind();
+      final clone = const DateTimeWithTimeZoneKind();
+      final other = const StringKind();
 
-      expect(value, clone);
-      expect(value, isNot(other));
+      expect(object, clone);
+      expect(object, isNot(other));
 
-      expect(value.hashCode, clone.hashCode);
-      expect(value.hashCode, isNot(other.hashCode));
+      expect(object.hashCode, clone.hashCode);
+      expect(object.hashCode, isNot(other.hashCode));
     });
 
     test('implements Comparable', () {

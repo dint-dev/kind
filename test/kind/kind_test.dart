@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:test/test.dart';
 import 'package:kind/kind.dart';
+import 'package:test/test.dart';
 
 void main() {
   group('Kind', () {

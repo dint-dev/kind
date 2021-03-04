@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'package:collection/collection.dart';
+import 'package:kind/helpers.dart';
 import 'package:kind/kind.dart';
 import 'package:meta/meta.dart';
 
@@ -27,7 +29,10 @@ abstract class ValidateContext {
 
   void checkRegExp({required String value, required RegExp regExp}) {
     if (!regExp.hasMatch(value)) {
-      invalid(value: value, message: 'Must match pattern "${regExp.pattern}"');
+      invalid(
+        value: value,
+        message: 'Must match pattern "${regExp.pattern}"',
+      );
     }
   }
 
@@ -49,10 +54,16 @@ abstract class ValidateContext {
     String label = 'length',
   }) {
     if (length < minLength) {
-      invalid(value: value, message: 'Length must be $minLength or greater');
+      invalid(
+        value: value,
+        message: 'Length must be $minLength or greater',
+      );
     }
     if (maxLength != null && length > maxLength) {
-      invalid(value: value, message: 'Length must be $minLength or less');
+      invalid(
+        value: value,
+        message: 'Length must be $minLength or less',
+      );
     }
   }
 
@@ -65,11 +76,35 @@ abstract class ValidateContext {
 class ValidationError extends Error {
   final Object? value;
   final String? message;
+  final List? path;
 
   ValidationError({
     required this.value,
     this.message,
+    this.path,
   });
+
+  @override
+  int get hashCode => value.hashCode ^ message.hashCode;
+
+  @override
+  bool operator ==(other) =>
+      other is ValidationError &&
+      value == other.value &&
+      message == other.message &&
+      const ListEquality().equals(path, other.path);
+
+  @override
+  String toString() {
+    return debugStringForConstructorCall(
+      name: 'ValidationError',
+      arguments: [
+        DebugNamedArgument('value', value),
+        DebugNamedArgument('message', message),
+        DebugNamedArgument('path', path),
+      ],
+    );
+  }
 }
 
 class _DefaultValidateContext extends ValidateContext {
@@ -80,7 +115,10 @@ class _DefaultValidateContext extends ValidateContext {
   _DefaultValidateContext() : super.constructor();
 
   @override
-  void invalid({required Object? value, String? message}) {
+  void invalid({
+    required Object? value,
+    String? message,
+  }) {
     errors.add(ValidationError(
       value: value,
       message: message,
@@ -120,7 +158,13 @@ class _ThrowingValidateContext extends ValidateContext {
   const _ThrowingValidateContext() : super.constructor();
 
   @override
-  void invalid({required Object? value, String? message}) {
-    throw ValidationError(value: value, message: message);
+  void invalid({
+    required Object? value,
+    String? message,
+  }) {
+    throw ValidationError(
+      value: value,
+      message: message,
+    );
   }
 }

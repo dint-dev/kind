@@ -146,6 +146,24 @@ class OneOfKind<T> extends Kind<T> {
   EntityKind<OneOfKind> getKind() => kind;
 
   @override
+  bool instanceIsDefaultValue(Object? value) {
+    return entries.first.kind.instanceIsDefaultValue(value);
+  }
+
+  @override
+  void instanceValidateConstraints(ValidateContext context, T value) {
+    super.instanceValidateConstraints(context, value);
+    for (var entry in entries) {
+      if (entry.kind.instanceIsValid(value)) {
+        return;
+      }
+    }
+    for (var entry in entries) {
+      entry.kind.instanceValidate(context, value);
+    }
+  }
+
+  @override
   T jsonTreeDecode(Object? json, {JsonDecodingContext? context}) {
     if (json == null) {
       final result = null;
@@ -285,7 +303,7 @@ class OneOfKindEntry<T> {
         name: 'name',
         getter: (t) => t.name,
       );
-      final kindProp = c.required(
+      final kindProp = c.required<Kind>(
         id: 3,
         name: 'kind',
         kind: Kind.kind,

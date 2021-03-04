@@ -74,6 +74,22 @@ class MapKind<K, V> extends Kind<Map<K, V>> {
   EntityKind<MapKind> getKind() => kind;
 
   @override
+  bool instanceIsDefaultValue(Object? value) {
+    return value is Map<K, V> && value.isEmpty;
+  }
+
+  @override
+  void instanceValidateConstraints(ValidateContext context, Map<K, V> map) {
+    super.instanceValidateConstraints(context, map);
+    final keyKind = this.keyKind;
+    final valueKind = this.valueKind;
+    for (var entry in map.entries) {
+      keyKind.instanceValidate(context, entry.key);
+      valueKind.instanceValidate(context, entry.value);
+    }
+  }
+
+  @override
   Map<K, V> jsonTreeDecode(Object? json, {JsonDecodingContext? context}) {
     context ??= JsonDecodingContext();
     if (json is Map) {

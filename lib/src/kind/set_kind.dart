@@ -98,6 +98,7 @@ class SetKind<T> extends Kind<Set<T>> {
 
   @override
   void instanceValidateConstraints(ValidateContext context, Set<T> value) {
+    super.instanceValidateConstraints(context, value);
     context.validateLength(
       value: value,
       length: value.length,
@@ -109,7 +110,6 @@ class SetKind<T> extends Kind<Set<T>> {
       context.validateIndex(i, item, kind: itemsKind);
       i++;
     }
-    super.instanceValidateConstraints(context, value);
   }
 
   @override
