@@ -64,10 +64,10 @@ Flutter SDK 2.0.0 or later.
     * [CompositePrimitiveKind](https://pub.dev/documentation/kind/latest/kind/CompositePrimitiveKind-class.html)
     * [EntityKind](https://pub.dev/documentation/kind/latest/kind/EntityKind-class.html)
   * Recommended _StringKind_ instances:
-    * [stringKindForEmailAddress](https://pub.dev/documentation/kind/latest/kind.strings/stringKindForEmailAddress.html) (email address)
-    * [stringKindForMarkdown](https://pub.dev/documentation/kind/latest/kind.strings/stringKindForMarkdown.html) (Markdown formatted content)
-    * [stringKindForPhoneNumber](https://pub.dev/documentation/kind/latest/kind.strings/stringKindForPhoneNumber.html) (phone number)
-    * [stringKindForUrl](https://pub.dev/documentation/kind/latest/kind.strings/stringKindForUrl.html) (URL)
+    * [stringKindForEmailAddress](https://pub.dev/documentation/kind/latest/kind.strings/stringKindForEmailAddress-constant.html) (email address)
+    * [stringKindForMarkdown](https://pub.dev/documentation/kind/latest/kind.strings/stringKindForMarkdown-constant.html) (Markdown formatted content)
+    * [stringKindForPhoneNumber](https://pub.dev/documentation/kind/latest/kind.strings/stringKindForPhoneNumber-constant.html) (phone number)
+    * [stringKindForUrl](https://pub.dev/documentation/kind/latest/kind.strings/stringKindForUrl-constant.html) (URL)
 
 ### Other APIs
   * [Date](https://pub.dev/documentation/kind/latest/kind/GeoPoint-class.html) (unlike _DateTime_, has only date)
