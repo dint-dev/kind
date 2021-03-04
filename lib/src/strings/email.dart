@@ -29,20 +29,24 @@ import 'package:meta/meta.dart';
 /// import 'package:kind/strings.dart';
 ///
 /// class Organization extend Entity {
-///   static final EntityKind<Organization> kind = EntityKind(
+///   static final EntityKind<Organization> kind = EntityKind<Organization>(
 ///     name: 'Organization',
 ///     builder: (c) {
-///       c.addProp(Prop<Organization, String?>(
+///       c.optional<String>(
 ///         id: 1,
 ///         name: 'emailAddress',
-///         kind: stringKindForEmailAddress.toNullable(),
-///         // ...
+///         kind: stringKindForEmailAddress,
+///         getter: (t) => t.emailAddress,
+///         setter: (t,v) => t.emailAddress = v,
 ///       );
-///       // ...
+///       c.constructor = () => Organization();
 ///     },
 ///   );
 ///
-///   // ...
+///   String? emailAddress;
+///
+///   @override
+///   EntityKind<Organization> getKind() => kind;
 /// }
 /// ```
 @experimental

@@ -24,20 +24,24 @@ import 'package:kind/kind.dart';
 /// import 'package:kind/strings.dart';
 ///
 /// class Organization extend Entity {
-///   static final EntityKind<Organization> kind = EntityKind(
+///   static final EntityKind<Organization> kind = EntityKind<Organization>(
 ///     name: 'Organization',
 ///     builder: (c) {
-///       c.addProp(Prop<Organization, String?>(
+///       c.optional<String>(
 ///         id: 1,
 ///         name: 'description',
-///         kind: stringKindForMarkdown.toNullable(),
-///         // ...
+///         kind: stringKindForMarkdown,
+///         getter: (t) => t.description,
+///         setter: (t,v) => t.description = v,
 ///       );
-///       // ...
+///       c.constructor = () => Organization();
 ///     },
 ///   );
 ///
-///   // ...
+///   String? description;
+///
+///   @override
+///   EntityKind<Organization> getKind() => kind;
 /// }
 /// ```
 const StringKind stringKindForMarkdown = StringKind(
