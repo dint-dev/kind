@@ -109,6 +109,8 @@ Wrapping values inside _Field<T>_ simplifies state observation. If you want to u
 getters / setters, see "Alternative approaches" section below.
 
 ```dart
+import 'package:kind/kind.dart';
+
 class Person extends Entity {
   static final EntityKind<Person> kind = EntityKind<Person>(
     name: 'Person',
@@ -138,11 +140,27 @@ class Person extends Entity {
   @override
   EntityKind getKind() => kind;
 }
+
+void main() {
+    final alice = Person();
+    alice.name.value = 'Alice';
+
+    final bob = Person();
+    bob.name.value = 'Bob';
+
+    alice.friends.add(bob);
+    bob.friends.add(alice);
+
+    // You objects have:
+    //   * `==` (that supports cyclic graphs)
+    //   * `hashCode`
+    //   * `toString()``
+    //   * And more!
+}
 ```
 
 
-# Serialization
-## JSON
+# JSON serialization
 Use [jsonTreeEncode(...)](https://pub.dev/documentation/kind/latest/kind/EntityKind/jsonTreeEncode.html)
 and [jsonTreeDecode(...)](https://pub.dev/documentation/kind/latest/kind/EntityKind/jsonTreeDecode.html):
 
@@ -154,20 +172,22 @@ final json = person.getKind().jsonTreeEncode(person);
 final person = Person.kind.jsonTreeDecode(json);
 ```
 
-## Protocol Buffers
+
+# Protocol Buffers serialization
 For encoding/decoding Protocol Buffers bytes,
 use [protobufBytesEncode(...)](https://pub.dev/documentation/kind/latest/kind/EntityKind/protobufBytesEncode.html)
 and [protobufBytesDecode(...)](https://pub.dev/documentation/kind/latest/kind/EntityKind/protobufBytesDecode.html):
 
 ```dart
 // Person --> bytes
-final generatedMessage = Person.kind.protobufBytesEncode(person);
+final bytes = Person.kind.protobufBytesEncode(person);
 
 // bytes --> Person
 final person = Person.kind.protobufBytesDecode(bytes);
 ```
 
-For encoding/decoding _package:protobuf_ [GeneratedMessage](https://pub.dev/documentation/protobuf/latest/protobuf/GeneratedMessage-class.html),
+For encoding/decoding [GeneratedMessage](https://pub.dev/documentation/protobuf/latest/protobuf/GeneratedMessage-class.html)
+(used by [package:protobuf](https://pub.dev/packages/protobuf) and [package:grpc](https://pub.dev/packages/grpc)),
 use [protobufTreeEncode(...)](https://pub.dev/documentation/kind/latest/kind/EntityKind/protobufTreeEncode.html)
 and [protobufTreeDecode(...)](https://pub.dev/documentation/kind/latest/kind/EntityKind/protobufTreeDecode.html):
 ```dart
@@ -178,7 +198,9 @@ final generatedMessage = Person.kind.protobufTreeEncode(person);
 final person = Person.kind.protobufTreeDecode(generatedMessage);
 ```
 
-You can also generate _GeneratedMessage_ classes with GRPC tooling and merge messages.
+You can also generate _GeneratedMessage_ classes with GRPC tooling and merge messages using
+[mergeFromMessage](https://pub.dev/documentation/protobuf/latest/protobuf/GeneratedMessage/mergeFromMessage.html).
+
 
 # Alternative approaches to specifying data classes
 ### Why / why not?
@@ -187,14 +209,16 @@ The alternative approaches:
   * Perform better when you have millions of objects.
   * Do not support reactive programming with `ReactiveSystem` unless you write a lot error-prone
     boilerplate code.
-    * In future, we may release a code generator that generates boilerplate for you, but there will
-      inevitably going to be some complexity unless Dart language designers decide to support
+    * At some point, we may release a code generator that generates boilerplate for you, but there
+      will inevitably going to be some complexity unless Dart language designers decide to support
       something like decorator annotations.
 
 ## Mutable and non-reactive
 You just define `getter` and `setter` in [Prop](https://pub.dev/documentation/kind/latest/kind/Prop-class.html)
 for ordinary Dart fields:
 ```dart
+import 'package:kind/kind.dart';
+
 class Person {
   /// Full name.
   String? fullName = '';
@@ -229,6 +253,8 @@ You can use [ReactiveMixin](https://pub.dev/documentation/kind/latest/kind/React
 for implementing getters and setters that send notifications to
 [ReactiveSystem](https://pub.dev/documentation/kind/latest/kind/ReactiveSystem-class.html):
 ```dart
+// ...
+
 class Person extends Entity with ReactiveMixin {
   String? _fullName;
   final Set<Person> _friends = ReactiveSet<Person>();
@@ -244,13 +270,15 @@ class Person extends Entity with ReactiveMixin {
   EntityKind<Person> getKind() => personKind;
 }
 
-// The `personKind` is identical to the previous example.
+// `personKind` is identical to the previous example.
 // ...
 ```
 
 
 ## Immutable and non-reactive
 ```dart
+import 'package:kind/kind.dart';
+
 // Extending Entity is optional, but recommended.
 class Person {
   /// Full name of the person.
@@ -295,6 +323,8 @@ You can use [ReactiveMixin](https://pub.dev/documentation/kind/latest/kind/React
 for implementing getters and setters that send notifications to
 [ReactiveSystem](https://pub.dev/documentation/kind/latest/kind/ReactiveSystem-class.html):
 ```dart
+// ...
+
 // Extending Entity is optional, but recommended.
 class Person extends Entity with ReactiveMixin {
   final String? _fullName;
@@ -317,6 +347,6 @@ class Person extends Entity with ReactiveMixin {
   EntityKind<Person> getKind() => personKind;
 }
 
-// The `personKind` is identical to the previous example.
+// `personKind` is identical to the previous example.
 // ...
 ```
