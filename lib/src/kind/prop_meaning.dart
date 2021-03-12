@@ -25,7 +25,7 @@ import 'package:kind/kind.dart';
 /// class Person extends Entity {
 ///   static final EntityKind<Person> kind = EntityKind<Person>(
 ///     name: 'Person',
-///     builder: (c) {
+///     define: (c) {
 ///       // ...
 ///       c.addProp(Prop<Person,Date?>(
 ///         id: 2,

@@ -23,7 +23,7 @@ import 'package:meta/meta.dart';
 /// class Person extends Entity {
 ///    static final EntityKind<Person> kind = EntityKind<Person>(
 ///      name: 'Person',
-///      builder: (c) {
+///      define: (c) {
 ///        // You could also use shorthand: `requiredString(...)`
 ///        c.addProp(Prop<Person, String>(
 ///          id: 1,
@@ -130,7 +130,7 @@ class Field<T> extends FieldLike<T> {
 /// class Person extends Entity {
 ///    static final EntityKind<Person> kind = EntityKind<Person>(
 ///      name: 'Person',
-///      builder: (c) {
+///      define: (c) {
 ///        // You could also use shorthand: `requiredString(...)`
 ///        c.addProp(Prop<Person, String>(
 ///          id: 1,
@@ -209,7 +209,7 @@ abstract class FieldLike<T> {
         'Make sure your class looks like the following:/\n'
         '    class YourClass extends Entity {/\n'
         '      static final EntityKind<YourClass> kind = EntityKind<YourClass>(\n'
-        '        builder: (c) {\n'
+        '        define: (c) {\n'
         '          // ...\n'
         '          c.addProp(Prop<YourClass, YourFieldType>(\n'
         '           id: 42,\n'
@@ -251,7 +251,7 @@ abstract class FieldLike<T> {
 /// class Person extends Entity {
 ///    static final EntityKind<Person> kind = EntityKind<Person>(
 ///      name: 'Person',
-///      builder: (c) {
+///      define: (c) {
 ///        // You could also use shorthand: `requiredString(...)`
 ///        c.addProp(Prop<Person, String>(
 ///          id: 1,
@@ -366,7 +366,7 @@ class ListField<T> extends WrappingField<List<T>> with ListMixin<T> {
 /// class Person extends Entity {
 ///    static final EntityKind<Person> kind = EntityKind<Person>(
 ///      name: 'Person',
-///      builder: (c) {
+///      define: (c) {
 ///        // You could also use shorthand: `requiredString(...)`
 ///        c.addProp(Prop<Person, String>(
 ///          id: 1,

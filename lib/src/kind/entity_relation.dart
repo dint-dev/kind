@@ -109,7 +109,7 @@ class EntityRelation extends Entity {
   /// class Person extends Entity {
   ///   static final EntityKind<Person> kind = EntityKind<Person>(
   ///     name: 'Person',
-  ///     builder: (c) {
+  ///     define: (c) {
   ///       // ...
   ///       c.addList<Person>(
   ///         id: 2,
@@ -160,7 +160,7 @@ class EntityRelation extends Entity {
   /// class Company extends Entity {
   ///   static final EntityKind<Company> kind = EntityKind<Company>(
   ///     name: 'Company',
-  ///     builder: (c) {
+  ///     define: (c) {
   ///       // ...
   ///       c.requiredSet<Employee>(
   ///         id: 2,
@@ -193,7 +193,7 @@ class EntityRelation extends Entity {
   /// class Company extends Entity {
   ///   static final EntityKind<Company> kind = EntityKind<Company>(
   ///     name: 'Company',
-  ///     builder: (c) {
+  ///     define: (c) {
   ///       // ...
   ///       c.optional<Employee>(
   ///         id: 2,

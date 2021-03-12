@@ -27,7 +27,7 @@ import 'package:meta/meta.dart';
 /// class Organization extend Entity {
 ///   static final EntityKind<Organization> kind = EntityKind<Organization>(
 ///     name: 'Organization',
-///     builder: (c) {
+///     define: (c) {
 ///       c.optional<String>(
 ///         id: 1,
 ///         name: 'url',

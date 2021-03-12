@@ -337,31 +337,31 @@ methods in  [JsonEncodingContext](https://pub.dev/documentation/kind/latest/kind
 and [JsonDecodingContext](https://pub.dev/documentation/kind/latest/kind/JsonDecodingContext-class.html).
 
 # Protocol Buffers serialization
-For encoding/decoding Protocol Buffers bytes,
-use [protobufBytesEncode(...)](https://pub.dev/documentation/kind/latest/kind/EntityKind/protobufBytesEncode.html)
-and [protobufBytesDecode(...)](https://pub.dev/documentation/kind/latest/kind/EntityKind/protobufBytesDecode.html):
+Use [ProtobufEncodingContext](https://pub.dev/documentation/kind/latest/kind/ProtobufEncodingContext-class.html)
+and [ProtobufDecodingContext](https://pub.dev/documentation/kind/latest/kind/ProtobufDecodingContext-class.html):
 
 ```dart
 // Pet --> bytes
-final bytes = Pet.kind.protobufBytesEncode(pet);
+final encodingContext = ProtobufEncodingContext();
+final bytes = encodingContext.encodeBytes(pet, kind: Pet.kind);
 
 // bytes --> Pet
-final pet = Pet.kind.protobufBytesDecode(bytes);
+final decodingContext = ProtobufDecodingContext();
+final pet = decodingContext.decodeBytes(bytes);
 ```
 
 For encoding/decoding [GeneratedMessage](https://pub.dev/documentation/protobuf/latest/protobuf/GeneratedMessage-class.html)
 (used by [package:protobuf](https://pub.dev/packages/protobuf) and [package:grpc](https://pub.dev/packages/grpc)),
-use [protobufTreeEncode(...)](https://pub.dev/documentation/kind/latest/kind/EntityKind/protobufTreeEncode.html)
-and [protobufTreeDecode(...)](https://pub.dev/documentation/kind/latest/kind/EntityKind/protobufTreeDecode.html):
+use `encode(...)` and `decode(...)`:
 ```dart
 // Pet --> GeneratedMessage
-final generatedMessage = Pet.kind.protobufTreeEncode(pet);
+final generatedMessage = encodingContext.encode(pet);
 
 // GeneratedMessage --> Pet
-final pet = Pet.kind.protobufTreeDecode(generatedMessage);
+final pet = decodingContext.decode(generatedMessage);
 ```
 
-You can also generate _GeneratedMessage_ classes with GRPC tooling and merge messages (using
+You can also generate separate _GeneratedMessage_ classes with GRPC tooling and merge messages (using
 [mergeFromMessage](https://pub.dev/documentation/protobuf/latest/protobuf/GeneratedMessage/mergeFromMessage.html)
 and other methods available).
 
