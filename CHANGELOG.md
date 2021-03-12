@@ -1,3 +1,6 @@
+## 0.5.2
+  * Fixes a few small issues.
+
 ## 0.5.1
   * Fixes issues in the documentation.
 

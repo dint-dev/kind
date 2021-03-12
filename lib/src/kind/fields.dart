@@ -28,37 +28,37 @@ import 'package:meta/meta.dart';
 ///        c.addProp(Prop<Person, String>(
 ///          id: 1,
 ///          name: 'name',
-///          field: (e) => e.name,
 ///          kind: StringKind(
 ///            maxLengthInUtf8: 80,
 ///          ),
+///          field: (e) => e.name,
 ///        ));
 ///        // You could also use shorthand: `optionalDate(...)`
 ///        c.addProp(Prop<Person, Date?>(
 ///          id: 2,
 ///          name: 'dateOfBirth',
-///          field: (e) => e.dateOfBirth,
 ///          kind: DateKind().toNullable(),
+///          field: (e) => e.dateOfBirth,
 ///        ));
 ///        // You could also use shorthand: `requiredList(...)`
 ///        c.addProp(Prop<Person, List<String>>(
 ///          id: 3,
 ///          name: 'favoriteFoods',
-///          field: (e) => e.favoriteFoods,
 ///          kind: ListKind(
 ///            itemsKind: StringKind(
 ///              maxLengthInUtf8: 80,
 ///            ),
 ///          ),
+///          field: (e) => e.favoriteFoods,
 ///        ));
 ///        // You could also use shorthand: `requiredSet(...)`
 ///        c.addProp(Prop<Person, Set<Person>>(
 ///          id: 4,
 ///          name: 'friends',
-///          field: (e) => e.friends,
 ///          kind: SetKind<Person>(
 ///            itemsKind: Person.kind,
 ///          ),
+///          field: (e) => e.friends,
 ///        ));
 ///      },
 ///   );
@@ -87,19 +87,31 @@ class Field<T> extends FieldLike<T> {
   T get value {
     final result = _value;
     if (result != null) {
+      // Non-null value.
+      ReactiveSystem.instance.beforeRead($parent);
       return result;
     }
+
+    // At this point, `result` is null.
+    // T is nullable, we return null.
     if (result is T) {
+      ReactiveSystem.instance.beforeRead($parent);
       return result;
     }
+
+    // `T` is non-nullable.
+    // We need to construct initial value.
     final prop = getParentProp();
     final kind = prop.kind;
     final newInstance = kind.newInstance();
     _value = newInstance;
+
+    ReactiveSystem.instance.beforeRead($parent);
     return newInstance;
   }
 
   set value(T newValue) {
+    ReactiveSystem.instance.beforeWrite($parent);
     _value = newValue;
   }
 }

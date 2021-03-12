@@ -78,8 +78,7 @@ class UuidKind extends PrimitiveKind<Uuid> {
   }
 
   @override
-  Object protobufTreeEncode(Uuid instance,
-      {ProtobufEncodingContext? context}) {
+  Object protobufTreeEncode(Uuid instance, {ProtobufEncodingContext? context}) {
     final bytes = instance.toBytes();
     return const BytesKind().protobufTreeEncode(bytes, context: context);
   }

@@ -85,8 +85,7 @@ class JsonKind extends PrimitiveKind<Object?> {
   }
 
   @override
-  Object protobufTreeEncode(Object? value,
-      {ProtobufEncodingContext? context}) {
+  Object protobufTreeEncode(Object? value, {ProtobufEncodingContext? context}) {
     final s = jsonEncode(value);
     context ??= ProtobufEncodingContext();
     return context.encode(s, kind: const StringKind());

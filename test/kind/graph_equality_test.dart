@@ -90,35 +90,35 @@ class _Example extends Entity {
         id: 1,
         name: 'name',
         getter: (t) => t.name,
-        setter: (t,v) => t.name = v,
+        setter: (t, v) => t.name = v,
       );
       c.optional<_Example>(
         id: 2,
         name: 'example',
         kind: _Example.kind,
         getter: (t) => t.example,
-        setter: (t,v) => t.example = v,
+        setter: (t, v) => t.example = v,
       );
       c.requiredList<String>(
         id: 3,
         name: 'listOfStrings',
         itemsKind: const StringKind(),
         getter: (t) => t.listOfStrings,
-        setter: (t,v) => t.listOfStrings = v,
+        setter: (t, v) => t.listOfStrings = v,
       );
       c.requiredList<_Example>(
         id: 4,
         name: 'listOfExamples',
         itemsKind: _Example.kind,
         getter: (t) => t.listOfExamples,
-        setter: (t,v) => t.listOfExamples = v,
+        setter: (t, v) => t.listOfExamples = v,
       );
       c.requiredSet<_Example>(
         id: 5,
         name: 'setOfExamples',
         itemsKind: _Example.kind,
         getter: (t) => t.setOfExamples,
-        setter: (t,v) => t.setOfExamples = v,
+        setter: (t, v) => t.setOfExamples = v,
       );
     },
   );

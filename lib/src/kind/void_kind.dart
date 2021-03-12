@@ -74,8 +74,7 @@ class VoidKind extends Kind<void> {
   }
 
   @override
-  Object protobufTreeEncode(void instance,
-      {ProtobufEncodingContext? context}) {
+  Object protobufTreeEncode(void instance, {ProtobufEncodingContext? context}) {
     return 0;
   }
 }

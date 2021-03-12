@@ -482,7 +482,8 @@ class EntityKindImpl<T extends Object> extends EntityKind<T> {
         defineFunction(defineContext);
 
         // Set internal state of EntityKind
-        _props = List<Prop<Object, Object?>>.unmodifiable(defineContext.propList);
+        _props =
+            List<Prop<Object, Object?>>.unmodifiable(defineContext.propList);
         _constructor = defineContext.constructor;
         _constructorFromEntityData = defineContext.constructorFromData;
         _examples = defineContext.examples;

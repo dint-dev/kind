@@ -1,8 +1,8 @@
 name: kind
-version: 0.5.1
+version: 0.5.2
 description:
-  An unified data layer framework that enables serialization, persistence, and state observability
-  for any Dart class. Comes with primitives such as decimal numbers and currency amounts.
+  A serialization / reflection framework. Supports JSON and Protobuf / GRPC.
+  Comes with primitives such as Currency and Uuid.
 homepage: https://github.com/dint-dev/kind
 
 environment:

@@ -19,12 +19,9 @@ void main() {
   group('Entity', () {
     group('== / hashCode', () {
       test('string field', () {
-        final value = _Example()
-          ..name.value = 'a';
-        final clone = _Example()
-          ..name.value = 'a';
-        final other0 = _Example()
-          ..name.value = 'OTHER';
+        final value = _Example()..name.value = 'a';
+        final clone = _Example()..name.value = 'a';
+        final other0 = _Example()..name.value = 'OTHER';
 
         expect(value == Object(), isFalse);
         expect(value, clone);
@@ -46,9 +43,7 @@ void main() {
         final nonPrimitiveListDifferences = _Example()
           ..name.value = 'a'
           ..example.value = _Example()
-          ..listOfExamples.addAll([_Example()
-            ..name.value = 'OTHER'
-          ]);
+          ..listOfExamples.addAll([_Example()..name.value = 'OTHER']);
         final other0 = _Example()
           ..name.value = 'OTHER'
           ..example.value = _Example()

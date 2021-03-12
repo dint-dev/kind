@@ -253,8 +253,7 @@ class ListKind<T> extends Kind<List<T>> {
   }
 
   @override
-  Object protobufTreeEncode(List<T> value,
-      {ProtobufEncodingContext? context}) {
+  Object protobufTreeEncode(List<T> value, {ProtobufEncodingContext? context}) {
     context ??= ProtobufEncodingContext();
     context.enter(value);
     try {

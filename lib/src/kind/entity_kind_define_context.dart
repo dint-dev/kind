@@ -23,7 +23,8 @@ class EntityKindDefineContext<T extends Object>
   /// Unmodifiable list of properties.
   ///
   /// You can add properties with [addProp].
-  late final List<Prop<Object, Object?>>  propList = UnmodifiableListView<Prop<Object,Object?>>(_modifiablePropList);
+  late final List<Prop<Object, Object?>> propList =
+      UnmodifiableListView<Prop<Object, Object?>>(_modifiablePropList);
   final List<Prop<Object, Object?>> _modifiablePropList = [];
 
   /// Column IDs that subclasses should not use.

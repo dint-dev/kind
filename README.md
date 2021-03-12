@@ -119,7 +119,7 @@ environment:
   sdk: '>=2.12.0 <3.0.0'
 
 dependencies:
-  kind: ^0.5.1
+  kind: ^0.5.2
 ```
 
 ## 2.Write data models
@@ -168,8 +168,11 @@ class Pet extends Object with EntityMixin {
         //
         name: 'name',
 
-        // Here we say that the string must have at least 1 character.
+        // Here we say that a valid string should:
+        //   * Have at least 1 character.
+        //   * Have no more than 80 characters.
         minLengthInUtf8: 1,
+        maxLengthInUTf8: 80,
 
         // Getter that returns value of the field.
         getter: (t) => t.name,
@@ -237,6 +240,7 @@ c.addProp(Prop<Pet, String?>(
   name: 'name',
   kind: const StringKind(
     minLengthInUtf8: 1,
+    maxLengthInUTf8: 80,
   ),
   getter: (t) => t.name,
 ));
@@ -255,6 +259,7 @@ class Pet extends Object with EntityMixin {
         id: 1,
         name: 'name',
         minLengthInUtf8: 1,
+        maxLengthInUTf8: 80,
         getter: (t) => t.name,
         setter: (e,v) => e.name = v, // <-- Not defined in the earlier approach.
       );
@@ -324,7 +329,7 @@ void main() {}
   //   }
   
   // JSON tree --> Pet
-  final decodingContext = JsonEncodingContext();
+  final decodingContext = JsonDecodingContext();
   final decodedDog = decodingContext.decode(dogJson, kind: Pet.kind);
 }
 ```

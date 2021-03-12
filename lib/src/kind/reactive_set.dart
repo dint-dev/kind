@@ -97,8 +97,8 @@ class _ReactiveSet<T> extends SetBase<T>
   @override
   final Object wrappedState;
 
-  Object? _lastReadOptimizationToken;
-  Object? _lastWriteOptimizationToken;
+  Object? _lastReadOptimizationCode;
+  Object? _lastWriteOptimizationCode;
 
   _ReactiveSet(this.wrapped, {Object? wrappedState})
       : wrappedState = wrappedState ?? wrapped;
@@ -134,7 +134,7 @@ class _ReactiveSet<T> extends SetBase<T>
 
   @override
   void freeze() {
-    _lastWriteOptimizationToken = _frozenToken;
+    _lastWriteOptimizationCode = _frozenToken;
   }
 
   @override
@@ -167,17 +167,17 @@ class _ReactiveSet<T> extends SetBase<T>
     //
     final code = reactiveSystem.readOptimizationCode;
     if (code != 0) {
-      if (code == 1 || code == _lastReadOptimizationToken) {
+      if (code == 1 || code == _lastReadOptimizationCode) {
         return;
       }
-      _lastReadOptimizationToken = code;
+      _lastReadOptimizationCode = code;
     }
     reactiveSystem.beforeRead(this);
   }
 
   void _beforeWrite() {
-    final lastWriteOptimizationToken = _lastWriteOptimizationToken;
-    if (lastWriteOptimizationToken == _frozenToken) {
+    final lastWriteOptimizationCode = _lastWriteOptimizationCode;
+    if (lastWriteOptimizationCode == _frozenToken) {
       throw FrozenError();
     }
 
@@ -190,10 +190,10 @@ class _ReactiveSet<T> extends SetBase<T>
     final reactiveSystem = ReactiveSystem.instance;
     final code = reactiveSystem.writeOptimizationCode;
     if (code != 0) {
-      if (code == 1 || code == lastWriteOptimizationToken) {
+      if (code == 1 || code == lastWriteOptimizationCode) {
         return;
       }
-      _lastWriteOptimizationToken = code;
+      _lastWriteOptimizationCode = code;
     }
     reactiveSystem.beforeWrite(this);
   }
