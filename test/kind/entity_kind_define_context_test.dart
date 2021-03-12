@@ -16,11 +16,12 @@ import 'package:kind/kind.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('EntityKindBuilder', () {
-    late EntityKindDeclarationContext builder;
+  group('EntityKindDefineContext:', () {
+    late EntityKindDefineContext builder;
     setUp(() {
-      builder = EntityKindDeclarationContext();
+      builder = EntityKindDefineContext();
     });
+
     test('optionalBool()', () {
       final prop = builder.optionalBool(
         id: 2,
@@ -31,6 +32,7 @@ void main() {
       expect(prop.name, 'x');
       expect(prop.kind, const NullableKind(BoolKind()));
     });
+
     test('optionalUint32()', () {
       final prop = builder.optionalUint32(
         id: 2,

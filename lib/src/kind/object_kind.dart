@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import 'package:kind/kind.dart';
+import 'package:meta/meta.dart';
 
 /// A kind that's lazily resolved using the available [KindLibrary].
 ///
@@ -21,9 +22,10 @@ import 'package:kind/kind.dart';
 /// final kind = ObjectKind<Example>(name:'Example');
 /// ```
 class ObjectKind<T extends Object> extends PrimitiveKind<T> {
+  @protected
   static final EntityKind<ObjectKind> kind = EntityKind<ObjectKind>(
     name: 'ObjectKind',
-    build: (c) {
+    define: (c) {
       final name = c.optionalString(
           id: 1,
           name: 'name',
@@ -143,7 +145,7 @@ class ObjectKind<T extends Object> extends PrimitiveKind<T> {
   }
 
   @override
-  Object? protobufTreeEncode(T instance, {ProtobufEncodingContext? context}) {
+  Object protobufTreeEncode(T instance, {ProtobufEncodingContext? context}) {
     if (instance is Entity) {
       return instance.getKind().protobufTreeEncode(instance);
     }

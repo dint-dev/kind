@@ -14,7 +14,7 @@
 
 import 'package:kind/kind.dart';
 
-///  A collection of ([Prop], value) tuples.
+/// A collection of ([Prop], value) tuples.
 abstract class EntityData {
   /// Constructs a mutable instance of [EntityData].
   factory EntityData() = _EntityData;
@@ -77,7 +77,19 @@ class _EntityData implements EntityData {
   T get<T>(Prop<dynamic, T> prop) {
     final value = _map[prop.id];
     if (value == null && !_map.containsKey(prop.id)) {
-      return prop.defaultValue ?? prop.kind.newInstance();
+      final defaultValue = prop.defaultValue;
+      if (defaultValue != null) {
+        return defaultValue;
+      }
+      try {
+        return prop.kind.newInstance();
+      } catch (error, stackTrace) {
+        throw TraceableError(
+          message: 'Creating default value for property "${prop.name}" failed.',
+          error: error,
+          stackTrace: stackTrace,
+        );
+      }
     }
     if (!prop.kind.instanceIsCorrectType(value)) {
       throw StateError(

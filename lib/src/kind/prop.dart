@@ -33,7 +33,7 @@ class Prop<T extends Object, V> {
   @protected
   static final Kind<Prop> kind_ = EntityKind<Prop>(
     name: 'Prop',
-    build: (c) {
+    define: (c) {
       final idProp = c.requiredUint64(
         id: 1,
         name: 'id',
@@ -251,9 +251,12 @@ class Prop<T extends Object, V> {
       try {
         // Yes. Use it.
         return getter(target);
-      } catch (e) {
-        throw StateError(
-          'Calling getter of kind "${_kindName(target)}" property "$name" (id: $id) failed: $e',
+      } catch (error, stackTrace) {
+        throw TraceableError(
+          message:
+              'Calling getter of kind "${_kindName(target)}" property "$name" (id: $id) failed.',
+          error: error,
+          stackTrace: stackTrace,
         );
       }
     }
@@ -265,9 +268,12 @@ class Prop<T extends Object, V> {
       try {
         // Get field
         fieldInstance = field(target);
-      } catch (e) {
-        throw StateError(
-          'Calling field getter of kind "${_kindName(target)}" property "$name" (id: $id) failed: $e',
+      } catch (error, stackTrace) {
+        throw TraceableError(
+          message:
+              'Calling field getter of kind "${_kindName(target)}" property "$name" (id: $id) failed.',
+          error: error,
+          stackTrace: stackTrace,
         );
       }
 

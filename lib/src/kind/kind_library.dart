@@ -19,7 +19,7 @@ import 'package:kind/kind.dart';
 class KindLibrary extends Entity {
   static final EntityKind<KindLibrary> kind = EntityKind<KindLibrary>(
     name: 'KindLibrary',
-    build: (c) {
+    define: (c) {
       c.requiredList(
         id: 1,
         name: 'kinds',

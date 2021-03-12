@@ -119,7 +119,6 @@ void main() {
         kind.jsonTreeEncode('OTHER');
         fail('Should have thrown');
       } on GraphNodeError catch (e) {
-        expect(e.name, 'JSON serialization error');
         expect(e.reason, 'Not one of the 2 supported values.');
       }
       expect(
@@ -151,14 +150,12 @@ void main() {
         kind.jsonTreeDecode(null);
         fail('Should have thrown');
       } on GraphNodeError catch (e) {
-        expect(e.name, 'JSON deserialization error');
         expect(e.reason, 'Expected JSON string.');
       }
       try {
         kind.jsonTreeDecode('OTHER');
         fail('Should have thrown');
       } on GraphNodeError catch (e) {
-        expect(e.name, 'JSON deserialization error');
         expect(e.reason, 'Not one of the 2 supported names.');
       }
       expect(

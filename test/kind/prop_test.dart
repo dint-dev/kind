@@ -123,7 +123,7 @@ void main() {
       late EntityKind kind;
       kind = EntityKind<Object>(
         name: 'Example',
-        build: (c) {
+        define: (c) {
           c.addProp(Prop<Object, Object?>(
             id: 2,
             name: 'example',

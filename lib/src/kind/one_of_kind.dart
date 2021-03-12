@@ -65,7 +65,7 @@ class OneOfKind<T> extends Kind<T> {
   @protected
   static final EntityKind<OneOfKind> kind = EntityKind<OneOfKind>(
     name: 'OneOfKind',
-    build: (c) {
+    define: (c) {
       final entries = c.requiredList<OneOfKindEntry>(
         id: 1,
         name: 'entries',
@@ -120,6 +120,23 @@ class OneOfKind<T> extends Kind<T> {
         throw StateError('Two (or more) have conflicting id "$id".');
       }
     }
+  }
+
+  /// Returns [OneOfKind] for the kinds.
+  ///
+  /// [OneOfKindEntry] `id` is `1 + indexInTheList` and `name` is the kind.
+  factory OneOfKind.fromKinds(List<Kind<T>> kinds) {
+    final entries = List<OneOfKindEntry<T>>.generate(kinds.length, (i) {
+      final kind = kinds[i];
+      return OneOfKindEntry(
+        id: 1 + i,
+        name: kind.name,
+        kind: kind,
+      );
+    });
+    return OneOfKind<T>(
+      entries: List<OneOfKindEntry<T>>.unmodifiable(entries),
+    );
   }
 
   @override
@@ -282,7 +299,7 @@ class OneOfKind<T> extends Kind<T> {
   }
 
   @override
-  Object? protobufTreeEncode(T instance, {ProtobufEncodingContext? context}) {
+  Object protobufTreeEncode(T instance, {ProtobufEncodingContext? context}) {
     throw UnimplementedError();
   }
 
@@ -302,7 +319,7 @@ class OneOfKindEntry<T> {
   @protected
   static final Kind<OneOfKindEntry> kind_ = EntityKind<OneOfKindEntry>(
     name: 'OneOfKindEntry',
-    build: (c) {
+    define: (c) {
       final idProp = c.requiredUint64(
         id: 1,
         name: 'id',
@@ -327,10 +344,12 @@ class OneOfKindEntry<T> {
     },
   );
 
-  /// Numeric ID of this kind. Used in Protocol Buffers serialization.
+  /// Integer ID for Protocol Buffers serialization.
+  ///
+  /// Must be 1 or greater.
   final int id;
 
-  /// Name of this kind. Used in JSON serialization.
+  /// Name for JSON serialization and debugging.
   final String name;
 
   /// Kind.
@@ -340,7 +359,8 @@ class OneOfKindEntry<T> {
     required this.id,
     required this.name,
     required this.kind,
-  });
+  })   : assert(id >= 1),
+        assert(name != '');
 
   @override
   int get hashCode => id.hashCode ^ name.hashCode ^ kind.hashCode;

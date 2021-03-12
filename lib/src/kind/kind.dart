@@ -36,6 +36,8 @@ import 'package:protobuf/protobuf.dart';
 ///   * Floating-point values
 ///     * [Float32Kind]
 ///     * [Float64Kind]
+///   * Exact decimal values
+///     * [DecimalKind]
 ///   * Date/time
 ///     * [DateKind]
 ///     * [DateTimeKind]
@@ -45,110 +47,96 @@ import 'package:protobuf/protobuf.dart';
 ///     * [BytesKind]
 ///   * Collections
 ///     * [ListKind]
+///     * [MapKind]
 ///     * [SetKind]
-///   * Others
+///   * Some others
+///     * [Currency.kind]
+///     * [CurrencyAmountKind]
 ///     * [EnumKind]
 ///     * [GeoPointKind]
+///     * [FutureKind]
 ///     * [JsonKind]
+///     * [Kind.kind]
 ///     * [NullableKind]
 ///     * [OneOfKind]
+///     * [StreamKind]
 ///     * [UuidKind]
+///     * [UnitOfMeasure.kind]
+///     * [VoidKind]
 ///   * Custom entities
 ///     * [EntityKind]
 ///
 abstract class Kind<T> extends Entity {
-  /// Kind for Kind.
-  static final Kind<Kind> kind = OneOfKind<Kind>(entries: [
-    OneOfKindEntry(
-      id: 1,
-      name: 'BoolKind',
-      // ignore: invalid_use_of_protected_member
-      kind: BoolKind.kind,
-    ),
-    OneOfKindEntry(
-      id: 2,
-      name: 'Int32Kind',
-      // ignore: invalid_use_of_protected_member
-      kind: Int32Kind.kind,
-    ),
-    OneOfKindEntry(
-      id: 3,
-      name: 'Int64Kind',
-      // ignore: invalid_use_of_protected_member
-      kind: Int64Kind.kind,
-    ),
-    OneOfKindEntry(
-      id: 4,
-      name: 'Int64FixNumKind',
-      // ignore: invalid_use_of_protected_member
-      kind: Int64FixNumKind.kind,
-    ),
-    OneOfKindEntry(
-      id: 5,
-      name: 'Uint32Kind',
-      // ignore: invalid_use_of_protected_member
-      kind: Uint32Kind.kind,
-    ),
-    OneOfKindEntry(
-      id: 6,
-      name: 'Uint64FixNumKind',
-      // ignore: invalid_use_of_protected_member
-      kind: Uint64Kind.kind,
-    ),
-    OneOfKindEntry(
-      id: 7,
-      name: 'DateKind',
-      // ignore: invalid_use_of_protected_member
-      kind: DateKind.kind,
-    ),
-    OneOfKindEntry(
-      id: 8,
-      name: 'DateTimeKind',
-      // ignore: invalid_use_of_protected_member
-      kind: DateTimeKind.kind,
-    ),
-    OneOfKindEntry(
-      id: 9,
-      name: 'DateTimeWithTimeZoneKind',
-      kind: DateTimeWithTimeZoneKind.kind,
-    ),
-    OneOfKindEntry(
-      id: 10,
-      name: 'Uuid',
-      // ignore: invalid_use_of_protected_member
-      kind: UuidKind.kind,
-    ),
-    OneOfKindEntry(
-      id: 11,
-      name: 'StringKind',
-      // ignore: invalid_use_of_protected_member
-      kind: StringKind.kind,
-    ),
-    OneOfKindEntry(
-      id: 12,
-      name: 'BytesKind',
-      // ignore: invalid_use_of_protected_member
-      kind: BytesKind.kind,
-    ),
-    OneOfKindEntry(
-      id: 13,
-      name: 'ListKind',
-      // ignore: invalid_use_of_protected_member
-      kind: ListKind.kind,
-    ),
-    OneOfKindEntry(
-      id: 14,
-      name: 'SetKind',
-      // ignore: invalid_use_of_protected_member
-      kind: SetKind.kind,
-    ),
-    OneOfKindEntry(
-      id: 15,
-      name: 'EntityKind',
-      // ignore: invalid_use_of_protected_member
-      kind: EntityKind.kind,
-    ),
-  ]);
+  static final List<Kind<Kind>> _kinds = <Kind<Kind>>[
+    // ignore: invalid_use_of_protected_member
+    VoidKind.kind,
+    // ignore: invalid_use_of_protected_member
+    NullableKind.kind,
+    // ignore: invalid_use_of_protected_member
+    BoolKind.kind,
+    // ignore: invalid_use_of_protected_member
+    Int8Kind.kind,
+    // ignore: invalid_use_of_protected_member
+    Int16Kind.kind,
+    // ignore: invalid_use_of_protected_member
+    Int32Kind.kind,
+    // ignore: invalid_use_of_protected_member
+    Int64Kind.kind,
+    // ignore: invalid_use_of_protected_member
+    Uint8Kind.kind,
+    // ignore: invalid_use_of_protected_member
+    Uint16Kind.kind,
+    // ignore: invalid_use_of_protected_member
+    Uint32Kind.kind,
+    // ignore: invalid_use_of_protected_member
+    Uint64Kind.kind,
+    // ignore: invalid_use_of_protected_member
+    Int64FixNumKind.kind,
+    // ignore: invalid_use_of_protected_member
+    Float32Kind.kind,
+    // ignore: invalid_use_of_protected_member
+    Float64Kind.kind,
+    // ignore: invalid_use_of_protected_member
+    DecimalKind.kind,
+    // ignore: invalid_use_of_protected_member
+    DateKind.kind,
+    // ignore: invalid_use_of_protected_member
+    DateTimeKind.kind,
+    // ignore: invalid_use_of_protected_member
+    DateTimeWithTimeZoneKind.kind,
+    // ignore: invalid_use_of_protected_member
+    UuidKind.kind,
+    // ignore: invalid_use_of_protected_member
+    StringKind.kind,
+    // ignore: invalid_use_of_protected_member
+    BytesKind.kind,
+    // ignore: invalid_use_of_protected_member
+    DurationKind.kind,
+    // ignore: invalid_use_of_protected_member
+    GeoPointKind.kind,
+    // ignore: invalid_use_of_protected_member
+    ListKind.kind,
+    // ignore: invalid_use_of_protected_member
+    SetKind.kind,
+    // ignore: invalid_use_of_protected_member
+    MapKind.kind,
+    // ignore: invalid_use_of_protected_member
+    EnumKind.kind,
+    // ignore: invalid_use_of_protected_member
+    OneOfKind.kind,
+    // ignore: invalid_use_of_protected_member
+    ObjectKind.kind,
+    // ignore: invalid_use_of_protected_member
+    CurrencyAmountKind.kind,
+    // ignore: invalid_use_of_protected_member
+    FutureKind.kind,
+    // ignore: invalid_use_of_protected_member
+    StreamKind.kind,
+    // ignore: invalid_use_of_protected_member
+    EntityKind.kind,
+  ];
+
+  static final Kind<Kind> kind = OneOfKind<Kind>.fromKinds(_kinds);
 
   const Kind();
 
@@ -177,6 +165,8 @@ abstract class Kind<T> extends Entity {
   /// final examples = emailKind.examples(); // --> ['example@gmail.com']
   /// ```
   List<T> get declaredExamples => <T>[];
+
+  bool get isSerializable => true;
 
   /// Name of this kind for debugging purposes.
   ///
@@ -450,16 +440,46 @@ abstract class Kind<T> extends Entity {
   /// }
   /// ```
   List<T> newList(int length, {bool growable = false, bool reactive = true}) {
-    // Construct a new list.
-    final defaultInstance = newInstance();
-    final list = List<T>.filled(length, defaultInstance, growable: growable);
+    late List<T> list;
+    if (length < 0) {
+      throw ArgumentError.value(length, 'length');
+    } else if (length == 0) {
+      list = List<T>.empty(
+        growable: growable,
+      );
+      // Non-growable empty list can't be mutated,
+      // so it does not need to be reactive.
+      if (!growable) {
+        return list;
+      }
+    } else {
+      // Construct default instance.
+      late T defaultInstance;
+      try {
+        defaultInstance = newInstance();
+      } catch (error, stackTrace) {
+        throw TraceableError(
+          message:
+              'Constructing `List<$name>` (length $length) failed because filler instance could not be constructed.',
+          error: error,
+          stackTrace: stackTrace,
+        );
+      }
+      list = List<T>.filled(
+        length,
+        defaultInstance,
+        growable: growable,
+      );
 
-    // The defaultInstance could be mutable, so we need to construct a new
-    // instance for every index.
-    //
-    // In PrimitiveKind we override this method to avoid this.
-    for (var i = 0; i < length; i++) {
-      list[i] = newInstance();
+      // The defaultInstance could be mutable, so we need to construct a new
+      // instance for every index.
+      //
+      // We can retain the item at index 0.
+      //
+      // In PrimitiveKind we override this method to avoid this.
+      for (var i = 1; i < length; i++) {
+        list[i] = newInstance();
+      }
     }
 
     // Wrap with ReactiveList?
@@ -513,7 +533,7 @@ abstract class Kind<T> extends Entity {
     for (var i = 0; i < length; i++) {
       list[i] = oldList[i];
     }
-    if (reactive) {
+    if (reactive && (length != 0 || growable)) {
       return ReactiveList<T>.wrap(list);
     }
     return list;
@@ -551,7 +571,7 @@ abstract class Kind<T> extends Entity {
       function,
       growable: growable,
     );
-    if (reactive) {
+    if (reactive && (length != 0 || growable)) {
       return ReactiveList<T>.wrap(list);
     }
     return list;
@@ -622,7 +642,7 @@ abstract class Kind<T> extends Entity {
   /// SomeEntity.kind.protobufTreeEncode(instanceOfSomeEntity);
   /// // --> GeneratedMessage (package:protobuf)
   /// ```
-  Object? protobufTreeEncode(
+  Object protobufTreeEncode(
     T instance, {
     ProtobufEncodingContext? context,
   });

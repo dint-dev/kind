@@ -31,7 +31,7 @@ class SetKind<T> extends Kind<Set<T>> {
   @protected
   static final EntityKind<SetKind> kind = EntityKind<SetKind>(
     name: 'SetKind',
-    build: (c) {
+    define: (c) {
       final itemsKind = c.required(
         id: 1,
         name: 'itemsKind',
@@ -177,7 +177,7 @@ class SetKind<T> extends Kind<Set<T>> {
   }
 
   @override
-  Object? protobufTreeEncode(Set<T> value, {ProtobufEncodingContext? context}) {
+  Object protobufTreeEncode(Set<T> value, {ProtobufEncodingContext? context}) {
     final newContext = context ?? ProtobufEncodingContext();
     newContext.enter(value);
     try {

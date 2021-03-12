@@ -15,7 +15,10 @@
 import 'package:kind/kind.dart';
 import 'package:meta/meta.dart';
 
-/// Like [DateTime], but supports any time zone.
+/// A [DateTime] that retains the original time zone.
+///
+/// Normal [DateTime] converts any value to either UTC or local time zone of the
+/// device. This class retains the original time zone.
 ///
 /// Year must be between 0000 and 9999.
 @sealed

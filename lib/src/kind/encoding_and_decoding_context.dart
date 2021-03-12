@@ -14,11 +14,8 @@
 
 import 'package:kind/kind.dart';
 
-/// Context object for [EntityKind.protobufBuilderInfo].
-class ProtobufBuilderInfoContext {}
-
-/// Protocol Buffers messages to Dart objects.
-class ProtobufDecodingContext with GraphNodeContext {
+/// Superclass of [JsonDecodingContext] and [ProtobufDecodingContext].
+abstract class DecodingContext with GraphNodeContext {
   /// Optional library of available kinds.
   final KindLibrary? kindLibrary;
 
@@ -28,56 +25,54 @@ class ProtobufDecodingContext with GraphNodeContext {
   /// you don't care about reactivity).
   final bool reactive;
 
-  /// Translates names of kinds and properties.
+  /// Translates names of kinds and properties. Default is null.
+  ///
+  /// If the value is null, the original names of kinds and properties will be
+  /// used.
   final Namer? namer;
 
-  ProtobufDecodingContext({
+  DecodingContext({
     this.kindLibrary,
     this.reactive = true,
     this.namer,
   });
 
-  @override
-  String get errorPrimaryLabel => 'Protocol Buffers deserialization error';
-
-  /// Decodes the argument.
-  ///
-  /// You must specify [kind] of the returned value.
-  T decode<T>(Object? value, {required Kind<T> kind}) {
-    return kind.protobufTreeDecode(value, context: this);
-  }
+  /// Deserializes an object using the given [Kind].
+  T decode<T>(Object? value, {required Kind<T> kind});
 
   /// Returns a new error.
   GraphNodeError newUnsupportedTypeError(Object? value) {
-    return newGraphNodeError(value: value, reason: 'Unsupported type');
+    return newGraphNodeError(
+      value: value,
+      reason: 'Unsupported type',
+    );
   }
 }
 
-/// Converts Dart objects to Protocol Buffers messages.
-class ProtobufEncodingContext with GraphNodeContext {
+/// Superclass of [JsonEncodingContext] and [ProtobufEncodingContext].
+abstract class EncodingContext with GraphNodeContext {
   /// Optional library of available kinds.
   final KindLibrary? kindLibrary;
 
-  /// Translates names of kinds and properties.
+  /// Translates names of kinds and properties. Default is null.
+  ///
+  /// If the value is null, the original names of kinds and properties will be
+  /// used.
   final Namer? namer;
 
-  ProtobufEncodingContext({
+  EncodingContext({
     this.kindLibrary,
     this.namer,
   });
 
-  @override
-  String get errorPrimaryLabel => 'Protocol Buffers serialization error';
-
-  /// Encodes the argument.
-  ///
-  /// You must specify [kind] of the argument.
-  Object? encode<T>(T value, {required Kind<T> kind}) {
-    return kind.protobufTreeEncode(value, context: this);
-  }
+  /// Serializes the object using the given [Kind].
+  Object? encode<T>(T object, {required Kind<T> kind});
 
   /// Returns a new error.
   GraphNodeError newUnsupportedTypeError(Object? value) {
-    return newGraphNodeError(value: value, reason: 'Unsupported type');
+    return newGraphNodeError(
+      value: value,
+      reason: 'Unsupported type',
+    );
   }
 }

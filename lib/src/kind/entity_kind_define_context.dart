@@ -12,24 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'package:collection/collection.dart';
 import 'package:kind/kind.dart';
 import 'package:protobuf/protobuf.dart' show BuilderInfo;
 
-/// Context for building [EntityKind].
-class EntityKindDeclarationContext<T extends Object>
+/// A mutable context for defining properties, constructor, and other
+/// information for [EntityKind].
+class EntityKindDefineContext<T extends Object>
     with PropDeclarationHelperMixin<T> {
-  /// List of properties.
-  final List<Prop<Object, Object?>> propList = [];
+  /// Unmodifiable list of properties.
+  ///
+  /// You can add properties with [addProp].
+  late final List<Prop<Object, Object?>>  propList = UnmodifiableListView<Prop<Object,Object?>>(_modifiablePropList);
+  final List<Prop<Object, Object?>> _modifiablePropList = [];
 
-  /// Column IDs subclasses should not use.
+  /// Column IDs that subclasses should not use.
   final Set<int> reservedColumnIds = <int>{};
 
-  /// Constructor.
+  /// Optional constructor function.
   ///
   /// Either [constructor] or [constructorFromData] must be non-null.
   T Function()? constructor;
 
-  /// Constructor from data.
+  /// Optional constructor function that receives data as argument.
   ///
   /// Either [constructor] or [constructorFromData] must be non-null.
   T Function(EntityData data)? constructorFromData;
@@ -37,13 +42,13 @@ class EntityKindDeclarationContext<T extends Object>
   /// Protocol Buffers [BuilderInfo].
   BuilderInfo? protobufBuilderInfo;
 
-  /// A function that generates a random example.
+  /// Optional function that generates a random example.
   T Function(RandomExampleContext? context)? generateRandomExample;
 
-  /// Declared, static examples.
-  final List<T> declaredExamples = [];
+  /// Optional examples of valid instances.
+  List<T>? examples;
 
-  /// Primary key properties.
+  /// Primary key properties for relational database systems.
   List<String>? primaryKeyProps;
 
   @override
@@ -60,6 +65,6 @@ class EntityKindDeclarationContext<T extends Object>
         );
       }
     }
-    propList.add(prop);
+    _modifiablePropList.add(prop);
   }
 }

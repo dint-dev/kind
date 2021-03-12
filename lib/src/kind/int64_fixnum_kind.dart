@@ -69,8 +69,8 @@ class Int64FixNumKind extends NumericKind<Int64> {
   /// The purpose of annotation `@protected` is reducing accidental use.
   @protected
   static final EntityKind<Int64FixNumKind> kind = EntityKind<Int64FixNumKind>(
-    name: 'Int64FixNumKind',
-    build: (c) {
+    name: '${PrimitiveKind.namePrefixForNonClasses}Int64FixNumKind',
+    define: (c) {
       final minProp = c.optionalInt64FixNum(
         id: 1,
         name: 'min',
@@ -100,12 +100,6 @@ class Int64FixNumKind extends NumericKind<Int64> {
     },
   );
 
-  @override
-  final Int64? min;
-
-  @override
-  final Int64? max;
-
   /// Whether to use unsigned values in Protocol Buffers.
   ///
   /// Note that negative values are allowed even when [unsigned] is `true`.
@@ -118,11 +112,16 @@ class Int64FixNumKind extends NumericKind<Int64> {
   /// See [Int64FixNumKind] class documentation.
   @literal
   const Int64FixNumKind({
+    UnitOfMeasurement? unitOfMeasurement,
     Int64? min,
-    this.max,
+    Int64? max,
     this.unsigned = false,
     this.fixed = false,
-  }) : min = min ?? (unsigned ? Int64.ZERO : null);
+  }) : super(
+          unitOfMeasurement: unitOfMeasurement,
+          min: min ?? (unsigned ? Int64.ZERO : null),
+          max: max,
+        );
 
   @override
   int get hashCode =>
@@ -216,7 +215,7 @@ class Int64FixNumKind extends NumericKind<Int64> {
   }
 
   @override
-  Object? protobufTreeEncode(Int64 value, {ProtobufEncodingContext? context}) {
+  Int64 protobufTreeEncode(Int64 value, {ProtobufEncodingContext? context}) {
     return value;
   }
 

@@ -42,7 +42,7 @@ void main() {
 
     test('name', () {
       final kind = const BytesKind();
-      expect(kind.name, 'Bytes');
+      expect(kind.name, '${PrimitiveKind.namePrefixForNonClasses}Bytes');
     });
 
     test('== / hashCode', () {

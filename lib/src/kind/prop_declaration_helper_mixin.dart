@@ -863,10 +863,26 @@ mixin PropDeclarationHelperMixin<T extends Object> {
   ///
   /// ## Example
   /// ```
-  /// declare.optional<Something>(
+  /// declare.requiredEnum<String>(
   ///   id: 1,
-  ///   name: 'x',
-  ///   kind: Something.kind,
+  ///   name: 'gender',
+  ///   entries: [
+  ///     RequiredEnumEntry(
+  ///       id: 1,
+  ///       name: 'female',
+  ///       value: 'female',
+  ///     ),
+  ///     RequiredEnumEntry(
+  ///       id: 2,
+  ///       name: 'male',
+  ///       value: 'male',
+  ///     ),
+  ///     RequiredEnumEntry(
+  ///       id: 3,
+  ///       name: 'notAcknowledged',
+  ///       value: 'notAcknowledged',
+  ///     ),
+  ///   ],
   /// );
   /// ```
   Prop<T, V> requiredEnum<V>({
@@ -901,17 +917,24 @@ mixin PropDeclarationHelperMixin<T extends Object> {
     required int id,
     required String name,
     double? defaultValue,
+    bool specialValues = false,
     double? min,
     double? max,
+    UnitOfMeasurement? unitOfMeasurement,
     Field<double> Function(T t)? field,
     double Function(T t)? getter,
     void Function(T t, double value)? setter,
   }) {
     var kind = const Float32Kind();
-    if (min != null || max != null) {
+    if (specialValues ||
+        min != null ||
+        max != null ||
+        unitOfMeasurement != null) {
       kind = Float32Kind(
+        specialValues: specialValues,
         min: min,
         max: max,
+        unitOfMeasurement: unitOfMeasurement,
       );
     }
     final prop = Prop<T, double>(
@@ -940,17 +963,24 @@ mixin PropDeclarationHelperMixin<T extends Object> {
     required int id,
     required String name,
     double? defaultValue,
+    bool specialValues = false,
     double? min,
     double? max,
+    UnitOfMeasurement? unitOfMeasurement,
     Field<double> Function(T t)? field,
     double Function(T t)? getter,
     void Function(T t, double value)? setter,
   }) {
     var kind = const Float64Kind();
-    if (min != null || max != null) {
+    if (specialValues ||
+        min != null ||
+        max != null ||
+        unitOfMeasurement != null) {
       kind = Float64Kind(
+        specialValues: specialValues,
         min: min,
         max: max,
+        unitOfMeasurement: unitOfMeasurement,
       );
     }
     final prop = Prop<T, double>(
@@ -1283,7 +1313,7 @@ mixin PropDeclarationHelperMixin<T extends Object> {
       kind = StringKind(
         minLengthInUtf8: minLengthInUtf8,
         maxLengthInUtf8: maxLengthInUtf8,
-        singleLine: singleLine,
+        isSingleLine: singleLine,
         regExpProvider: regExpProvider,
         examples: examples,
       );

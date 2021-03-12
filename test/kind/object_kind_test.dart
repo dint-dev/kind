@@ -23,6 +23,7 @@ void main() {
     });
 
     test('ObjectKind.kind', () {
+      // ignore: invalid_use_of_protected_member
       final kind = ObjectKind.kind;
       expect(kind.name, 'ObjectKind');
       expect(kind.jsonTreeEncode(ObjectKind()), {});
@@ -74,7 +75,7 @@ final _kindLibrary = KindLibrary([_Example.kind]);
 class _Example {
   static final EntityKind kind = EntityKind<_Example>(
     name: 'example',
-    build: (c) {
+    define: (c) {
       c.constructor = () => _Example();
     },
   );

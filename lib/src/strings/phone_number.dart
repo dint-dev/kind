@@ -54,7 +54,7 @@ import 'package:meta/meta.dart';
 @experimental
 const StringKind stringKindForPhoneNumber = StringKind(
   name: 'phoneNumber',
-  singleLine: true,
+  isSingleLine: true,
   minLengthInUtf8: 3,
   maxLengthInUtf8: 40,
   regExpProvider: _telephoneRegExpProvider,

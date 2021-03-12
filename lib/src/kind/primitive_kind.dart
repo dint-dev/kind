@@ -14,19 +14,35 @@
 
 import 'package:kind/kind.dart';
 
-/// Superclass for [IntKindBase], [Int64FixNumKind], and [FloatKindBase].
+/// Superclass for [IntKindBase], [Int64FixNumKind], [FloatKindBase], and
+/// [DecimalKind].
 abstract class NumericKind<T> extends PrimitiveKind<T> {
-  const NumericKind();
+  /// Unit of measurement (for visualization purposes).
+  final UnitOfMeasurement? unitOfMeasurement;
 
-  /// Maximum valid value (inclusive).
-  T? get max;
+  /// Maximum valid value.
+  ///
+  /// If this is a non-integer kind, the set of valid values MAY exclude
+  /// the maximum value.
+  final T? max;
 
-  /// Minimum valid value (inclusive).
-  T? get min;
+  /// Minimum valid value.
+  ///
+  /// If this is a non-integer kind, the set of valid values MAY exclude
+  /// the minimum value.
+  final T? min;
+
+  const NumericKind({
+    required this.unitOfMeasurement,
+    required this.min,
+    required this.max,
+  });
 }
 
 /// Superclass for kinds of primitives values such as [int] and [String].
 abstract class PrimitiveKind<T> extends Kind<T> {
+  static const String namePrefixForNonClasses = '@';
+
   const PrimitiveKind();
 
   @override

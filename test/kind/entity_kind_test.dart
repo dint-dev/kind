@@ -20,7 +20,7 @@ void main() {
     test('name', () {
       final kind = EntityKind(
         name: 'x',
-        build: (c) {},
+        define: (c) {},
       );
       expect(kind.name, 'x');
     });
@@ -32,7 +32,7 @@ void main() {
 
       final entityKind = EntityKind(
         name: 'Example',
-        build: (c) {
+        define: (c) {
           c.requiredString(
             id: 1,
             name: 'x',
@@ -60,7 +60,7 @@ void main() {
         kind.jsonTreeDecode(json),
         EntityKind<EntityData>(
           name: 'Example',
-          build: (c) {
+          define: (c) {
             c.requiredString(
               id: 1,
               name: 'x',
@@ -76,7 +76,7 @@ void main() {
     test('== / hashCode', () {
       final object = EntityKind<_Person>(
         name: 'Example',
-        build: (c) {
+        define: (c) {
           c.optionalString(
             id: 1,
             name: 'prop1',
@@ -87,7 +87,7 @@ void main() {
       );
       final clone = EntityKind<_Person>(
         name: 'Example',
-        build: (c) {
+        define: (c) {
           c.optionalString(
             id: 1,
             name: 'prop1',
@@ -98,7 +98,7 @@ void main() {
       );
       final other0 = EntityKind<_Person>(
         name: 'OTHER',
-        build: (c) {
+        define: (c) {
           c.optionalString(
             id: 1,
             name: 'prop1',
@@ -109,7 +109,7 @@ void main() {
       );
       final other1 = EntityKind<_Person>(
         name: 'Example',
-        build: (c) {
+        define: (c) {
           c.optionalString(
             id: 1,
             name: 'OTHER',
@@ -132,7 +132,7 @@ void main() {
       var getterCallCounter = 0;
       final kind = EntityKind<_Person>(
         name: 'Kind for instanceIsDefault test',
-        build: (c) {
+        define: (c) {
           c.optionalString(
             id: 1,
             name: 'name',
@@ -163,7 +163,7 @@ void main() {
       var getterCallCounter = 0;
       final kind = EntityKind<_Person>(
         name: 'Kind for instanceIsValid test',
-        build: (c) {
+        define: (c) {
           c.optionalString(
             id: 1,
             name: 'name',
@@ -249,7 +249,7 @@ void main() {
 class _Customer {
   static final EntityKind<_Customer> kind = EntityKind<_Customer>(
     name: 'Customer',
-    build: (c) {
+    define: (c) {
       c.optionalString(
         id: 1,
         name: 'name',
@@ -266,7 +266,7 @@ class _Person extends _Customer {
   static final EntityKind<_Person> kind = EntityKind<_Person>(
     name: 'Person',
     extendsClause: EntityKindExtendsClause(kind: _Customer.kind),
-    build: (c) {
+    define: (c) {
       c.optionalDate(
         id: 2,
         name: 'birthDate',

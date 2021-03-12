@@ -44,7 +44,7 @@ import 'package:kind/kind.dart';
 class PropMeaning {
   static final EntityKind<PropMeaning> kind_ = EntityKind<PropMeaning>(
     name: 'PropMeaning',
-    build: (c) {
+    define: (c) {
       final schemaUrl = c.requiredString(
         id: 1,
         name: 'schemaUrl',

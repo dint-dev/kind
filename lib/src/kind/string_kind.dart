@@ -23,7 +23,7 @@ import 'package:protobuf/protobuf.dart' as protobuf;
 ///
 /// ## Possible constraints
 ///   * Length of the string ([minLengthInUtf8], [maxLengthInUtf8])
-///   * Disallow newlines ([singleLine])
+///   * Disallow newlines ([isSingleLine])
 ///   * Regular expression ([regExp])
 ///
 /// ## Example
@@ -66,7 +66,7 @@ class StringKind extends PrimitiveKind<String> implements Entity {
   @protected
   static final EntityKind<StringKind> kind = EntityKind<StringKind>(
     name: 'StringKind',
-    build: (c) {
+    define: (c) {
       final minLengthInUtf8Prop = c.requiredUint64(
         id: 1,
         name: 'minLengthInUtf8',
@@ -80,7 +80,7 @@ class StringKind extends PrimitiveKind<String> implements Entity {
       final singleLineProp = c.requiredBool(
         id: 3,
         name: 'singleLine',
-        getter: (t) => t.singleLine,
+        getter: (t) => t.isSingleLine,
       );
       final patternProp = c.optionalString(
         id: 4,
@@ -92,7 +92,7 @@ class StringKind extends PrimitiveKind<String> implements Entity {
         return StringKind(
           minLengthInUtf8: data.get(minLengthInUtf8Prop),
           maxLengthInUtf8: data.get(maxLengthInUtf8Prop),
-          singleLine: data.get(singleLineProp),
+          isSingleLine: data.get(singleLineProp),
           regExpProvider: pattern == null ? null : () => RegExp(pattern),
         );
       };
@@ -117,7 +117,7 @@ class StringKind extends PrimitiveKind<String> implements Entity {
   final int? maxLengthInUtf8;
 
   /// Whether this is a single-line value.
-  final bool singleLine;
+  final bool isSingleLine;
 
   /// Provider of regular expression.
   final RegExp Function()? _regExpProvider;
@@ -142,7 +142,7 @@ class StringKind extends PrimitiveKind<String> implements Entity {
     this.name = 'String',
     this.minLengthInUtf8 = 0,
     this.maxLengthInUtf8,
-    this.singleLine = false,
+    this.isSingleLine = false,
     RegExp Function()? regExpProvider,
     List<String> examples = const [],
     this.normalizer,
@@ -161,7 +161,7 @@ class StringKind extends PrimitiveKind<String> implements Entity {
     return (StringKind).hashCode ^
         minLengthInUtf8.hashCode ^
         maxLengthInUtf8.hashCode ^
-        singleLine.hashCode;
+        isSingleLine.hashCode;
   }
 
   @override
@@ -184,7 +184,7 @@ class StringKind extends PrimitiveKind<String> implements Entity {
         name == other.name &&
         minLengthInUtf8 == other.minLengthInUtf8 &&
         maxLengthInUtf8 == other.maxLengthInUtf8 &&
-        singleLine == other.singleLine &&
+        isSingleLine == other.isSingleLine &&
         _regExpProvider == other._regExpProvider &&
         const ListEquality<String>()
             .equals(declaredExamples, other.declaredExamples);
@@ -199,12 +199,12 @@ class StringKind extends PrimitiveKind<String> implements Entity {
       context.validateLength(
         value: value,
         label: 'length (in UTF-8)',
-        length: utf8.encode(value).length,
+        length: _stringLengthInUtf8(value),
         minLength: minLengthInUtf8,
         maxLength: maxLengthInUtf8,
       );
     }
-    if (singleLine && value.contains('\n')) {
+    if (isSingleLine && value.contains('\n')) {
       context.invalid(
         value: value,
         message: 'Strings with multiple lines are not allowed.',
@@ -288,7 +288,7 @@ class StringKind extends PrimitiveKind<String> implements Entity {
   @override
   String toString() {
     final arguments = <String>[];
-    if (singleLine) {
+    if (isSingleLine) {
       arguments.add('singleLine: true');
     }
     if (minLengthInUtf8 != 0) {
@@ -314,7 +314,7 @@ class StringKind extends PrimitiveKind<String> implements Entity {
     return StringKind(
       minLengthInUtf8: minLengthInUtf8,
       maxLengthInUtf8: n,
-      singleLine: singleLine,
+      isSingleLine: isSingleLine,
       regExpProvider: _regExpProvider,
       normalizer: normalizer,
       examples: _examples,
@@ -330,11 +330,27 @@ class StringKind extends PrimitiveKind<String> implements Entity {
     return StringKind(
       minLengthInUtf8: n,
       maxLengthInUtf8: maxLengthInUtf8,
-      singleLine: singleLine,
+      isSingleLine: isSingleLine,
       regExpProvider: _regExpProvider,
       normalizer: normalizer,
       examples: _examples,
       randomExample: _randomExampleGenerator,
     );
+  }
+
+  static int _stringLengthInUtf8(String value) {
+    // Optimize the common case of empty string.
+    if (value.isEmpty) {
+      return 0;
+    }
+
+    // Optimize the common case of only simple latin characters.
+    if (value.codeUnits.every((e) => e < 128)) {
+      return value.length;
+    }
+
+    // Otherwise we encode the string in UTF-8.
+    // TODO: Avoid encoding
+    return utf8.encode(value).length;
   }
 }

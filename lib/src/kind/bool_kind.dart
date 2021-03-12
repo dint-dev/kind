@@ -25,7 +25,7 @@ class BoolKind extends PrimitiveKind<bool> {
   @protected
   static final EntityKind<BoolKind> kind = EntityKind<BoolKind>(
     name: 'BoolKind',
-    build: (c) {
+    define: (c) {
       c.constructor = () => const BoolKind();
     },
   );
@@ -89,8 +89,7 @@ class BoolKind extends PrimitiveKind<bool> {
   }
 
   @override
-  Object? protobufTreeEncode(bool instance,
-      {ProtobufEncodingContext? context}) {
+  bool protobufTreeEncode(bool instance, {ProtobufEncodingContext? context}) {
     return instance;
   }
 

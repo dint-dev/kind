@@ -14,47 +14,8 @@
 
 import 'dart:math';
 
+import 'package:kind/kind.dart';
 import 'package:meta/meta.dart';
-
-/// Distance unit.
-///
-/// ## Available units
-///   * [DistanceUnit.meters]
-///   * [DistanceUnit.kilometers]
-///   * [DistanceUnit.feet]
-///   * [DistanceUnit.miles]
-@sealed
-class DistanceUnit {
-  /// Meters.
-  static const meters = DistanceUnit._('meters', 1.0);
-
-  /// Kilometers.
-  static const kilometers = DistanceUnit._('kilometers', 1000.0);
-
-  /// Miles (unit used in the U.S.).
-  static const miles = DistanceUnit._('miles', 1609.344);
-
-  /// Feet (unit used in the U.S.).
-  static const feet = DistanceUnit._('feet', 0.3048);
-
-  final String name;
-
-  final double inMeters;
-
-  @literal
-  const DistanceUnit._(this.name, this.inMeters);
-
-  double fromMeters(double value) {
-    return value * (1 / inMeters);
-  }
-
-  double toMeters(double value) {
-    return value * inMeters;
-  }
-
-  @override
-  String toString() => 'DistanceUnit.$name';
-}
 
 /// A geographic point on Earth.
 ///
@@ -68,6 +29,7 @@ class DistanceUnit {
 /// final sanFrancisco = GeoPoint(37.7749, -122.4194);
 /// final london = GeoPoint(51.5074, -0.1278);
 /// final distance = sanFrancisco.distanceTo(london);
+/// final distanceInMiles = sanFrancisco.distanceTo(london, unitOfLength: UnitOfLength.miles);
 /// ```
 @sealed
 class GeoPoint implements Comparable<GeoPoint> {
@@ -121,15 +83,16 @@ class GeoPoint implements Comparable<GeoPoint> {
   /// final london = GeoPoint(51.5074, -0.1278);
   ///
   /// // Meters
-  /// final distanceInMeters = london.distanceTo(sanFrancisco);
+  /// final distance = london.distanceTo(sanFrancisco);
   ///
-  /// // American miles
+  /// // Miles
   /// final distanceInMiles = london.distanceTo(
   ///   sanFrancisco,
-  ///   unit: DistanceUnit.miles,
+  ///   unitOfLength: UnitOfLength.miles,
   /// );
   /// ```
-  double distanceTo(GeoPoint other, {DistanceUnit unit = DistanceUnit.meters}) {
+  double distanceTo(GeoPoint other,
+      {UnitOfLength unitOfLength = UnitOfLength.meters}) {
     final lat0 = _toRadians(latitude);
     final lon0 = _toRadians(longitude);
     final lat1 = _toRadians(other.latitude);
@@ -140,7 +103,7 @@ class GeoPoint implements Comparable<GeoPoint> {
         cos(lat0) * cos(lat1) * pow(sin(dlon / 2), 2.0);
     final c = 2 * atan2(sqrt(a), sqrt(1 - a));
     const _radius = 6378137.0;
-    return unit.fromMeters(c * _radius);
+    return UnitOfLength.meters.convertDouble(c * _radius, to: unitOfLength);
   }
 
   @override

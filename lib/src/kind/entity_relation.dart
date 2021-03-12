@@ -24,7 +24,7 @@ import 'package:kind/kind.dart';
 class EntityRelation extends Entity {
   static final EntityKind<EntityRelation> kind = EntityKind<EntityRelation>(
     name: 'EntityRelation',
-    build: (c) {
+    define: (c) {
       final localKey = c.requiredList<String>(
         id: 1,
         name: 'localPropNames',

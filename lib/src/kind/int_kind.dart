@@ -73,7 +73,7 @@ class Int16Kind extends IntKindBase {
   @protected
   static final EntityKind<Int16Kind> kind = EntityKind<Int16Kind>(
     name: 'Int16Kind',
-    build: (c) {
+    define: (c) {
       final min = c.optionalInt32(
         id: 1,
         name: 'min',
@@ -93,9 +93,11 @@ class Int16Kind extends IntKindBase {
 
   @literal
   const Int16Kind({
+    UnitOfMeasurement? unitOfMeasurement,
     int? min,
     int? max,
   }) : super(
+          unitOfMeasurement: unitOfMeasurement,
           min: min,
           max: max,
         );
@@ -107,7 +109,7 @@ class Int16Kind extends IntKindBase {
   int get hashCode => (Int16Kind).hashCode ^ super.hashCode;
 
   @override
-  String get name => 'Int16';
+  String get name => '${PrimitiveKind.namePrefixForNonClasses}Int16';
 
   @override
   int get protobufFieldType {
@@ -144,7 +146,7 @@ class Int16Kind extends IntKindBase {
       );
     }
     final list = Int16List(length);
-    if (reactive) {
+    if (reactive && length != 0) {
       return ReactiveList<int>.wrap(list);
     }
     return list;
@@ -201,7 +203,7 @@ class Int32Kind extends IntKindBase {
   @protected
   static final EntityKind<Int32Kind> kind = EntityKind<Int32Kind>(
     name: 'Int32Kind',
-    build: (c) {
+    define: (c) {
       final min = c.optionalInt32(
         id: 1,
         name: 'min',
@@ -221,9 +223,11 @@ class Int32Kind extends IntKindBase {
 
   @literal
   const Int32Kind({
+    UnitOfMeasurement? unitOfMeasurement,
     int? min,
     int? max,
   }) : super(
+          unitOfMeasurement: unitOfMeasurement,
           min: min,
           max: max,
         );
@@ -235,7 +239,7 @@ class Int32Kind extends IntKindBase {
   int get hashCode => (Int32Kind).hashCode ^ super.hashCode;
 
   @override
-  String get name => 'Int32';
+  String get name => '${PrimitiveKind.namePrefixForNonClasses}Int32';
 
   @override
   int get protobufFieldType {
@@ -272,7 +276,7 @@ class Int32Kind extends IntKindBase {
       );
     }
     final list = Int32List(length);
-    if (reactive) {
+    if (reactive && length != 0) {
       return ReactiveList<int>.wrap(list);
     }
     return list;
@@ -334,7 +338,7 @@ class Int64Kind extends IntKindBase {
   @protected
   static final EntityKind<Int64Kind> kind = EntityKind<Int64Kind>(
     name: 'Int64Kind',
-    build: (c) {
+    define: (c) {
       final min = c.optionalInt64(
         id: 1,
         name: 'min',
@@ -364,10 +368,12 @@ class Int64Kind extends IntKindBase {
 
   @literal
   const Int64Kind({
+    UnitOfMeasurement? unitOfMeasurement,
     int? min,
     int? max,
     this.safeInJs = false,
   }) : super(
+          unitOfMeasurement: unitOfMeasurement,
           min: min,
           max: max,
         );
@@ -379,7 +385,7 @@ class Int64Kind extends IntKindBase {
   int get hashCode => (Int64Kind).hashCode ^ super.hashCode;
 
   @override
-  String get name => 'Int64';
+  String get name => '${PrimitiveKind.namePrefixForNonClasses}Int64';
 
   @override
   int get protobufFieldType {
@@ -418,7 +424,7 @@ class Int64Kind extends IntKindBase {
     // Use platform-dependent constructor.
     // (Javascript doesn't support Uint64List)
     final list = newInt64List(length);
-    if (reactive) {
+    if (reactive && length != 0) {
       return ReactiveList<int>.wrap(list);
     }
     return list;
@@ -475,7 +481,7 @@ class Int8Kind extends IntKindBase {
   @protected
   static final EntityKind<Int8Kind> kind = EntityKind<Int8Kind>(
     name: 'Int8Kind',
-    build: (c) {
+    define: (c) {
       final min = c.optionalInt32(
         id: 1,
         name: 'min',
@@ -495,9 +501,11 @@ class Int8Kind extends IntKindBase {
 
   @literal
   const Int8Kind({
+    UnitOfMeasurement? unitOfMeasurement,
     int? min,
     int? max,
   }) : super(
+          unitOfMeasurement: unitOfMeasurement,
           min: min,
           max: max,
         );
@@ -509,7 +517,7 @@ class Int8Kind extends IntKindBase {
   int get hashCode => (Int8Kind).hashCode ^ super.hashCode;
 
   @override
-  String get name => 'Int8';
+  String get name => '${PrimitiveKind.namePrefixForNonClasses}Int8';
 
   @override
   int get protobufFieldType {
@@ -546,7 +554,7 @@ class Int8Kind extends IntKindBase {
       );
     }
     final list = Int8List(length);
-    if (reactive) {
+    if (reactive && length != 0) {
       return ReactiveList<int>.wrap(list);
     }
     return list;
@@ -587,14 +595,16 @@ class Int8Kind extends IntKindBase {
 ///   * Cross-platform 64-bit integers
 ///     * [Int64FixNumKind]
 abstract class IntKindBase extends NumericKind<int> {
-  @override
-  final int? min;
-
-  @override
-  final int? max;
-
   @literal
-  const IntKindBase({this.min, this.max});
+  const IntKindBase({
+    required UnitOfMeasurement? unitOfMeasurement,
+    required int? min,
+    required int? max,
+  }) : super(
+          unitOfMeasurement: unitOfMeasurement,
+          min: min,
+          max: max,
+        );
 
   @mustCallSuper
   @override
@@ -657,7 +667,7 @@ abstract class IntKindBase extends NumericKind<int> {
   }
 
   @override
-  Object? protobufTreeEncode(int instance, {ProtobufEncodingContext? context}) {
+  int protobufTreeEncode(int instance, {ProtobufEncodingContext? context}) {
     return instance;
   }
 
@@ -739,7 +749,7 @@ class Uint16Kind extends IntKindBase {
   @protected
   static final EntityKind<Uint16Kind> kind = EntityKind<Uint16Kind>(
     name: 'Uint16Kind',
-    build: (c) {
+    define: (c) {
       final min = c.optionalUint32(
         id: 1,
         name: 'min',
@@ -759,9 +769,11 @@ class Uint16Kind extends IntKindBase {
 
   @literal
   const Uint16Kind({
+    UnitOfMeasurement? unitOfMeasurement,
     int? min,
     int? max,
   }) : super(
+          unitOfMeasurement: unitOfMeasurement,
           min: min,
           max: max,
         );
@@ -773,7 +785,7 @@ class Uint16Kind extends IntKindBase {
   int get hashCode => (Uint16Kind).hashCode ^ super.hashCode;
 
   @override
-  String get name => 'Uint16';
+  String get name => '${PrimitiveKind.namePrefixForNonClasses}Uint16';
 
   @override
   int get protobufFieldType {
@@ -810,7 +822,7 @@ class Uint16Kind extends IntKindBase {
       );
     }
     final list = Uint16List(length);
-    if (reactive) {
+    if (reactive && length != 0) {
       return ReactiveList<int>.wrap(list);
     }
     return list;
@@ -864,7 +876,7 @@ class Uint32Kind extends IntKindBase {
   @protected
   static final EntityKind<Uint32Kind> kind = EntityKind<Uint32Kind>(
     name: 'Uint32Kind',
-    build: (c) {
+    define: (c) {
       final min = c.optionalUint32(
         id: 1,
         name: 'min',
@@ -884,9 +896,11 @@ class Uint32Kind extends IntKindBase {
 
   @literal
   const Uint32Kind({
+    UnitOfMeasurement? unitOfMeasurement,
     int? min,
     int? max,
   }) : super(
+          unitOfMeasurement: unitOfMeasurement,
           min: min,
           max: max,
         );
@@ -898,7 +912,7 @@ class Uint32Kind extends IntKindBase {
   int get hashCode => (Uint32Kind).hashCode ^ super.hashCode;
 
   @override
-  String get name => 'Uint32';
+  String get name => '${PrimitiveKind.namePrefixForNonClasses}Uint32';
 
   @override
   int get protobufFieldType {
@@ -935,7 +949,7 @@ class Uint32Kind extends IntKindBase {
       );
     }
     final list = Uint32List(length);
-    if (reactive) {
+    if (reactive && length != 0) {
       return ReactiveList<int>.wrap(list);
     }
     return list;
@@ -994,7 +1008,7 @@ class Uint64Kind extends IntKindBase {
   @protected
   static final EntityKind<Uint64Kind> kind = EntityKind<Uint64Kind>(
     name: 'Uint64Kind',
-    build: (c) {
+    define: (c) {
       final min = c.optionalUint64(
         id: 1,
         name: 'min',
@@ -1023,10 +1037,12 @@ class Uint64Kind extends IntKindBase {
 
   @literal
   const Uint64Kind({
+    UnitOfMeasurement? unitOfMeasurement,
     int? min,
     int? max,
     this.safeInJs = false,
   }) : super(
+          unitOfMeasurement: unitOfMeasurement,
           min: min,
           max: max,
         );
@@ -1038,7 +1054,7 @@ class Uint64Kind extends IntKindBase {
   int get hashCode => (Uint64Kind).hashCode ^ super.hashCode;
 
   @override
-  String get name => 'Uint64';
+  String get name => '${PrimitiveKind.namePrefixForNonClasses}Uint64';
 
   @override
   int get protobufFieldType {
@@ -1089,7 +1105,7 @@ class Uint64Kind extends IntKindBase {
     // Use platform-dependent constructor.
     // (Javascript doesn't support Uint64List)
     final list = newUint64List(length);
-    if (reactive) {
+    if (reactive && length != 0) {
       return ReactiveList<int>.wrap(list);
     }
     return list;
@@ -1143,7 +1159,7 @@ class Uint8Kind extends IntKindBase {
   @protected
   static final EntityKind<Uint8Kind> kind = EntityKind<Uint8Kind>(
     name: 'Uint8Kind',
-    build: (c) {
+    define: (c) {
       final min = c.optionalUint32(
         id: 1,
         name: 'min',
@@ -1163,9 +1179,11 @@ class Uint8Kind extends IntKindBase {
 
   @literal
   const Uint8Kind({
+    UnitOfMeasurement? unitOfMeasurement,
     int? min,
     int? max,
   }) : super(
+          unitOfMeasurement: unitOfMeasurement,
           min: min,
           max: max,
         );
@@ -1177,7 +1195,7 @@ class Uint8Kind extends IntKindBase {
   int get hashCode => (Uint16Kind).hashCode ^ super.hashCode;
 
   @override
-  String get name => 'Uint8';
+  String get name => '${PrimitiveKind.namePrefixForNonClasses}Uint8';
 
   @override
   int get protobufFieldType {
@@ -1214,7 +1232,7 @@ class Uint8Kind extends IntKindBase {
       );
     }
     final list = Uint8List(length);
-    if (reactive) {
+    if (reactive && length != 0) {
       return ReactiveList<int>.wrap(list);
     }
     return list;

@@ -17,11 +17,17 @@ import 'package:meta/meta.dart';
 
 /// [Kind] for nullable values (`T?`).
 ///
-/// ## Example
+/// You should create nullable kinds with [toNullable] method of [Kind].
+///
+/// ## Examples
 /// ```
 /// import 'package:kind/kind.dart';
 ///
-/// const Kind<String?> example = NullableKind(StringKind());
+/// // Use `toNullable()`:
+/// const Kind<String?> example0 = StringKind().toNullable();
+///
+/// // Which is the same as:
+/// const Kind<String?> example1 = NullableKind<String>(StringKind());
 /// ```
 ///
 /// ## Generating random values
@@ -29,12 +35,13 @@ import 'package:meta/meta.dart';
 /// [randomExampleList()].
 ///
 /// By default `null` values have probably of 1/3.
-/// This may be changed in future.
+/// This is an implementation detail that could be changed in future.
 @sealed
 class NullableKind<T> extends Kind<T?> {
+  @protected
   static final EntityKind<NullableKind> kind = EntityKind<NullableKind>(
     name: 'NullableKind',
-    build: (c) {
+    define: (c) {
       final wrappedKindProp = c.required<Kind>(
         id: 1,
         name: 'wrapped',
@@ -129,6 +136,33 @@ class NullableKind<T> extends Kind<T?> {
   T? newInstance() => null;
 
   @override
+  List<T?> newList(int length, {bool growable = false, bool reactive = true}) {
+    late List<T?> list;
+    if (length < 0) {
+      throw ArgumentError.value(length, 'length');
+    } else if (length == 0) {
+      list = List<T?>.empty(
+        growable: growable,
+      );
+      // Non-growable empty list can't be mutated,
+      // so it does not need to be reactive.
+      if (!growable) {
+        return list;
+      }
+    } else {
+      list = List<T?>.filled(
+        length,
+        null,
+        growable: growable,
+      );
+    }
+    if (reactive) {
+      return ReactiveList<T?>.wrap(list);
+    }
+    return list;
+  }
+
+  @override
   T? protobufTreeDecode(Object? value, {ProtobufDecodingContext? context}) {
     if (value == null) {
       return null;
@@ -138,9 +172,9 @@ class NullableKind<T> extends Kind<T?> {
   }
 
   @override
-  Object? protobufTreeEncode(T? value, {ProtobufEncodingContext? context}) {
+  Object protobufTreeEncode(T? value, {ProtobufEncodingContext? context}) {
     if (value == null) {
-      return null;
+      throw ArgumentError.value(value, 'value');
     }
     context ??= ProtobufEncodingContext();
     return context.encode<T>(value, kind: wrapped);

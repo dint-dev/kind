@@ -18,12 +18,34 @@ import 'package:meta/meta.dart';
 /// Superclass for kinds that delegate operations to another [Kind].
 ///
 /// Subclasses need to implement:
-///   * [compose]
+///   * [buildPrimitiveKind]
 ///   * [name]
-///   * [instanceFromComposed]
-///   * [instanceToComposed]
+///   * [instanceFromPrimitive]
+///   * [instanceToPrimitive]
 ///
-/// ## Example
+/// # Example: a simple case
+/// ```
+/// import 'package:kind/kind.dart';
+///
+/// // Weight.
+/// class Weight {
+///   static final Kind<Weight> kind = CompositePrimitiveKind.simple<Weight, double>(
+///     name: 'Weight',
+///     primitiveKind: const Float64Kind(min: 0.0),
+///     toPrimitive: (weight) => arg.inKilograms,
+///     fromPrimitive: (string) => Weight(string),
+///   );
+///
+///   // Weight in kilograms.
+///   final double inKilograms;
+///
+///   const Weight(this.inKilograms);
+///
+///   // ...
+/// }
+/// ```
+///
+/// ## Example: extending class
 /// ```
 /// import 'package:kind/kind.dart';
 ///
@@ -33,13 +55,16 @@ import 'package:meta/meta.dart';
 /// }
 ///
 /// class PhoneNumberKind extends CompositeKind<PhoneNumber, String> {
+///   final int maxLength;
+///   PhoneNumberKind({this.maxLength=64});
+///
 ///   @override
 ///   String get name => 'PhoneNumber';
 ///
 ///   @override
 ///   StringKind buildKind() {
 ///     return const StringKind(
-///       maxLength: 64,
+///       maxLength: maxLength,
 ///     );
 ///   }
 ///
@@ -57,26 +82,73 @@ import 'package:meta/meta.dart';
 abstract class CompositePrimitiveKind<T, E> extends PrimitiveKind<T> {
   PrimitiveKind<E>? _composedKind;
 
-  /// Returns [PrimitiveKind] that will be used for serialization and
-  /// persistence.
+  CompositePrimitiveKind();
+
+  /// A convenience mehtod for constructing simple kinds.
   ///
-  /// The value is constructed with [compose] when this field is first
-  /// used.
-  @nonVirtual
-  PrimitiveKind<E> get composedKind => _composedKind ??= compose();
+  /// # Example
+  /// ```
+  /// import 'package:kind/kind.dart';
+  ///
+  /// // Weight.
+  /// class Weight {
+  ///   static final Kind<Weight> kind = CompositePrimitiveKind.simple<Weight, double>(
+  ///     name: 'Weight',
+  ///     primitiveKind: const Float64Kind(min: 0.0),
+  ///     toPrimitive: (weight) => arg.inKilograms,
+  ///     fromPrimitive: (string) => Weight(string),
+  ///   );
+  ///
+  ///   // Weight in kilograms.
+  ///   final double inKilograms;
+  ///
+  ///   const Weight(this.inKilograms);
+  ///
+  ///   // ...
+  /// }
+  /// ```
+  factory CompositePrimitiveKind.simple({
+    required String name,
+    required PrimitiveKind<E> primitiveKind,
+    required T Function(E primitive) fromPrimitive,
+    required E Function(T instance) toPrimitive,
+  }) {
+    late _SimpleCompositePrimitiveKind<T, E> returnedKind;
+    returnedKind = _SimpleCompositePrimitiveKind<T, E>(
+      name: name,
+      primitiveKindArgument: primitiveKind,
+      toPrimitive: toPrimitive,
+      fromPrimitive: fromPrimitive,
+      kind: EntityKind<_SimpleCompositePrimitiveKind>(
+        name: '_${name}Kind',
+        define: (c) {
+          c.constructor = () => returnedKind;
+        },
+      ),
+    );
+    return returnedKind;
+  }
 
   /// Name of the kind (for debugging purposes).
   ///
   /// Subclasses also need to implement:
-  ///   * [compose]
-  ///   * [instanceFromComposed]
-  ///   * [instanceToComposed]
+  ///   * [buildPrimitiveKind]
+  ///   * [instanceFromPrimitive]
+  ///   * [instanceToPrimitive]
   @override
   String get name;
 
+  /// Returns [PrimitiveKind] that will be used for serialization and
+  /// persistence.
+  ///
+  /// The value is constructed with [buildPrimitiveKind] when this field is first
+  /// used.
+  @nonVirtual
+  PrimitiveKind<E> get primitiveKind => _composedKind ??= buildPrimitiveKind();
+
   @override
   int get protobufFieldType {
-    return composedKind.protobufFieldType;
+    return primitiveKind.protobufFieldType;
   }
 
   /// Builds [PrimitiveKind] that will be used for serialization and
@@ -84,44 +156,44 @@ abstract class CompositePrimitiveKind<T, E> extends PrimitiveKind<T> {
   ///
   /// Subclasses also need to implement:
   ///   * [name]
-  ///   * [instanceFromComposed]
-  ///   * [instanceToComposed]
+  ///   * [instanceFromPrimitive]
+  ///   * [instanceToPrimitive]
   @protected
-  PrimitiveKind<E> compose();
+  PrimitiveKind<E> buildPrimitiveKind();
 
   /// Maps an instance of this kind to an instance of the base type.
   ///
   /// Subclasses also need to implement:
-  ///   * [compose]
+  ///   * [buildPrimitiveKind]
   ///   * [name]
-  ///   * [instanceToComposed]
+  ///   * [instanceToPrimitive]
   @protected
-  T instanceFromComposed(E value);
+  T instanceFromPrimitive(E value);
 
-  /// Maps an instance of the [composedKind] to an instance of this kind.
+  /// Maps an instance of the [primitiveKind] to an instance of this kind.
   ///
   /// Subclasses also need to implement:
-  ///   * [compose]
+  ///   * [buildPrimitiveKind]
   ///   * [name]
-  ///   * [instanceFromComposed]
+  ///   * [instanceFromPrimitive]
   @protected
-  E instanceToComposed(T value);
+  E instanceToPrimitive(T value);
 
-  /// Calls [instanceToComposed] and validates the mapped value with
-  /// [composedKind].
+  /// Calls [instanceToPrimitive] and validates the mapped value with
+  /// [primitiveKind].
   ///
   /// Mapping may be expensive so you may want to override the default
   /// implementation.
   @override
   void instanceValidateConstraints(ValidateContext context, T value) {
-    composedKind.instanceValidateConstraints(
-        context, instanceToComposed(value));
+    primitiveKind.instanceValidateConstraints(
+        context, instanceToPrimitive(value));
     super.instanceValidateConstraints(context, value);
   }
 
   @override
   T jsonTreeDecode(Object? json, {JsonDecodingContext? context}) {
-    return instanceFromComposed(composedKind.jsonTreeDecode(
+    return instanceFromPrimitive(primitiveKind.jsonTreeDecode(
       json,
       context: context,
     ));
@@ -129,31 +201,66 @@ abstract class CompositePrimitiveKind<T, E> extends PrimitiveKind<T> {
 
   @override
   Object? jsonTreeEncode(T instance, {JsonEncodingContext? context}) {
-    return composedKind.jsonTreeEncode(
-      instanceToComposed(instance),
+    return primitiveKind.jsonTreeEncode(
+      instanceToPrimitive(instance),
       context: context,
     );
   }
 
   @override
   T newInstance() {
-    return instanceFromComposed(composedKind.newInstance());
+    return instanceFromPrimitive(primitiveKind.newInstance());
   }
 
   @override
   T protobufTreeDecode(Object? protobufValue,
       {ProtobufDecodingContext? context}) {
-    return instanceFromComposed(composedKind.protobufTreeDecode(
+    return instanceFromPrimitive(primitiveKind.protobufTreeDecode(
       protobufValue,
       context: context,
     ));
   }
 
   @override
-  Object? protobufTreeEncode(T instance, {ProtobufEncodingContext? context}) {
-    return composedKind.protobufTreeEncode(
-      instanceToComposed(instance),
+  Object protobufTreeEncode(T instance, {ProtobufEncodingContext? context}) {
+    return primitiveKind.protobufTreeEncode(
+      instanceToPrimitive(instance),
       context: context,
     );
+  }
+}
+
+/// Used by [CompositePrimitiveKind.simple].
+class _SimpleCompositePrimitiveKind<T, E> extends CompositePrimitiveKind<T, E> {
+  final PrimitiveKind<E> primitiveKindArgument;
+  final EntityKind<_SimpleCompositePrimitiveKind> kind;
+  final E Function(T instance) toPrimitive;
+  final T Function(E primitive) fromPrimitive;
+
+  @override
+  final String name;
+
+  _SimpleCompositePrimitiveKind({
+    required this.name,
+    required this.primitiveKindArgument,
+    required this.kind,
+    required this.toPrimitive,
+    required this.fromPrimitive,
+  });
+
+  @override
+  PrimitiveKind<E> buildPrimitiveKind() => primitiveKindArgument;
+
+  @override
+  EntityKind<_SimpleCompositePrimitiveKind> getKind() => kind;
+
+  @override
+  T instanceFromPrimitive(E primitive) {
+    return fromPrimitive(primitive);
+  }
+
+  @override
+  E instanceToPrimitive(T instance) {
+    return toPrimitive(instance);
   }
 }

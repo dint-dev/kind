@@ -22,7 +22,8 @@ void main() {
     test('Int64FixNumKind.kind', () {
       // ignore: invalid_use_of_protected_member
       final kind = Int64FixNumKind.kind;
-      expect(kind.name, 'Int64FixNumKind');
+      expect(
+          kind.name, '${PrimitiveKind.namePrefixForNonClasses}Int64FixNumKind');
       expect(
         kind.jsonTreeEncode(const Int64FixNumKind()),
         {},

@@ -48,7 +48,7 @@ import 'package:meta/meta.dart';
 @experimental
 const StringKind stringKindForUrl = StringKind(
   name: 'url',
-  singleLine: true,
+  isSingleLine: true,
   minLengthInUtf8: 5,
   maxLengthInUtf8: 4096,
   regExpProvider: _urlRegExpProvider,

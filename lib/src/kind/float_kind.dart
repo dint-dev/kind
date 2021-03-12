@@ -39,9 +39,10 @@ class Float32Kind extends FloatKindBase {
   /// [Kind] for [Float32Kind].
   ///
   /// The purpose of annotation `@protected` is reducing accidental use.
+  @protected
   static final EntityKind<Float32Kind> kind = EntityKind<Float32Kind>(
     name: 'Float32Kind',
-    build: (c) {
+    define: (c) {
       final specialValues = c.requiredBool(
         id: 1,
         name: 'specialValues',
@@ -67,8 +68,15 @@ class Float32Kind extends FloatKindBase {
         name: 'exclusiveMax',
         getter: (t) => t.exclusiveMax,
       );
+      final unitOfMeasurement = c.optional<UnitOfMeasurement>(
+        id: 6,
+        name: 'unitOfMeasurement',
+        kind: UnitOfMeasurement.kind,
+        getter: (t) => t.unitOfMeasurement,
+      );
       c.constructorFromData = (data) {
         return Float32Kind(
+          unitOfMeasurement: data.get(unitOfMeasurement),
           specialValues: data.get(specialValues),
           min: data.get(min),
           max: data.get(max),
@@ -81,12 +89,14 @@ class Float32Kind extends FloatKindBase {
 
   @literal
   const Float32Kind({
+    UnitOfMeasurement? unitOfMeasurement,
     bool specialValues = false,
     double? min,
     double? max,
     bool exclusiveMin = false,
     bool exclusiveMax = false,
   }) : super(
+          unitOfMeasurement: unitOfMeasurement,
           min: min,
           max: max,
           exclusiveMin: exclusiveMin,
@@ -101,7 +111,7 @@ class Float32Kind extends FloatKindBase {
   int get hashCode => (Float32Kind).hashCode ^ super.hashCode;
 
   @override
-  String get name => 'Float32';
+  String get name => '${PrimitiveKind.namePrefixForNonClasses}Float32';
 
   @override
   int get protobufFieldType {
@@ -128,7 +138,7 @@ class Float32Kind extends FloatKindBase {
       return super.newList(length, growable: growable, reactive: reactive);
     }
     final list = Float32List(length);
-    if (reactive) {
+    if (reactive && length != 0) {
       return ReactiveList<double>.wrap(list);
     }
     return list;
@@ -164,9 +174,10 @@ class Float64Kind extends FloatKindBase {
   /// [Kind] for [Float64Kind].
   ///
   /// The purpose of annotation `@protected` is reducing accidental use.
+  @protected
   static final EntityKind<Float64Kind> kind = EntityKind<Float64Kind>(
     name: 'Float64Kind',
-    build: (c) {
+    define: (c) {
       final specialValues = c.requiredBool(
         id: 1,
         name: 'specialValues',
@@ -192,8 +203,15 @@ class Float64Kind extends FloatKindBase {
         name: 'exclusiveMax',
         getter: (t) => t.exclusiveMax,
       );
+      final unitOfMeasurement = c.optional<UnitOfMeasurement>(
+        id: 6,
+        name: 'unitOfMeasurement',
+        kind: UnitOfMeasurement.kind,
+        getter: (t) => t.unitOfMeasurement,
+      );
       c.constructorFromData = (data) {
         return Float64Kind(
+          unitOfMeasurement: data.get(unitOfMeasurement),
           specialValues: data.get(specialValues),
           min: data.get(min),
           max: data.get(max),
@@ -206,12 +224,14 @@ class Float64Kind extends FloatKindBase {
 
   @literal
   const Float64Kind({
+    UnitOfMeasurement? unitOfMeasurement,
     bool specialValues = false,
     double? min,
     double? max,
     bool exclusiveMin = false,
     bool exclusiveMax = false,
   }) : super(
+          unitOfMeasurement: unitOfMeasurement,
           specialValues: specialValues,
           min: min,
           max: max,
@@ -226,7 +246,7 @@ class Float64Kind extends FloatKindBase {
   int get hashCode => (Float64Kind).hashCode ^ super.hashCode;
 
   @override
-  String get name => 'Float64';
+  String get name => '${PrimitiveKind.namePrefixForNonClasses}Float64';
 
   @override
   int get protobufFieldType {
@@ -253,7 +273,7 @@ class Float64Kind extends FloatKindBase {
       return super.newList(length, growable: growable, reactive: reactive);
     }
     final list = Float64List(length);
-    if (reactive) {
+    if (reactive && length != 0) {
       return ReactiveList<double>.wrap(list);
     }
     return list;
@@ -265,22 +285,23 @@ class Float64Kind extends FloatKindBase {
 
 /// Base class for floating-point kinds ([Float32Kind] and [Float64Kind]).
 abstract class FloatKindBase extends NumericKind<double> {
-  @override
-  final double? min;
-  @override
-  final double? max;
   final bool exclusiveMin;
   final bool exclusiveMax;
   final bool specialValues;
 
   @literal
   const FloatKindBase({
+    UnitOfMeasurement? unitOfMeasurement,
     this.specialValues = false,
-    this.min,
-    this.max,
+    double? min,
+    double? max,
     this.exclusiveMin = false,
     this.exclusiveMax = false,
-  });
+  }) : super(
+          unitOfMeasurement: unitOfMeasurement,
+          min: min,
+          max: max,
+        );
 
   @override
   int get hashCode =>
@@ -407,7 +428,7 @@ abstract class FloatKindBase extends NumericKind<double> {
   }
 
   @override
-  Object? protobufTreeEncode(double value, {ProtobufEncodingContext? context}) {
+  double protobufTreeEncode(double value, {ProtobufEncodingContext? context}) {
     return value;
   }
 

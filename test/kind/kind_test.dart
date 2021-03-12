@@ -42,6 +42,22 @@ void main() {
       expect(kinds, contains(ListKind.kind));
       // ignore: invalid_use_of_protected_member
       expect(kinds, contains(EntityKind.kind));
+
+      for (var kind in kinds) {
+        if (!kind.isSerializable) {
+          continue;
+        }
+        kind.newInstance();
+        if (kind is StringKind) {
+          expect(kind.instanceIsCorrectType(3.14), isFalse);
+          expect(kind.instanceIsValid(3.14), isFalse);
+          expect(kind.instanceIsCorrectType(3.14), isFalse);
+        } else {
+          expect(kind.instanceIsCorrectType('abc'), isFalse);
+          expect(kind.instanceIsValid('abc'), isFalse);
+          expect(kind.instanceIsDefaultValue('abc'), isFalse);
+        }
+      }
     });
   });
 }

@@ -31,7 +31,7 @@ class MapKind<K, V> extends Kind<Map<K, V>> {
   @protected
   static final EntityKind<MapKind> kind = EntityKind<MapKind>(
     name: 'MapKind',
-    build: (c) {
+    define: (c) {
       final keyKindProp = c.required<Kind>(
         id: 1,
         name: 'keyKind',
@@ -145,7 +145,7 @@ class MapKind<K, V> extends Kind<Map<K, V>> {
   }
 
   @override
-  Object? protobufTreeEncode(Map<K, V> value,
+  Object protobufTreeEncode(Map<K, V> value,
       {ProtobufEncodingContext? context}) {
     throw UnimplementedError();
   }

@@ -59,7 +59,8 @@ void main() {
 
   group('Int8Kind', () {
     test('name', () {
-      expect(const Int8Kind().name, 'Int8');
+      expect(const Int8Kind().name,
+          '${PrimitiveKind.namePrefixForNonClasses}Int8');
     });
 
     test('Int8Kind.kind', () {
@@ -127,7 +128,8 @@ void main() {
 
   group('Int16Kind', () {
     test('name', () {
-      expect(const Int16Kind().name, 'Int16');
+      expect(const Int16Kind().name,
+          '${PrimitiveKind.namePrefixForNonClasses}Int16');
     });
 
     test('Int16Kind.kind', () {
@@ -195,7 +197,8 @@ void main() {
 
   group('Int32Kind', () {
     test('name', () {
-      expect(const Int32Kind().name, 'Int32');
+      expect(const Int32Kind().name,
+          '${PrimitiveKind.namePrefixForNonClasses}Int32');
     });
 
     test('Int32Kind.kind', () {
@@ -321,7 +324,8 @@ void main() {
 
   group('Int64Kind', () {
     test('name', () {
-      expect(const Int64Kind().name, 'Int64');
+      expect(const Int64Kind().name,
+          '${PrimitiveKind.namePrefixForNonClasses}Int64');
     });
 
     test('Int64Kind.kind', () {
@@ -509,7 +513,8 @@ void main() {
 
   group('Uint8Kind', () {
     test('name', () {
-      expect(const Uint8Kind().name, 'Uint8');
+      expect(const Uint8Kind().name,
+          '${PrimitiveKind.namePrefixForNonClasses}Uint8');
     });
 
     test('Uint8Kind.kind', () {
@@ -570,7 +575,8 @@ void main() {
 
   group('Uint16Kind', () {
     test('name', () {
-      expect(const Uint16Kind().name, 'Uint16');
+      expect(const Uint16Kind().name,
+          '${PrimitiveKind.namePrefixForNonClasses}Uint16');
     });
 
     test('Uint16Kind.kind', () {
@@ -631,7 +637,8 @@ void main() {
 
   group('Uint32Kind', () {
     test('name', () {
-      expect(const Uint32Kind().name, 'Uint32');
+      expect(const Uint32Kind().name,
+          '${PrimitiveKind.namePrefixForNonClasses}Uint32');
     });
 
     test('Uint32Kind.kind', () {
@@ -750,7 +757,8 @@ void main() {
 
   group('Uint64Kind', () {
     test('name', () {
-      expect(const Uint64Kind().name, 'Uint64');
+      expect(const Uint64Kind().name,
+          '${PrimitiveKind.namePrefixForNonClasses}Uint64');
     });
 
     test('Uint64Kind.kind', () {

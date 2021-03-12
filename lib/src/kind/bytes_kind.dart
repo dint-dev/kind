@@ -15,6 +15,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:collection/collection.dart';
 import 'package:kind/kind.dart';
 import 'package:meta/meta.dart';
 import 'package:protobuf/protobuf.dart' as protobuf;
@@ -26,14 +27,21 @@ import 'package:protobuf/protobuf.dart' as protobuf;
 ///
 /// ## Serialization
 /// ### JSON
-/// By default, base64 strings are used. You can customize this by specifying
-/// [jsonCodec].
-/// Decoder method always returns immutable byte lists.
+/// By default, [base64] strings are used. You can customize this by specifying
+/// [jsonCodec]. In the following example, we use [base64Url]:
+/// ```
+/// import 'dart:convert' show base64Url;
+/// import 'package:kind/kind.dart';
+///
+/// final example = BytesKind(jsonCodec: base64Url);
+/// ```
+///
+/// Decoding method always returns immutable lists.
 ///
 /// ## Protocol Buffers
-/// By default, bytes are used.
-/// Decoder method always returns immutable byte lists.
+/// Values are serialized as byte sequences.
 ///
+/// Decoding method always returns immutable lists.
 @sealed
 class BytesKind extends PrimitiveKind<List<int>> {
   /// [Kind] for [BytesKind].
@@ -42,7 +50,7 @@ class BytesKind extends PrimitiveKind<List<int>> {
   @protected
   static final EntityKind<BytesKind> kind = EntityKind<BytesKind>(
     name: 'BytesKind',
-    build: (c) {
+    define: (c) {
       final minLength = c.requiredUint64(
         id: 1,
         name: 'minLength',
@@ -53,8 +61,17 @@ class BytesKind extends PrimitiveKind<List<int>> {
         name: 'maxLength',
         getter: (t) => t.maxLength,
       );
-      final jsonCodecProp = c.required<String>(
+      final mediaTypes = c.optionalSet<String>(
         id: 3,
+        name: 'mediaTypes',
+        itemsKind: const StringKind(
+          maxLengthInUtf8: 63,
+          regExpProvider: _mediaTypeRegExpProvider,
+        ),
+        getter: (t) => t.mediaTypes,
+      );
+      final jsonCodecProp = c.required<String>(
+        id: 4,
         name: 'jsonCodec',
         kind: EnumKind(entries: [
           EnumKindEntry(id: 1, name: 'base64', value: 'base64'),
@@ -72,7 +89,7 @@ class BytesKind extends PrimitiveKind<List<int>> {
         },
       );
       final examples = c.requiredList(
-        id: 4,
+        id: 5,
         name: 'examples',
         itemsKind: const BytesKind(),
         getter: (t) => t.examples,
@@ -90,6 +107,7 @@ class BytesKind extends PrimitiveKind<List<int>> {
         return BytesKind(
           minLength: data.get(minLength),
           maxLength: data.get(maxLength),
+          mediaTypes: data.get(mediaTypes),
           jsonCodec: jsonCodec,
           examples: data.get(examples),
         );
@@ -105,15 +123,20 @@ class BytesKind extends PrimitiveKind<List<int>> {
   /// Maximum length.
   final int? maxLength;
 
+  /// Accepted media types ("image/jpeg", etc.).
+  final Set<String>? mediaTypes;
+
   /// Codec used for encoding bytes in JSON. By default, [base64].
   final Codec<List<int>, String> jsonCodec;
 
+  /// Examples of valid values.
   final List<List<int>> examples;
 
   @literal
   const BytesKind({
     this.minLength = 0,
     this.maxLength,
+    this.mediaTypes,
     this.jsonCodec = base64,
     this.examples = const [],
   })  : assert(minLength >= 0),
@@ -124,7 +147,7 @@ class BytesKind extends PrimitiveKind<List<int>> {
       (BytesKind).hashCode ^ minLength.hashCode ^ maxLength.hashCode;
 
   @override
-  String get name => 'Bytes';
+  String get name => '${PrimitiveKind.namePrefixForNonClasses}Bytes';
 
   @override
   int get protobufFieldType {
@@ -136,7 +159,9 @@ class BytesKind extends PrimitiveKind<List<int>> {
     return other is BytesKind &&
         minLength == other.minLength &&
         maxLength == other.maxLength &&
-        jsonCodec == other.jsonCodec;
+        const SetEquality<String>().equals(mediaTypes, other.mediaTypes) &&
+        jsonCodec == other.jsonCodec &&
+        const ListEquality<List<int>>().equals(examples, other.examples);
   }
 
   @override
@@ -194,7 +219,7 @@ class BytesKind extends PrimitiveKind<List<int>> {
   }
 
   @override
-  Object? protobufTreeEncode(List<int> instance,
+  Uint8List protobufTreeEncode(List<int> instance,
       {ProtobufEncodingContext? context}) {
     return Uint8List.fromList(instance);
   }
@@ -212,5 +237,10 @@ class BytesKind extends PrimitiveKind<List<int>> {
       arguments.add('jsonCodec: ...');
     }
     return 'BytesKind(${arguments.join(', ')})';
+  }
+
+  /// Regular expression for 'mediaTypes'.
+  static RegExp _mediaTypeRegExpProvider() {
+    return RegExp(r'^[a-z]+/[\-+.a-z0-9]+\$');
   }
 }

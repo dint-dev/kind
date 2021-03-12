@@ -28,15 +28,14 @@ import 'package:meta/meta.dart';
 /// You can generate random examples with the methods [randomExample()] and
 /// [randomExampleList()].
 ///
-/// Currently method [randomExample] returns random values between years 1950
-/// and 2020.
-///
-/// This behavior may be changed in future.
+/// Currently [randomExample] returns random values between years 1950 and 2020.
+/// This is an implementation detail that could be changed in future.
 class DateTimeWithTimeZoneKind extends PrimitiveKind<DateTimeWithTimeZone> {
+  @protected
   static final EntityKind<DateTimeWithTimeZoneKind> kind =
       EntityKind<DateTimeWithTimeZoneKind>(
     name: 'DateTimeWithTimeZoneKind',
-    build: (c) {
+    define: (c) {
       c.constructor = () => const DateTimeWithTimeZoneKind();
     },
   );
@@ -113,7 +112,7 @@ class DateTimeWithTimeZoneKind extends PrimitiveKind<DateTimeWithTimeZone> {
   }
 
   @override
-  Object? protobufTreeEncode(DateTimeWithTimeZone value,
+  Object protobufTreeEncode(DateTimeWithTimeZone value,
       {ProtobufEncodingContext? context}) {
     // TODO: How to serialize timezone in Protocol Buffers?
     final dateTime = value.toDateTime(utc: true);

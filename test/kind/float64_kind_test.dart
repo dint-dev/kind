@@ -23,7 +23,10 @@ void main() {
     test('Float64Kind.kind', () {
       // ignore: invalid_use_of_protected_member
       final kind = Float64Kind.kind;
-      expect(kind.name, 'Float64Kind');
+      expect(
+        kind.name,
+        'Float64Kind',
+      );
       expect(
         kind.jsonTreeEncode(const Float64Kind()),
         {},
@@ -51,7 +54,10 @@ void main() {
     });
 
     test('name', () {
-      expect(const Float64Kind().name, 'Float64');
+      expect(
+        const Float64Kind().name,
+        '${PrimitiveKind.namePrefixForNonClasses}Float64',
+      );
     });
 
     test('toString()', () {

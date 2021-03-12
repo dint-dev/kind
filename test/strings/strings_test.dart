@@ -21,7 +21,7 @@ void main() {
     expect(kind.name, 'EmailAddress');
 
     // Constraints
-    expect(kind.singleLine, isTrue);
+    expect(kind.isSingleLine, isTrue);
     expect(kind.minLengthInUtf8, 6);
     expect(kind.maxLengthInUtf8, 80);
 
@@ -59,7 +59,7 @@ void main() {
     expect(kind.name, 'markdown');
 
     // Constraints
-    expect(kind.singleLine, isFalse);
+    expect(kind.isSingleLine, isFalse);
     expect(kind.maxLengthInUtf8, null);
 
     // Anything is valid
@@ -78,7 +78,7 @@ void main() {
     expect(kind.name, 'phoneNumber');
 
     // Constraints
-    expect(kind.singleLine, isTrue);
+    expect(kind.isSingleLine, isTrue);
     expect(kind.maxLengthInUtf8, 40);
 
     // Some invalid examples
@@ -98,7 +98,7 @@ void main() {
     expect(kind.name, 'url');
 
     // Constraints
-    expect(kind.singleLine, isTrue);
+    expect(kind.isSingleLine, isTrue);
     expect(kind.minLengthInUtf8, 5);
     expect(kind.maxLengthInUtf8, 4096);
 

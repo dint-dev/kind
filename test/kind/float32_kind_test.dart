@@ -51,7 +51,10 @@ void main() {
     });
 
     test('name', () {
-      expect(const Float32Kind().name, 'Float32');
+      expect(
+        const Float32Kind().name,
+        '${PrimitiveKind.namePrefixForNonClasses}Float32',
+      );
     });
 
     test('toString()', () {

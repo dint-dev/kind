@@ -22,245 +22,253 @@ void main() {
 
   group('Protocol Buffers support', () {
     group('empty message', () {
-      final value = _Example();
+      final entity = _Example();
       const message = <int>[];
 
       test('encode', () {
-        final result = _Example.kind.protobufTreeEncode(value).writeToBuffer();
-        expect(result, message);
+        final encoded =
+            _Example.kind.protobufTreeEncode(entity).writeToBuffer();
+        expect(encoded, message);
       });
 
       test('decode', () {
-        final result = _Example.kind.protobufBytesDecode(message);
-        expect(result.boolValue, value.boolValue);
-        expect(result.boolValueOrNull, value.boolValueOrNull);
-        expect(result.uint32Value, value.uint32Value);
-        expect(result.uint64Value, value.uint64Value);
-        expect(result.int32Value, value.int32Value);
-        expect(result.int64Value, value.int64Value);
-        expect(result.float32Value, value.float32Value);
-        expect(result.float64Value, value.float64Value);
-        expect(result.dateTimeValue, value.dateTimeValue);
-        expect(result.stringValue, value.stringValue);
-        expect(result.bytesValue, value.bytesValue);
-        expect(result.example, value.example);
-        expect(result, value);
+        final decoded = _Example.kind.protobufBytesDecode(message);
+        expect(decoded.boolValue, entity.boolValue);
+        expect(decoded.boolValueOrNull, entity.boolValueOrNull);
+        expect(decoded.uint32Value, entity.uint32Value);
+        expect(decoded.uint64Value, entity.uint64Value);
+        expect(decoded.int32Value, entity.int32Value);
+        expect(decoded.int64Value, entity.int64Value);
+        expect(decoded.float32Value, entity.float32Value);
+        expect(decoded.float64Value, entity.float64Value);
+        expect(decoded.dateTimeValue, entity.dateTimeValue);
+        expect(decoded.stringValue, entity.stringValue);
+        expect(decoded.bytesValue, entity.bytesValue);
+        expect(decoded.example, entity.example);
+        expect(decoded, entity);
       });
     });
 
     group('bool field', () {
-      final value = _Example()..boolValue = true;
+      final entity = _Example()..boolValue = true;
       final message = <int>[
         (_Example._boolProp.id << 3) | 0,
         1,
       ];
 
       test('encode', () {
-        final result = _Example.kind.protobufTreeEncode(value).writeToBuffer();
-        expect(result, message);
+        final encoded =
+            _Example.kind.protobufTreeEncode(entity).writeToBuffer();
+        expect(encoded, message);
       });
 
       test('decode', () {
-        final result = _Example.kind.protobufBytesDecode(message);
-        expect(result.boolValue, value.boolValue);
-        expect(result.boolValueOrNull, value.boolValueOrNull);
-        expect(result.uint32Value, value.uint32Value);
-        expect(result.uint64Value, value.uint64Value);
-        expect(result.int32Value, value.int32Value);
-        expect(result.int64Value, value.int64Value);
-        expect(result.float32Value, value.float32Value);
-        expect(result.float64Value, value.float64Value);
-        expect(result.dateTimeValue, value.dateTimeValue);
-        expect(result.stringValue, value.stringValue);
-        expect(result.bytesValue, value.bytesValue);
-        expect(result.example, value.example);
-        expect(result, value);
+        final decoded = _Example.kind.protobufBytesDecode(message);
+        expect(decoded.boolValue, entity.boolValue);
+        expect(decoded.boolValueOrNull, entity.boolValueOrNull);
+        expect(decoded.uint32Value, entity.uint32Value);
+        expect(decoded.uint64Value, entity.uint64Value);
+        expect(decoded.int32Value, entity.int32Value);
+        expect(decoded.int64Value, entity.int64Value);
+        expect(decoded.float32Value, entity.float32Value);
+        expect(decoded.float64Value, entity.float64Value);
+        expect(decoded.dateTimeValue, entity.dateTimeValue);
+        expect(decoded.stringValue, entity.stringValue);
+        expect(decoded.bytesValue, entity.bytesValue);
+        expect(decoded.example, entity.example);
+        expect(decoded, entity);
       });
     });
 
     group('bool field (nullable)', () {
-      final value = _Example()..boolValueOrNull = true;
+      final entity = _Example()..boolValueOrNull = true;
       final message = <int>[
         (_Example._boolOrNullProp.id << 3) | 0,
         1,
       ];
 
       test('encode', () {
-        final result = _Example.kind.protobufTreeEncode(value).writeToBuffer();
-        expect(result, message);
+        final encoded =
+            _Example.kind.protobufTreeEncode(entity).writeToBuffer();
+        expect(encoded, message);
       });
 
       test('decode', () {
-        final result = _Example.kind.protobufBytesDecode(message);
-        expect(result.boolValue, value.boolValue);
-        expect(result.boolValueOrNull, value.boolValueOrNull);
-        expect(result.uint32Value, value.uint32Value);
-        expect(result.uint64Value, value.uint64Value);
-        expect(result.int32Value, value.int32Value);
-        expect(result.int64Value, value.int64Value);
-        expect(result.float32Value, value.float32Value);
-        expect(result.float64Value, value.float64Value);
-        expect(result.dateTimeValue, value.dateTimeValue);
-        expect(result.stringValue, value.stringValue);
-        expect(result.bytesValue, value.bytesValue);
-        expect(result.example, value.example);
-        expect(result, value);
+        final decoded = _Example.kind.protobufBytesDecode(message);
+        expect(decoded.boolValue, entity.boolValue);
+        expect(decoded.boolValueOrNull, entity.boolValueOrNull);
+        expect(decoded.uint32Value, entity.uint32Value);
+        expect(decoded.uint64Value, entity.uint64Value);
+        expect(decoded.int32Value, entity.int32Value);
+        expect(decoded.int64Value, entity.int64Value);
+        expect(decoded.float32Value, entity.float32Value);
+        expect(decoded.float64Value, entity.float64Value);
+        expect(decoded.dateTimeValue, entity.dateTimeValue);
+        expect(decoded.stringValue, entity.stringValue);
+        expect(decoded.bytesValue, entity.bytesValue);
+        expect(decoded.example, entity.example);
+        expect(decoded, entity);
       });
     });
 
     group('uint32 field', () {
-      final value = _Example()..uint32Value = 2;
+      final entity = _Example()..uint32Value = 2;
       final message = <int>[
         (_Example._uint32Prop.id << 3) | 0,
         2,
       ];
 
       test('encode', () {
-        final result = _Example.kind.protobufTreeEncode(value).writeToBuffer();
-        expect(result, message);
+        final encoded =
+            _Example.kind.protobufTreeEncode(entity).writeToBuffer();
+        expect(encoded, message);
       });
 
       test('decode', () {
-        final result = _Example.kind.protobufBytesDecode(message);
-        expect(result.boolValue, value.boolValue);
-        expect(result.boolValueOrNull, value.boolValueOrNull);
-        expect(result.uint32Value, value.uint32Value);
-        expect(result.uint64Value, value.uint64Value);
-        expect(result.int32Value, value.int32Value);
-        expect(result.int64Value, value.int64Value);
-        expect(result.float32Value, value.float32Value);
-        expect(result.float64Value, value.float64Value);
-        expect(result.dateTimeValue, value.dateTimeValue);
-        expect(result.stringValue, value.stringValue);
-        expect(result.bytesValue, value.bytesValue);
-        expect(result.example, value.example);
-        expect(result, value);
+        final decoded = _Example.kind.protobufBytesDecode(message);
+        expect(decoded.boolValue, entity.boolValue);
+        expect(decoded.boolValueOrNull, entity.boolValueOrNull);
+        expect(decoded.uint32Value, entity.uint32Value);
+        expect(decoded.uint64Value, entity.uint64Value);
+        expect(decoded.int32Value, entity.int32Value);
+        expect(decoded.int64Value, entity.int64Value);
+        expect(decoded.float32Value, entity.float32Value);
+        expect(decoded.float64Value, entity.float64Value);
+        expect(decoded.dateTimeValue, entity.dateTimeValue);
+        expect(decoded.stringValue, entity.stringValue);
+        expect(decoded.bytesValue, entity.bytesValue);
+        expect(decoded.example, entity.example);
+        expect(decoded, entity);
       });
     });
 
     group('uint64 field', () {
-      final value = _Example()..uint64Value = 2;
+      final entity = _Example()..uint64Value = 2;
       final message = <int>[
         (_Example._uint64Prop.id << 3) | 0,
         2,
       ];
 
       test('encode', () {
-        final result = _Example.kind.protobufTreeEncode(value).writeToBuffer();
-        expect(result, message);
+        final encoded =
+            _Example.kind.protobufTreeEncode(entity).writeToBuffer();
+        expect(encoded, message);
       });
 
       test('decode', () {
-        final result = _Example.kind.protobufBytesDecode(message);
-        expect(result.boolValue, value.boolValue);
-        expect(result.boolValueOrNull, value.boolValueOrNull);
-        expect(result.uint32Value, value.uint32Value);
-        expect(result.uint64Value, value.uint64Value);
-        expect(result.int32Value, value.int32Value);
-        expect(result.int64Value, value.int64Value);
-        expect(result.float32Value, value.float32Value);
-        expect(result.float64Value, value.float64Value);
-        expect(result.dateTimeValue, value.dateTimeValue);
-        expect(result.stringValue, value.stringValue);
-        expect(result.bytesValue, value.bytesValue);
-        expect(result.example, value.example);
-        expect(result, value);
+        final decoded = _Example.kind.protobufBytesDecode(message);
+        expect(decoded.boolValue, entity.boolValue);
+        expect(decoded.boolValueOrNull, entity.boolValueOrNull);
+        expect(decoded.uint32Value, entity.uint32Value);
+        expect(decoded.uint64Value, entity.uint64Value);
+        expect(decoded.int32Value, entity.int32Value);
+        expect(decoded.int64Value, entity.int64Value);
+        expect(decoded.float32Value, entity.float32Value);
+        expect(decoded.float64Value, entity.float64Value);
+        expect(decoded.dateTimeValue, entity.dateTimeValue);
+        expect(decoded.stringValue, entity.stringValue);
+        expect(decoded.bytesValue, entity.bytesValue);
+        expect(decoded.example, entity.example);
+        expect(decoded, entity);
       });
     });
 
     group('int32 field', () {
-      final value = _Example()..int32Value = 2;
+      final entity = _Example()..int32Value = 2;
       final message = <int>[
         (_Example._int32Prop.id << 3) | 0,
         4,
       ];
 
       test('encode', () {
-        final result = _Example.kind.protobufTreeEncode(value).writeToBuffer();
-        expect(result, message);
+        final encoded =
+            _Example.kind.protobufTreeEncode(entity).writeToBuffer();
+        expect(encoded, message);
       });
 
       test('decode', () {
-        final result = _Example.kind.protobufBytesDecode(message);
-        expect(result.boolValue, value.boolValue);
-        expect(result.boolValueOrNull, value.boolValueOrNull);
-        expect(result.uint32Value, value.uint32Value);
-        expect(result.uint64Value, value.uint64Value);
-        expect(result.int32Value, value.int32Value);
-        expect(result.int64Value, value.int64Value);
-        expect(result.float32Value, value.float32Value);
-        expect(result.float64Value, value.float64Value);
-        expect(result.dateTimeValue, value.dateTimeValue);
-        expect(result.stringValue, value.stringValue);
-        expect(result.bytesValue, value.bytesValue);
-        expect(result.example, value.example);
-        expect(result, value);
+        final decoded = _Example.kind.protobufBytesDecode(message);
+        expect(decoded.boolValue, entity.boolValue);
+        expect(decoded.boolValueOrNull, entity.boolValueOrNull);
+        expect(decoded.uint32Value, entity.uint32Value);
+        expect(decoded.uint64Value, entity.uint64Value);
+        expect(decoded.int32Value, entity.int32Value);
+        expect(decoded.int64Value, entity.int64Value);
+        expect(decoded.float32Value, entity.float32Value);
+        expect(decoded.float64Value, entity.float64Value);
+        expect(decoded.dateTimeValue, entity.dateTimeValue);
+        expect(decoded.stringValue, entity.stringValue);
+        expect(decoded.bytesValue, entity.bytesValue);
+        expect(decoded.example, entity.example);
+        expect(decoded, entity);
       });
     });
 
     group('int64 field', () {
-      final value = _Example()..int64Value = 2;
+      final entity = _Example()..int64Value = 2;
       final message = <int>[
         (_Example._int64Prop.id << 3) | 0,
         4,
       ];
 
       test('encode', () {
-        final result = _Example.kind.protobufTreeEncode(value).writeToBuffer();
-        expect(result, message);
+        final encoded =
+            _Example.kind.protobufTreeEncode(entity).writeToBuffer();
+        expect(encoded, message);
       });
 
       test('decode', () {
-        final result = _Example.kind.protobufBytesDecode(message);
-        expect(result.boolValue, value.boolValue);
-        expect(result.boolValueOrNull, value.boolValueOrNull);
-        expect(result.uint32Value, value.uint32Value);
-        expect(result.uint64Value, value.uint64Value);
-        expect(result.int32Value, value.int32Value);
-        expect(result.int64Value, value.int64Value);
-        expect(result.float32Value, value.float32Value);
-        expect(result.float64Value, value.float64Value);
-        expect(result.dateTimeValue, value.dateTimeValue);
-        expect(result.stringValue, value.stringValue);
-        expect(result.bytesValue, value.bytesValue);
-        expect(result.example, value.example);
-        expect(result, value);
+        final decoded = _Example.kind.protobufBytesDecode(message);
+        expect(decoded.boolValue, entity.boolValue);
+        expect(decoded.boolValueOrNull, entity.boolValueOrNull);
+        expect(decoded.uint32Value, entity.uint32Value);
+        expect(decoded.uint64Value, entity.uint64Value);
+        expect(decoded.int32Value, entity.int32Value);
+        expect(decoded.int64Value, entity.int64Value);
+        expect(decoded.float32Value, entity.float32Value);
+        expect(decoded.float64Value, entity.float64Value);
+        expect(decoded.dateTimeValue, entity.dateTimeValue);
+        expect(decoded.stringValue, entity.stringValue);
+        expect(decoded.bytesValue, entity.bytesValue);
+        expect(decoded.example, entity.example);
+        expect(decoded, entity);
       });
     });
 
     group('int64FixNum field', () {
-      final value = _Example()..int64FixNumValue = Int64(2);
+      final entity = _Example()..int64FixNumValue = Int64(2);
       final message = <int>[
         (_Example._int64FixNumProp.id << 3) | 0,
         4,
       ];
 
       test('encode', () {
-        final result = _Example.kind.protobufTreeEncode(value).writeToBuffer();
-        expect(result, message);
+        final encoded =
+            _Example.kind.protobufTreeEncode(entity).writeToBuffer();
+        expect(encoded, message);
       });
 
       test('decode', () {
-        final result = _Example.kind.protobufBytesDecode(message);
-        expect(result.boolValue, value.boolValue);
-        expect(result.boolValueOrNull, value.boolValueOrNull);
-        expect(result.uint32Value, value.uint32Value);
-        expect(result.uint64Value, value.uint64Value);
-        expect(result.int32Value, value.int32Value);
-        expect(result.int64Value, value.int64Value);
-        expect(result.int64FixNumValue, value.int64FixNumValue);
-        expect(result.float32Value, value.float32Value);
-        expect(result.float64Value, value.float64Value);
-        expect(result.dateTimeValue, value.dateTimeValue);
-        expect(result.stringValue, value.stringValue);
-        expect(result.bytesValue, value.bytesValue);
-        expect(result.example, value.example);
-        expect(result, value);
+        final decoded = _Example.kind.protobufBytesDecode(message);
+        expect(decoded.boolValue, entity.boolValue);
+        expect(decoded.boolValueOrNull, entity.boolValueOrNull);
+        expect(decoded.uint32Value, entity.uint32Value);
+        expect(decoded.uint64Value, entity.uint64Value);
+        expect(decoded.int32Value, entity.int32Value);
+        expect(decoded.int64Value, entity.int64Value);
+        expect(decoded.int64FixNumValue, entity.int64FixNumValue);
+        expect(decoded.float32Value, entity.float32Value);
+        expect(decoded.float64Value, entity.float64Value);
+        expect(decoded.dateTimeValue, entity.dateTimeValue);
+        expect(decoded.stringValue, entity.stringValue);
+        expect(decoded.bytesValue, entity.bytesValue);
+        expect(decoded.example, entity.example);
+        expect(decoded, entity);
       });
     });
 
     group('float32 field', () {
-      final value = _Example()..float32Value = 2.0;
+      final entity = _Example()..float32Value = 2.0;
       final message = <int>[
         (_Example._float32Prop.id << 3) | 5,
         0,
@@ -270,31 +278,32 @@ void main() {
       ];
 
       test('encode', () {
-        final result = _Example.kind.protobufTreeEncode(value).writeToBuffer();
-        expect(result, message);
+        final encoded =
+            _Example.kind.protobufTreeEncode(entity).writeToBuffer();
+        expect(encoded, message);
       });
 
       test('decode', () {
-        final result = _Example.kind.protobufBytesDecode(message);
-        expect(result.boolValue, value.boolValue);
-        expect(result.boolValueOrNull, value.boolValueOrNull);
-        expect(result.uint32Value, value.uint32Value);
-        expect(result.uint64Value, value.uint64Value);
-        expect(result.int32Value, value.int32Value);
-        expect(result.int64Value, value.int64Value);
-        expect(result.int64FixNumValue, value.int64FixNumValue);
-        expect(result.float32Value, value.float32Value);
-        expect(result.float64Value, value.float64Value);
-        expect(result.dateTimeValue, value.dateTimeValue);
-        expect(result.stringValue, value.stringValue);
-        expect(result.bytesValue, value.bytesValue);
-        expect(result.example, value.example);
-        expect(result, value);
+        final decoded = _Example.kind.protobufBytesDecode(message);
+        expect(decoded.boolValue, entity.boolValue);
+        expect(decoded.boolValueOrNull, entity.boolValueOrNull);
+        expect(decoded.uint32Value, entity.uint32Value);
+        expect(decoded.uint64Value, entity.uint64Value);
+        expect(decoded.int32Value, entity.int32Value);
+        expect(decoded.int64Value, entity.int64Value);
+        expect(decoded.int64FixNumValue, entity.int64FixNumValue);
+        expect(decoded.float32Value, entity.float32Value);
+        expect(decoded.float64Value, entity.float64Value);
+        expect(decoded.dateTimeValue, entity.dateTimeValue);
+        expect(decoded.stringValue, entity.stringValue);
+        expect(decoded.bytesValue, entity.bytesValue);
+        expect(decoded.example, entity.example);
+        expect(decoded, entity);
       });
     });
 
     group('float64 field', () {
-      final value = _Example()..float64Value = 2.0;
+      final entity = _Example()..float64Value = 2.0;
       final message = <int>[
         (_Example._float64Prop.id << 3) | 1,
         0,
@@ -308,26 +317,27 @@ void main() {
       ];
 
       test('encode', () {
-        final result = _Example.kind.protobufTreeEncode(value).writeToBuffer();
-        expect(result, message);
+        final encoded =
+            _Example.kind.protobufTreeEncode(entity).writeToBuffer();
+        expect(encoded, message);
       });
 
       test('decode', () {
-        final result = _Example.kind.protobufBytesDecode(message);
-        expect(result.boolValue, value.boolValue);
-        expect(result.boolValueOrNull, value.boolValueOrNull);
-        expect(result.uint32Value, value.uint32Value);
-        expect(result.uint64Value, value.uint64Value);
-        expect(result.int32Value, value.int32Value);
-        expect(result.int64Value, value.int64Value);
-        expect(result.int64FixNumValue, value.int64FixNumValue);
-        expect(result.float32Value, value.float32Value);
-        expect(result.float64Value, value.float64Value);
-        expect(result.dateTimeValue, value.dateTimeValue);
-        expect(result.stringValue, value.stringValue);
-        expect(result.bytesValue, value.bytesValue);
-        expect(result.example, value.example);
-        expect(result, value);
+        final decoded = _Example.kind.protobufBytesDecode(message);
+        expect(decoded.boolValue, entity.boolValue);
+        expect(decoded.boolValueOrNull, entity.boolValueOrNull);
+        expect(decoded.uint32Value, entity.uint32Value);
+        expect(decoded.uint64Value, entity.uint64Value);
+        expect(decoded.int32Value, entity.int32Value);
+        expect(decoded.int64Value, entity.int64Value);
+        expect(decoded.int64FixNumValue, entity.int64FixNumValue);
+        expect(decoded.float32Value, entity.float32Value);
+        expect(decoded.float64Value, entity.float64Value);
+        expect(decoded.dateTimeValue, entity.dateTimeValue);
+        expect(decoded.stringValue, entity.stringValue);
+        expect(decoded.bytesValue, entity.bytesValue);
+        expect(decoded.example, entity.example);
+        expect(decoded, entity);
       });
     });
 
@@ -338,7 +348,7 @@ void main() {
         milliseconds: 7,
       ));
 
-      final value = _Example()..dateTimeValue = dateTime;
+      final entity = _Example()..dateTimeValue = dateTime;
       final message = <int>[
         (_Example._dateTimeProp.id << 3) | 2,
         7,
@@ -352,36 +362,39 @@ void main() {
       ];
 
       test('encode', () {
-        final result = _Example.kind.protobufTreeEncode(value).writeToBuffer();
-        expect(result, message);
+        final encoded =
+            _Example.kind.protobufTreeEncode(entity).writeToBuffer();
+        expect(encoded, message);
       });
 
       test('decode', () {
-        final result = _Example.kind.protobufBytesDecode(message);
-        expect(result.boolValue, value.boolValue);
-        expect(result.boolValueOrNull, value.boolValueOrNull);
-        expect(result.uint32Value, value.uint32Value);
-        expect(result.uint64Value, value.uint64Value);
-        expect(result.int32Value, value.int32Value);
-        expect(result.int64Value, value.int64Value);
-        expect(result.int64FixNumValue, value.int64FixNumValue);
-        expect(result.float32Value, value.float32Value);
-        expect(result.float64Value, value.float64Value);
-        expect(result.dateTimeValue, value.dateTimeValue);
-        expect(result.stringValue, value.stringValue);
-        expect(result.bytesValue, value.bytesValue);
-        expect(result.example, value.example);
-        expect(result, value);
+        final decoded = _Example.kind.protobufBytesDecode(message);
+        expect(decoded.boolValue, entity.boolValue);
+        expect(decoded.boolValueOrNull, entity.boolValueOrNull);
+        expect(decoded.uint32Value, entity.uint32Value);
+        expect(decoded.uint64Value, entity.uint64Value);
+        expect(decoded.int32Value, entity.int32Value);
+        expect(decoded.int64Value, entity.int64Value);
+        expect(decoded.int64FixNumValue, entity.int64FixNumValue);
+        expect(decoded.float32Value, entity.float32Value);
+        expect(decoded.float64Value, entity.float64Value);
+        expect(decoded.dateTimeValue, entity.dateTimeValue);
+        expect(decoded.stringValue, entity.stringValue);
+        expect(decoded.bytesValue, entity.bytesValue);
+        expect(decoded.example, entity.example);
+        expect(decoded, entity);
       });
     });
 
     group('DateTimeWithTimeZone field', () {
-      final timestamap = DateTimeWithTimeZone.epoch.add(const Duration(
+      final dateTimeWithTimeZone =
+          DateTimeWithTimeZone.epoch.add(const Duration(
         seconds: 9,
         milliseconds: 7,
       ));
 
-      final value = _Example()..dateTimeWithTimeZoneValue = timestamap;
+      final entity = _Example()
+        ..dateTimeWithTimeZoneValue = dateTimeWithTimeZone;
       final message = <int>[
         (_Example._dateTimeWithTimeZoneProp.id << 3) | 2,
         7,
@@ -395,26 +408,27 @@ void main() {
       ];
 
       test('encode', () {
-        final result = _Example.kind.protobufTreeEncode(value).writeToBuffer();
-        expect(result, message);
+        final encoded =
+            _Example.kind.protobufTreeEncode(entity).writeToBuffer();
+        expect(encoded, message);
       });
 
       test('decode', () {
-        final result = _Example.kind.protobufBytesDecode(message);
-        expect(result.boolValue, value.boolValue);
-        expect(result.boolValueOrNull, value.boolValueOrNull);
-        expect(result.uint32Value, value.uint32Value);
-        expect(result.uint64Value, value.uint64Value);
-        expect(result.int32Value, value.int32Value);
-        expect(result.int64Value, value.int64Value);
-        expect(result.int64FixNumValue, value.int64FixNumValue);
-        expect(result.float32Value, value.float32Value);
-        expect(result.float64Value, value.float64Value);
-        expect(result.dateTimeValue, value.dateTimeValue);
-        expect(result.stringValue, value.stringValue);
-        expect(result.bytesValue, value.bytesValue);
-        expect(result.example, value.example);
-        expect(result, value);
+        final decoded = _Example.kind.protobufBytesDecode(message);
+        expect(decoded.boolValue, entity.boolValue);
+        expect(decoded.boolValueOrNull, entity.boolValueOrNull);
+        expect(decoded.uint32Value, entity.uint32Value);
+        expect(decoded.uint64Value, entity.uint64Value);
+        expect(decoded.int32Value, entity.int32Value);
+        expect(decoded.int64Value, entity.int64Value);
+        expect(decoded.int64FixNumValue, entity.int64FixNumValue);
+        expect(decoded.float32Value, entity.float32Value);
+        expect(decoded.float64Value, entity.float64Value);
+        expect(decoded.dateTimeValue, entity.dateTimeValue);
+        expect(decoded.stringValue, entity.stringValue);
+        expect(decoded.bytesValue, entity.bytesValue);
+        expect(decoded.example, entity.example);
+        expect(decoded, entity);
       });
     });
 
@@ -422,7 +436,7 @@ void main() {
       final dateTime = DateTime.fromMillisecondsSinceEpoch(0, isUtc: true)
           .add(const Duration(seconds: -9));
 
-      final value = _Example()..dateTimeValue = dateTime;
+      final entity = _Example()..dateTimeValue = dateTime;
       final message = <int>[
         (_Example._dateTimeProp.id << 3) | 2,
         2,
@@ -431,31 +445,32 @@ void main() {
       ];
 
       test('encode', () {
-        final result = _Example.kind.protobufTreeEncode(value).writeToBuffer();
-        expect(result, message);
+        final encoded =
+            _Example.kind.protobufTreeEncode(entity).writeToBuffer();
+        expect(encoded, message);
       });
 
       test('decode', () {
-        final result = _Example.kind.protobufBytesDecode(message);
-        expect(result.boolValue, value.boolValue);
-        expect(result.boolValueOrNull, value.boolValueOrNull);
-        expect(result.uint32Value, value.uint32Value);
-        expect(result.uint64Value, value.uint64Value);
-        expect(result.int32Value, value.int32Value);
-        expect(result.int64Value, value.int64Value);
-        expect(result.int64FixNumValue, value.int64FixNumValue);
-        expect(result.float32Value, value.float32Value);
-        expect(result.float64Value, value.float64Value);
-        expect(result.dateTimeValue, value.dateTimeValue);
-        expect(result.stringValue, value.stringValue);
-        expect(result.bytesValue, value.bytesValue);
-        expect(result.example, value.example);
-        expect(result, value);
+        final decoded = _Example.kind.protobufBytesDecode(message);
+        expect(decoded.boolValue, entity.boolValue);
+        expect(decoded.boolValueOrNull, entity.boolValueOrNull);
+        expect(decoded.uint32Value, entity.uint32Value);
+        expect(decoded.uint64Value, entity.uint64Value);
+        expect(decoded.int32Value, entity.int32Value);
+        expect(decoded.int64Value, entity.int64Value);
+        expect(decoded.int64FixNumValue, entity.int64FixNumValue);
+        expect(decoded.float32Value, entity.float32Value);
+        expect(decoded.float64Value, entity.float64Value);
+        expect(decoded.dateTimeValue, entity.dateTimeValue);
+        expect(decoded.stringValue, entity.stringValue);
+        expect(decoded.bytesValue, entity.bytesValue);
+        expect(decoded.example, entity.example);
+        expect(decoded, entity);
       });
     });
 
     group('string field', () {
-      final value = _Example()..stringValue = 'ab';
+      final entity = _Example()..stringValue = 'ab';
       final message = <int>[
         (_Example._stringProp.id << 3) | 2,
         2,
@@ -463,31 +478,32 @@ void main() {
       ];
 
       test('encode', () {
-        final result = _Example.kind.protobufTreeEncode(value).writeToBuffer();
-        expect(result, message);
+        final encoded =
+            _Example.kind.protobufTreeEncode(entity).writeToBuffer();
+        expect(encoded, message);
       });
 
       test('decode', () {
-        final result = _Example.kind.protobufBytesDecode(message);
-        expect(result.boolValue, value.boolValue);
-        expect(result.boolValueOrNull, value.boolValueOrNull);
-        expect(result.uint32Value, value.uint32Value);
-        expect(result.uint64Value, value.uint64Value);
-        expect(result.int32Value, value.int32Value);
-        expect(result.int64Value, value.int64Value);
-        expect(result.int64FixNumValue, value.int64FixNumValue);
-        expect(result.float32Value, value.float32Value);
-        expect(result.float64Value, value.float64Value);
-        expect(result.dateTimeValue, value.dateTimeValue);
-        expect(result.stringValue, value.stringValue);
-        expect(result.bytesValue, value.bytesValue);
-        expect(result.example, value.example);
-        expect(result, value);
+        final decoded = _Example.kind.protobufBytesDecode(message);
+        expect(decoded.boolValue, entity.boolValue);
+        expect(decoded.boolValueOrNull, entity.boolValueOrNull);
+        expect(decoded.uint32Value, entity.uint32Value);
+        expect(decoded.uint64Value, entity.uint64Value);
+        expect(decoded.int32Value, entity.int32Value);
+        expect(decoded.int64Value, entity.int64Value);
+        expect(decoded.int64FixNumValue, entity.int64FixNumValue);
+        expect(decoded.float32Value, entity.float32Value);
+        expect(decoded.float64Value, entity.float64Value);
+        expect(decoded.dateTimeValue, entity.dateTimeValue);
+        expect(decoded.stringValue, entity.stringValue);
+        expect(decoded.bytesValue, entity.bytesValue);
+        expect(decoded.example, entity.example);
+        expect(decoded, entity);
       });
     });
 
     group('bytes field', () {
-      final value = _Example()..bytesValue = [9, 8, 7];
+      final entity = _Example()..bytesValue = [9, 8, 7];
       final message = <int>[
         (_Example._bytesProp.id << 3) | 2,
         3,
@@ -497,31 +513,32 @@ void main() {
       ];
 
       test('encode', () {
-        final result = _Example.kind.protobufTreeEncode(value).writeToBuffer();
-        expect(result, message);
+        final encoded =
+            _Example.kind.protobufTreeEncode(entity).writeToBuffer();
+        expect(encoded, message);
       });
 
       test('decode', () {
-        final result = _Example.kind.protobufBytesDecode(message);
-        expect(result.boolValue, value.boolValue);
-        expect(result.boolValueOrNull, value.boolValueOrNull);
-        expect(result.uint32Value, value.uint32Value);
-        expect(result.uint64Value, value.uint64Value);
-        expect(result.int32Value, value.int32Value);
-        expect(result.int64Value, value.int64Value);
-        expect(result.int64FixNumValue, value.int64FixNumValue);
-        expect(result.float32Value, value.float32Value);
-        expect(result.float64Value, value.float64Value);
-        expect(result.dateTimeValue, value.dateTimeValue);
-        expect(result.stringValue, value.stringValue);
-        expect(result.bytesValue, value.bytesValue);
-        expect(result.example, value.example);
-        expect(result, value);
+        final decoded = _Example.kind.protobufBytesDecode(message);
+        expect(decoded.boolValue, entity.boolValue);
+        expect(decoded.boolValueOrNull, entity.boolValueOrNull);
+        expect(decoded.uint32Value, entity.uint32Value);
+        expect(decoded.uint64Value, entity.uint64Value);
+        expect(decoded.int32Value, entity.int32Value);
+        expect(decoded.int64Value, entity.int64Value);
+        expect(decoded.int64FixNumValue, entity.int64FixNumValue);
+        expect(decoded.float32Value, entity.float32Value);
+        expect(decoded.float64Value, entity.float64Value);
+        expect(decoded.dateTimeValue, entity.dateTimeValue);
+        expect(decoded.stringValue, entity.stringValue);
+        expect(decoded.bytesValue, entity.bytesValue);
+        expect(decoded.example, entity.example);
+        expect(decoded, entity);
       });
     });
 
     group('example field', () {
-      final value = _Example()..example = (_Example()..boolValue = true);
+      final entity = _Example()..example = (_Example()..boolValue = true);
       final message = <int>[
         (_Example._exampleProp.id << 3) | 2,
         2,
@@ -530,30 +547,31 @@ void main() {
       ];
 
       test('encode', () {
-        final result = _Example.kind.protobufTreeEncode(value).writeToBuffer();
-        expect(result, message);
+        final encoded =
+            _Example.kind.protobufTreeEncode(entity).writeToBuffer();
+        expect(encoded, message);
       });
 
       test('decode', () {
-        final result = _Example.kind.protobufBytesDecode(message);
-        expect(result.boolValue, value.boolValue);
-        expect(result.boolValueOrNull, value.boolValueOrNull);
-        expect(result.uint32Value, value.uint32Value);
-        expect(result.uint64Value, value.uint64Value);
-        expect(result.int32Value, value.int32Value);
-        expect(result.int64Value, value.int64Value);
-        expect(result.float32Value, value.float32Value);
-        expect(result.float64Value, value.float64Value);
-        expect(result.dateTimeValue, value.dateTimeValue);
-        expect(result.stringValue, value.stringValue);
-        expect(result.bytesValue, value.bytesValue);
-        expect(result.example, value.example);
-        expect(result, value);
+        final decoded = _Example.kind.protobufBytesDecode(message);
+        expect(decoded.boolValue, entity.boolValue);
+        expect(decoded.boolValueOrNull, entity.boolValueOrNull);
+        expect(decoded.uint32Value, entity.uint32Value);
+        expect(decoded.uint64Value, entity.uint64Value);
+        expect(decoded.int32Value, entity.int32Value);
+        expect(decoded.int64Value, entity.int64Value);
+        expect(decoded.float32Value, entity.float32Value);
+        expect(decoded.float64Value, entity.float64Value);
+        expect(decoded.dateTimeValue, entity.dateTimeValue);
+        expect(decoded.stringValue, entity.stringValue);
+        expect(decoded.bytesValue, entity.bytesValue);
+        expect(decoded.example, entity.example);
+        expect(decoded, entity);
       });
     });
 
     group('multiple field', () {
-      final value = _Example()
+      final entity = _Example()
         ..boolValue = true
         ..int32Value = 5;
       final message = <int>[
@@ -564,23 +582,24 @@ void main() {
       ];
 
       test('encode', () {
-        final result = _Example.kind.protobufTreeEncode(value).writeToBuffer();
-        expect(result, message);
+        final encoded =
+            _Example.kind.protobufTreeEncode(entity).writeToBuffer();
+        expect(encoded, message);
       });
 
       test('decode', () {
-        final result = _Example.kind.protobufBytesDecode(message);
-        expect(result.boolValue, value.boolValue);
-        expect(result.boolValueOrNull, value.boolValueOrNull);
-        expect(result.int32Value, value.int32Value);
-        expect(result.int64Value, value.int64Value);
-        expect(result.float32Value, value.float32Value);
-        expect(result.float64Value, value.float64Value);
-        expect(result.dateTimeValue, value.dateTimeValue);
-        expect(result.stringValue, value.stringValue);
-        expect(result.bytesValue, value.bytesValue);
-        expect(result.example, value.example);
-        expect(result, value);
+        final decoded = _Example.kind.protobufBytesDecode(message);
+        expect(decoded.boolValue, entity.boolValue);
+        expect(decoded.boolValueOrNull, entity.boolValueOrNull);
+        expect(decoded.int32Value, entity.int32Value);
+        expect(decoded.int64Value, entity.int64Value);
+        expect(decoded.float32Value, entity.float32Value);
+        expect(decoded.float64Value, entity.float64Value);
+        expect(decoded.dateTimeValue, entity.dateTimeValue);
+        expect(decoded.stringValue, entity.stringValue);
+        expect(decoded.bytesValue, entity.bytesValue);
+        expect(decoded.example, entity.example);
+        expect(decoded, entity);
       });
     });
   });
@@ -603,7 +622,7 @@ class _Example extends Entity {
   static late Prop _exampleProp;
   static final EntityKind<_Example> kind = EntityKind<_Example>(
     name: '_Example',
-    build: (c) {
+    define: (c) {
       c.constructor = () => _Example();
 
       _boolProp = c.requiredBool(

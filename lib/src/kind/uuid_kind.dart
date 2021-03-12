@@ -23,7 +23,7 @@ class UuidKind extends PrimitiveKind<Uuid> {
   @protected
   static final EntityKind<UuidKind> kind = EntityKind<UuidKind>(
     name: 'UuidKind',
-    build: (c) {
+    define: (c) {
       c.constructor = () => const UuidKind();
     },
   );
@@ -78,7 +78,7 @@ class UuidKind extends PrimitiveKind<Uuid> {
   }
 
   @override
-  Object? protobufTreeEncode(Uuid instance,
+  Object protobufTreeEncode(Uuid instance,
       {ProtobufEncodingContext? context}) {
     final bytes = instance.toBytes();
     return const BytesKind().protobufTreeEncode(bytes, context: context);

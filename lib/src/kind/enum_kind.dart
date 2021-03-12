@@ -59,7 +59,7 @@ class EnumKind<T> extends PrimitiveKind<T> {
   @protected
   static final EntityKind<EnumKind> kind = EntityKind<EnumKind>(
     name: 'EnumKind',
-    build: (c) {
+    define: (c) {
       final nameProp = c.optionalString(
         id: 1,
         name: 'name',
@@ -77,10 +77,18 @@ class EnumKind<T> extends PrimitiveKind<T> {
         itemsKind: EnumKindEntry.kind,
         getter: (t) => t.entries,
       );
+      final summaryProp = c.optionalString(
+        id: 3,
+        name: 'summary',
+        isSingleLine: true,
+        maxLengthInUtf8: 80,
+        getter: (t) => t.summary,
+      );
       c.constructorFromData = (data) {
         return EnumKind(
           name: data.get(nameProp) ?? 'Enum',
           entries: data.get(entriesProp),
+          summary: data.get(summaryProp),
         );
       };
     },
@@ -91,7 +99,14 @@ class EnumKind<T> extends PrimitiveKind<T> {
   @override
   final String name;
 
-  EnumKind({this.name = 'Enum', required this.entries}) {
+  /// Optional one-line summary that describes the kind.
+  final String? summary;
+
+  EnumKind({
+    this.name = 'Enum',
+    required this.entries,
+    this.summary,
+  }) {
     final entryIds = <int>{};
     final entryNames = <String>{};
     for (var entry in entries) {
@@ -243,7 +258,7 @@ class EnumKindEntry<T> extends Entity {
   @protected
   static final EntityKind<EnumKindEntry> kind = EntityKind<EnumKindEntry>(
     name: 'EnumEntry',
-    build: (c) {
+    define: (c) {
       final idProp = c.requiredUint32(
         id: 1,
         name: 'id',
@@ -254,34 +269,50 @@ class EnumKindEntry<T> extends Entity {
         name: 'name',
         getter: (t) => t.name,
       );
-      final valueProp = c.required<Object?>(
+      final valueProp = c.optional<Object>(
         id: 3,
         name: 'value',
         kind: const ObjectKind(),
         getter: (t) => t.value,
       );
+      final summaryProp = c.optionalString(
+        id: 4,
+        name: 'summary',
+        isSingleLine: true,
+        maxLengthInUtf8: 80,
+        getter: (t) => t.summary,
+      );
       c.constructorFromData = (data) => EnumKindEntry(
             id: data.get(idProp),
             name: data.get(nameProp),
             value: data.get(valueProp),
+            summary: data.get(summaryProp),
           );
     },
   );
 
-  /// ID of the entry. Must be 0 or greater.
+  /// Integer ID for Protocol Buffers serialization.
+  ///
+  /// Must be 1 or greater.
   final int id;
 
-  /// Name (for debugging purposes).
+  /// Name for JSON serialization and debugging.
   final String name;
 
   /// Value of the entry.
   final T value;
 
+  /// Optional one-line summary that describes the value.
+  final String? summary;
+
   EnumKindEntry({
     required this.id,
     required this.name,
     required this.value,
-  });
+    this.summary,
+  })  : assert(id >= 1,
+            'Property `$name` (id: $id) must not have ID less than 1.'),
+        assert(name != '', 'Property (id: $id) must have non-empty name.');
 
   @override
   int get hashCode => id;
@@ -291,7 +322,8 @@ class EnumKindEntry<T> extends Entity {
       other is EnumKindEntry &&
       id == other.id &&
       value == other.value &&
-      name == other.name;
+      name == other.name &&
+      summary == other.summary;
 
   @override
   EntityKind<EnumKindEntry> getKind() => kind;

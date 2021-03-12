@@ -1,3 +1,11 @@
+## 0.5.0
+
+  * Major refactoring, including some breaking API changes.
+  * Adds new primitives: Currency, CurrencyAmount, and Decimal.
+  * Adds new kinds: CurrencyAmountKind, DecimalKind, DurationKind, FutureKind, StreamKind, and
+    VoidKind.
+  * Fixes bugs and improves error messages.
+
 ## 0.4.0
 
   * Adds support for namers.

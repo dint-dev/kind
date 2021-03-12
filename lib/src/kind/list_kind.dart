@@ -32,7 +32,7 @@ class ListKind<T> extends Kind<List<T>> {
   @protected
   static final EntityKind<ListKind> kind = EntityKind<ListKind>(
     name: 'ListKind',
-    build: (c) {
+    define: (c) {
       final itemsKind = c.required(
         id: 1,
         name: 'itemsKind',
@@ -49,11 +49,18 @@ class ListKind<T> extends Kind<List<T>> {
         name: 'maxLength',
         getter: (t) => t.maxLength,
       );
+      final repeatingKinds = c.optionalList<Kind>(
+        id: 4,
+        name: 'repeatingKinds',
+        itemsKind: Kind.kind,
+        getter: (t) => t.repeatingKinds,
+      );
       c.constructorFromData = (data) {
         return ListKind(
           data.get(itemsKind),
           minLength: data.get(minLength),
           maxLength: data.get(maxLength),
+          repeatingKinds: data.get(repeatingKinds),
         );
       };
     },
@@ -61,6 +68,19 @@ class ListKind<T> extends Kind<List<T>> {
 
   /// Kind for items.
   final Kind<T> itemsKind;
+
+  /// Repeating kinds in the list.
+  ///
+  /// # Example
+  /// ```
+  /// final listKind = ListKind(
+  ///   itemsKind: ObjectKind(),
+  ///   repeatingKinds: [StringKind(), Int64Kind()],
+  /// );
+  /// // Example of a valid list:
+  /// //   ['a', 1, 'b', 2]
+  /// ```
+  final List<Kind<T>>? repeatingKinds;
 
   /// Minimum number of items.
   final int minLength;
@@ -75,6 +95,7 @@ class ListKind<T> extends Kind<List<T>> {
     this.itemsKind, {
     this.minLength = 0,
     this.maxLength,
+    this.repeatingKinds,
     this.reactive = true,
   })  : assert(minLength >= 0),
         assert(maxLength == null || maxLength >= minLength);
@@ -128,14 +149,27 @@ class ListKind<T> extends Kind<List<T>> {
   @override
   void instanceValidateConstraints(ValidateContext context, List<T> value) {
     super.instanceValidateConstraints(context, value);
+
+    // Length
     context.validateLength(
       value: value,
       length: value.length,
       minLength: minLength,
       maxLength: maxLength,
     );
+
+    // Common kind of all items
     for (var i = 0; i < value.length; i++) {
       context.validateIndex(i, value[i], kind: itemsKind);
+    }
+
+    // Repeating kinds
+    final repeatingKinds = this.repeatingKinds;
+    if (repeatingKinds != null) {
+      for (var i = 0; i < value.length; i++) {
+        final kind = repeatingKinds[i % repeatingKinds.length];
+        context.validateIndex(i, value[i], kind: kind);
+      }
     }
   }
 
@@ -219,7 +253,7 @@ class ListKind<T> extends Kind<List<T>> {
   }
 
   @override
-  Object? protobufTreeEncode(List<T> value,
+  Object protobufTreeEncode(List<T> value,
       {ProtobufEncodingContext? context}) {
     context ??= ProtobufEncodingContext();
     context.enter(value);

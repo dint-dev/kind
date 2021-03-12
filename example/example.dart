@@ -29,26 +29,26 @@ class Person extends Entity {
   static final kind = EntityKind<Person>(
     name: 'Person',
     packageName: 'example',
-    build: (b) {
-      b.requiredString(
+    define: (c) {
+      c.requiredString(
         id: 1,
         name: 'name',
         maxLengthInUtf8: 64,
         examples: ['John Doe'],
         field: (t) => t.name,
       );
-      b.optionalDate(
+      c.optionalDate(
         id: 2,
         name: 'dateOfBirth',
         field: (t) => t.dateOfBirth,
       );
-      b.requiredList<Person>(
+      c.requiredList<Person>(
         id: 2,
         name: 'friends',
         itemsKind: Person.kind,
         field: (t) => t.friends,
       );
-      b.constructor = () => Person();
+      c.constructor = () => Person();
     },
   );
 

@@ -25,7 +25,7 @@ void main() {
       // Example kind
       final kind = EntityKind(
         name: 'Person',
-        build: (c) {
+        define: (c) {
           c.optionalDate(
             id: 1,
             name: 'birthDate',

@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import 'package:collection/collection.dart';
-import 'package:kind/helpers.dart';
 import 'package:kind/kind.dart';
 import 'package:meta/meta.dart';
 
@@ -96,14 +95,13 @@ class ValidationError extends Error {
 
   @override
   String toString() {
-    return debugStringForConstructorCall(
-      name: 'ValidationError',
-      arguments: [
-        DebugNamedArgument('value', value),
-        DebugNamedArgument('message', message),
-        DebugNamedArgument('path', path),
-      ],
-    );
+    final b = EntityDebugStringBuilder();
+    b.writeDartConstructorCall(name: 'ValidationError', namedArguments: [
+      MapEntry('value', value),
+      MapEntry('message', message),
+      MapEntry('path', path),
+    ]);
+    return b.toString();
   }
 }
 

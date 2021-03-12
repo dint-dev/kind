@@ -40,7 +40,7 @@ import 'package:protobuf/protobuf.dart' as protobuf;
 ///   * London
 ///   * Sydney
 ///
-/// This behavior may be changed in future.
+/// This is an implementation detail that could be changed in future.
 @sealed
 class GeoPointKind extends PrimitiveKind<GeoPoint> {
   /// [Kind] for [GeoPointKind].
@@ -49,7 +49,7 @@ class GeoPointKind extends PrimitiveKind<GeoPoint> {
   @protected
   static final EntityKind<GeoPointKind> kind = EntityKind<GeoPointKind>(
     name: 'GeoPointKind',
-    build: (c) {
+    define: (c) {
       c.constructor = () => const GeoPointKind();
     },
   );
@@ -122,7 +122,7 @@ class GeoPointKind extends PrimitiveKind<GeoPoint> {
   }
 
   @override
-  Object? protobufTreeEncode(GeoPoint value,
+  Object protobufTreeEncode(GeoPoint value,
       {ProtobufEncodingContext? context}) {
     throw UnimplementedError();
   }

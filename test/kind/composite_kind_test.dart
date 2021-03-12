@@ -69,7 +69,7 @@ class _ExampleKind extends CompositePrimitiveKind<_Example, String> {
   String get name => 'Example';
 
   @override
-  PrimitiveKind<String> compose() {
+  PrimitiveKind<String> buildPrimitiveKind() {
     return const StringKind();
   }
 
@@ -79,12 +79,12 @@ class _ExampleKind extends CompositePrimitiveKind<_Example, String> {
   }
 
   @override
-  _Example instanceFromComposed(String builtKindInstance) {
+  _Example instanceFromPrimitive(String builtKindInstance) {
     return _Example(builtKindInstance);
   }
 
   @override
-  String instanceToComposed(_Example instance) {
+  String instanceToPrimitive(_Example instance) {
     return instance.value;
   }
 }

@@ -183,8 +183,6 @@ void main() {
           kind.jsonTreeDecode([1, 2, 3]);
           fail('Should have thrown');
         } on GraphNodeError catch (e) {
-          // Ignore
-          expect(e.name, 'JSON deserialization error');
           expect(e.pathEdges, []);
           expect(e.node, [1, 2, 3]);
           expect(e.reason, 'Expected JSON object.');
@@ -198,8 +196,6 @@ void main() {
           });
           fail('Should have thrown');
         } on GraphNodeError catch (e) {
-          // Ignore
-          expect(e.name, 'JSON deserialization error');
           expect(e.pathEdges, []);
           expect(e.node, {'value': 9});
           expect(e.reason,
@@ -215,8 +211,6 @@ void main() {
           });
           fail('Should have thrown');
         } on GraphNodeError catch (e) {
-          // Ignore
-          expect(e.name, 'JSON deserialization error');
           expect(e.pathEdges, ['type']);
           expect(e.node, {'type': 12345, 'value': 9});
           expect(e.reason,
@@ -232,8 +226,6 @@ void main() {
           });
           fail('Should have thrown');
         } on GraphNodeError catch (e) {
-          // Ignore
-          expect(e.name, 'JSON deserialization error');
           expect(e.pathEdges, ['type']);
           expect(e.node, 'some string');
           expect(
@@ -287,8 +279,6 @@ void main() {
           kind.jsonTreeEncode([1, 2, 3]);
           fail('Should have thrown');
         } on GraphNodeError catch (e) {
-          // Ignore
-          expect(e.name, 'JSON serialization error');
           expect(e.pathEdges, []);
           expect(e.node, [1, 2, 3]);
           expect(e.reason, 'Values of the given type are unsupported.');
@@ -342,9 +332,9 @@ void main() {
 class _Example0 extends Entity {
   static final EntityKind<_Example0> kind = EntityKind<_Example0>(
     name: 'Example',
-    build: (builder) {
-      builder.requiredString(id: 1, name: 'name', field: (e) => e.name);
-      builder.constructor = () => _Example0();
+    define: (c) {
+      c.requiredString(id: 1, name: 'name', field: (e) => e.name);
+      c.constructor = () => _Example0();
     },
   );
 
@@ -359,9 +349,9 @@ class _Example0 extends Entity {
 class _Example1 extends Entity {
   static final EntityKind<_Example1> kind = EntityKind<_Example1>(
     name: 'Example',
-    build: (builder) {
-      builder.requiredString(id: 1, name: 'name', field: (e) => e.name);
-      builder.constructor = () => _Example1();
+    define: (c) {
+      c.requiredString(id: 1, name: 'name', field: (e) => e.name);
+      c.constructor = () => _Example1();
     },
   );
 

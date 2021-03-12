@@ -41,7 +41,7 @@ void main() {
       );
       expect(
         kind.jsonTreeEncode(
-          const StringKind(singleLine: true),
+          const StringKind(isSingleLine: true),
         ),
         {'singleLine': true},
       );
@@ -60,37 +60,37 @@ void main() {
       final object = StringKind(
         minLengthInUtf8: 2,
         maxLengthInUtf8: 3,
-        singleLine: true,
+        isSingleLine: true,
         examples: ['example'],
       );
       final clone = const StringKind(
         minLengthInUtf8: 2,
         maxLengthInUtf8: 3,
-        singleLine: true,
+        isSingleLine: true,
         examples: ['example'],
       );
       final other0 = const StringKind(
         minLengthInUtf8: 0,
         maxLengthInUtf8: 3,
-        singleLine: true,
+        isSingleLine: true,
         examples: ['example'],
       );
       final other1 = const StringKind(
         minLengthInUtf8: 2,
         maxLengthInUtf8: 99999,
-        singleLine: true,
+        isSingleLine: true,
         examples: ['example'],
       );
       final other2 = const StringKind(
         minLengthInUtf8: 2,
         maxLengthInUtf8: 3,
-        singleLine: false,
+        isSingleLine: false,
         examples: ['example'],
       );
       final other3 = const StringKind(
         minLengthInUtf8: 2,
         maxLengthInUtf8: 3,
-        singleLine: true,
+        isSingleLine: true,
         examples: ['other'],
       );
 
@@ -152,7 +152,7 @@ void main() {
       });
 
       test('singleLine: false', () {
-        const kind = StringKind(singleLine: false);
+        const kind = StringKind(isSingleLine: false);
 
         // Valid examples
         expect(kind.instanceIsValid(''), isTrue);
@@ -165,7 +165,7 @@ void main() {
       });
 
       test('singleLine: true', () {
-        const kind = StringKind(singleLine: true);
+        const kind = StringKind(isSingleLine: true);
 
         // Valid examples
         expect(kind.instanceIsValid(''), isTrue);

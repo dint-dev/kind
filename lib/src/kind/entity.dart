@@ -14,50 +14,116 @@
 
 import 'package:kind/kind.dart';
 
-/// An object with properties.
+/// Optional superclass for entities.
 ///
-/// Entity has [getKind()], which returns the correct [EntityKind].
+/// This class gives you automatic implementations of:
+///   * `hashCode` (implementation uses [GraphEquality])
+///   * `==` (implementation uses [GraphEquality])
+///   * `toString()` (implementation uses [EntityDebugStringBuilder])
 ///
-/// If you extend [Entity], you get default implementations of [hashCode] and
-/// operator [==].
+/// You must implement [getKind()].
 ///
-/// ## Interpretation in different contexts
-///   * In databases, interpreted as a table.
-///   * In JSON serialization, serialized as JSON object.
-///   * In Protocol Buffers serialization, serialized as message.
+/// # Example
+/// ```
+/// import 'package:kind/kind.dart';
 ///
-/// ## Examples
-/// See documentation of [EntityKind].
+/// class Person extends Entity {
+///   static final EntityKind<Person> kind = EntityKind<Person>(
+///     name: 'Person',
+///     define: (c) {
+///       // ...
+///     },
+///   );
 ///
+///   @override
+///   EntityKind<Person> getKind() => kind;
+/// }
+/// ```
 abstract class Entity {
   const Entity();
 
   @override
-  int get hashCode => getKind().instanceHash(this);
+  int get hashCode {
+    return const GraphEquality().hashEntity(
+      this,
+      kind: getKind(),
+    );
+  }
 
   @override
   bool operator ==(Object other) {
-    return getKind().instanceEquals(this, other);
+    return const GraphEquality().equalsEntity(
+      this,
+      other,
+      kind: getKind(),
+      stack: null,
+    );
   }
 
   /// Returns [Kind] of this entity.
   ///
-  /// ## Example
-  /// ```
-  /// class Person extends Entity {
-  ///   static final EntityKind<Person> kind = EntityKind<Person>(
-  ///     name: 'Person',
-  ///     build: (b) {
-  ///       // ...
-  ///     },
-  ///   );
+  /// # Example
   ///
-  ///   @override
-  ///   getKind() => kind;
-  /// }
-  /// ```
+  /// See documentation for the class [Entity].
+  ///
   EntityKind getKind();
 
   @override
-  String toString() => getKind().instanceToString(this);
+  String toString() {
+    final builder = EntityDebugStringBuilder();
+    builder.writeDartEntity(this, kind: getKind());
+    return builder.toString();
+  }
+}
+
+/// Optional mixin for entities (alternative to extending [Entity]).
+///
+/// This class gives you automatic implementations of:
+///   * `hashCode` (implementation uses [GraphEquality])
+///   * `==` (implementation uses [GraphEquality])
+///   * `toString()` (implementation uses [EntityDebugStringBuilder])
+///
+/// You must implement [getKind()].
+///
+/// # Example
+/// ```
+/// import 'package:kind/kind.dart';
+///
+/// class Person extends SomeClass with EntityMixin {
+///   static final EntityKind<Person> kind = EntityKind<Person>(
+///     name: 'Person',
+///     define: (c) {
+///       // ...
+///     },
+///   );
+///
+///   @override
+///   EntityKind<Person> getKind() => kind;
+/// }
+/// ```
+mixin EntityMixin implements Entity {
+  @override
+  int get hashCode {
+    return const GraphEquality().hashEntity(
+      this,
+      kind: getKind(),
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return const GraphEquality().equalsEntity(
+      this,
+      other,
+      kind: getKind(),
+      stack: null,
+    );
+  }
+
+  @override
+  String toString() {
+    final builder = EntityDebugStringBuilder();
+    builder.writeDartEntity(this, kind: getKind());
+    return builder.toString();
+  }
 }

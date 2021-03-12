@@ -36,7 +36,7 @@ import 'package:meta/meta.dart';
 class KindMeaning {
   static final EntityKind<KindMeaning> kind_ = EntityKind<KindMeaning>(
     name: 'KindMeaning',
-    build: (c) {
+    define: (c) {
       final schemaUrl = c.requiredString(
         id: 1,
         name: 'schemaUrl',
@@ -59,7 +59,7 @@ class KindMeaning {
   @protected
   static final EntityKind<KindMeaning> kind = EntityKind<KindMeaning>(
     name: 'JsonKind',
-    build: (c) {
+    define: (c) {
       final schemaUrlProp = c.requiredString(
         id: 1,
         name: 'schemaUrl',

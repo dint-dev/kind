@@ -30,7 +30,7 @@ class JsonKind extends PrimitiveKind<Object?> {
   @protected
   static final EntityKind<JsonKind> kind = EntityKind<JsonKind>(
     name: 'JsonKind',
-    build: (c) {
+    define: (c) {
       c.constructor = () => const JsonKind();
     },
   );
@@ -85,7 +85,7 @@ class JsonKind extends PrimitiveKind<Object?> {
   }
 
   @override
-  Object? protobufTreeEncode(Object? value,
+  Object protobufTreeEncode(Object? value,
       {ProtobufEncodingContext? context}) {
     final s = jsonEncode(value);
     context ??= ProtobufEncodingContext();

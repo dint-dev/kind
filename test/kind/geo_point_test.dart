@@ -16,34 +16,6 @@ import 'package:kind/kind.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('DistanceUnit:', () {
-    test('meters', () {
-      const unit = DistanceUnit.meters;
-      expect(unit.name, 'meters');
-      expect(unit.inMeters, 1.0);
-    });
-
-    test('kilometers', () {
-      const unit = DistanceUnit.kilometers;
-      expect(unit.name, 'kilometers');
-      expect(unit.inMeters, 1000.0);
-      expect(unit.fromMeters(100), 0.1);
-      expect(unit.toMeters(0.1), 100);
-    });
-
-    test('miles', () {
-      const unit = DistanceUnit.miles;
-      expect(unit.name, 'miles');
-      expect(unit.inMeters, 1609.344);
-    });
-
-    test('feet', () {
-      const unit = DistanceUnit.feet;
-      expect(unit.name, 'feet');
-      expect(unit.inMeters, 0.3048);
-    });
-  });
-
   group('GeoPoint:', () {
     final sanFrancisco = GeoPoint(37.7749, -122.4194);
     final london = GeoPoint(51.5074, -0.1278);
@@ -67,17 +39,25 @@ void main() {
     });
 
     test('distanceTo(..): London - San Francisco --> 8,626 km', () {
+      // London - San Francisco
       expect(london.distanceTo(sanFrancisco) ~/ 1000, 8626);
+
+      // San Francisco - London
       expect(sanFrancisco.distanceTo(london) ~/ 1000, 8626);
-      expect(
-          sanFrancisco
-              .distanceTo(london, unit: DistanceUnit.kilometers)
-              .round(),
-          8626);
+
+      // With unit parameter
+      final explicitlyInKm = sanFrancisco.distanceTo(
+        london,
+        unitOfLength: UnitOfLength.kilometers,
+      );
+      expect(explicitlyInKm.round(), 8626);
     });
 
     test('distanceTo(..): San Francisco - Sydney --> 11,961 km', () {
+      // San Francisco - Sydney
       expect(sanFrancisco.distanceTo(sydney) ~/ 1000, 11961);
+
+      // Sydney - San Francisco
       expect(sydney.distanceTo(sanFrancisco) ~/ 1000, 11961);
     });
   });

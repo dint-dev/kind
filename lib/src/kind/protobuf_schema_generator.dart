@@ -20,7 +20,7 @@ import 'package:kind/kind.dart';
 /// ```
 /// import 'dart:io';
 /// import 'package:kind/kind.dart';
-/// import 'package:kind/protobuf.dart';
+/// import 'package:kind/protobuf_encoding_and_decoding.dart';
 ///
 /// void main() {
 ///   final generator = ProtocolBuffersSchemaGenerator(

@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:fixnum/fixnum.dart' show Int64;
 import 'package:kind/kind.dart';
 import 'package:protobuf/protobuf.dart' as protobuf;
 
@@ -35,7 +34,7 @@ class EntityKindImpl<T extends Object> extends EntityKind<T> {
 
   late List<String>? _primaryKeyDefinition;
 
-  void Function(EntityKindDeclarationContext<T> builder)? _buildFunction;
+  void Function(EntityKindDefineContext<T> builder)? _defineFunction;
 
   T Function()? _constructor;
 
@@ -59,148 +58,213 @@ class EntityKindImpl<T extends Object> extends EntityKind<T> {
     this.extendsClause,
     this.withKinds = const [],
     this.description,
-    required void Function(EntityKindDeclarationContext<T> builder) build,
-  })   : _buildFunction = build,
+    required void Function(EntityKindDefineContext<T> builder) define,
+  })   : _defineFunction = define,
         super.constructor();
 
   @override
   List<T> get declaredExamples {
-    _buildOnce();
+    // Construct internal state of this EntityKind.
+    _constructInternalStateOnce();
+
     return _examples!;
   }
 
   @override
   List<String>? get primaryKeyProps {
-    _buildOnce();
+    // Construct internal state of this EntityKind.
+    _constructInternalStateOnce();
+
     return _primaryKeyDefinition;
   }
 
   @override
   List<Prop<Object, Object?>> get props {
-    _buildOnce();
+    // Construct internal state of this EntityKind.
+    _constructInternalStateOnce();
+
     return _props!;
   }
 
   @override
-  int get protobufFieldType {
-    return protobuf.PbFieldType.OM;
-  }
-
-  @override
-  bool instanceIsDefaultValue(Object? value) {
-    if (value is! T) {
-      return false;
-    }
-    for (var prop in props) {
-      final propValue = prop.get(value);
-      if (!prop.kind.instanceIsDefaultValue(propValue)) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  @override
   T jsonTreeDecode(Object? json, {JsonDecodingContext? context}) {
-    _buildOnce();
+    // Construct internal state of this EntityKind.
+    _constructInternalStateOnce();
+
+    // Construct decoding context (if not given).
     context ??= JsonDecodingContext();
-    final namer = context.namer;
-    if (json is Map) {
-      final constructorFromEntityData = _constructorFromEntityData;
-      if (constructorFromEntityData == null) {
-        final result = newInstance();
 
-        // For each property...
-        for (var prop in props) {
-          var jsonKey = prop.name;
-          if (namer != null) {
-            jsonKey = namer.fromEntityKindPropName(this, prop, jsonKey);
-          }
-
-          // Property does not exist (in the JSON object)?
-          if (!json.containsKey(jsonKey)) {
-            // We don't need to set default value.
-            // (because `newInstance()` already took care of it.)
-            continue;
-          }
-
-          // Property exists
-          final jsonValue = json[jsonKey];
-          final dartValue = context.decode(jsonValue, kind: prop.kind);
-          prop.set(result, dartValue);
-        }
-
-        return result;
-      } else {
-        final entityData = EntityData();
-
-        for (var prop in props) {
-          var jsonKey = prop.name;
-          if (namer != null) {
-            jsonKey = namer.fromEntityKindPropName(this, prop, jsonKey);
-          }
-
-          // Property does not exist (in the JSON object)?
-          if (!json.containsKey(jsonKey)) {
-            // Set default value?
-            final defaultValue = prop.defaultValue;
-            if (defaultValue != null) {
-              entityData.set(prop, defaultValue);
-            }
-            continue;
-          }
-
-          // Property exists
-          final jsonValue = json[jsonKey];
-          final dartValue = context.decode(jsonValue, kind: prop.kind);
-          entityData.set(prop, dartValue);
-        }
-
-        return constructorFromEntityData(entityData);
-      }
-    } else {
+    // Check argument
+    if (json is! Map) {
       throw context.newGraphNodeError(
         value: json,
         reason: 'Expected JSON object.',
       );
     }
-  }
 
-  @override
-  Map<String, Object?> jsonTreeEncode(T value, {JsonEncodingContext? context}) {
-    _buildOnce();
-    context ??= JsonEncodingContext();
-    context.enter(value);
+    // Get property namer.
     final namer = context.namer;
-    try {
-      final result = <String, Object?>{};
+
+    // Is this mutable or immutable?
+    final constructorFromEntityData = _constructorFromEntityData;
+
+    if (constructorFromEntityData == null) {
+      // --------------
+      // Mutable entity
+      // --------------
+      final result = newInstance();
+
+      // For each property...
       for (var prop in props) {
-        final dartValue = prop.get(value);
-        if (prop.kind.instanceIsDefaultValue(dartValue)) {
-          continue;
-        }
-        final jsonValue = context.encode(dartValue, kind: prop.kind);
+        // Resolve JSON name of the property.
         var jsonKey = prop.name;
         if (namer != null) {
           jsonKey = namer.fromEntityKindPropName(this, prop, jsonKey);
         }
+
+        // Property does not exist (in the JSON object)?
+        if (!json.containsKey(jsonKey)) {
+          // We don't need to set default value.
+          // (because `newInstance()` already took care of it.)
+          continue;
+        }
+
+        // Property exists
+        final jsonValue = json[jsonKey];
+        final dartValue = context.decode(jsonValue, kind: prop.kind);
+        prop.set(result, dartValue);
+      }
+
+      return result;
+    } else {
+      // ----------------
+      // Immutable entity
+      // ----------------
+      final entityData = EntityData();
+
+      for (var prop in props) {
+        // Resolve JSON name of the property.
+        var jsonKey = prop.name;
+        if (namer != null) {
+          jsonKey = namer.fromEntityKindPropName(this, prop, jsonKey);
+        }
+
+        // Property does not exist (in the JSON object)?
+        if (!json.containsKey(jsonKey)) {
+          // Set default value?
+          final defaultValue = prop.defaultValue;
+          if (defaultValue != null) {
+            entityData.set(prop, defaultValue);
+          }
+          continue;
+        }
+
+        // Property exists
+        final jsonValue = json[jsonKey];
+        final dartValue = context.decode(jsonValue, kind: prop.kind);
+        entityData.set(prop, dartValue);
+      }
+
+      return constructorFromEntityData(entityData);
+    }
+  }
+
+  @override
+  Map<String, Object?> jsonTreeEncode(T value, {JsonEncodingContext? context}) {
+    // Construct internal state of this EntityKind.
+    _constructInternalStateOnce();
+
+    // Construct encoding context (if not given)
+    context ??= JsonEncodingContext();
+
+    // Get property namer
+    final namer = context.namer;
+
+    // Construct empty JSON object
+    final result = <String, Object?>{};
+
+    // Enter this object
+    context.enter(value);
+    try {
+      for (var prop in props) {
+        // Get value of the property.
+        // The method throws descriptive error message if it fails.
+        final dartValue = prop.get(value);
+
+        // Is the value equal to the default value?
+        if (prop.kind.instanceIsDefaultValue(dartValue)) {
+          continue;
+        }
+
+        // Encode property value as JSON.
+        final jsonValue = context.encode(dartValue, kind: prop.kind);
+
+        // Resolve JSON name of the property.
+        var jsonKey = prop.name;
+        if (namer != null) {
+          jsonKey = namer.fromEntityKindPropName(this, prop, jsonKey);
+        }
+
+        // Mutate the returned JSON object.
         result[jsonKey] = jsonValue;
       }
       return result;
     } finally {
+      // Leave this object
       context.leave();
     }
   }
 
   @override
-  T newFromData(EntityData data) {
-    _buildOnce();
+  T newInstance() {
+    // Construct internal state of this EntityKind.
+    _constructInternalStateOnce();
+
+    final constructor = _constructor;
+    if (constructor != null) {
+      // Construct instance.
+      //
+      // We don't need to initialize with default property values because
+      // the constructor takes care of it.
+      try {
+        return constructor();
+      } catch (error, stackTrace) {
+        throw TraceableError(
+          message: 'Constructing a default instance of `$name` failed.',
+          error: error,
+          stackTrace: stackTrace,
+        );
+      }
+    }
+    final constructorFromEntityData = _constructorFromEntityData;
+    if (constructorFromEntityData != null) {
+      // We don't need to initialize with default property values because
+      // entityData.get(prop, value) will take care of it.
+      final entityData = EntityData();
+      try {
+        return constructorFromEntityData(entityData);
+      } catch (error, stackTrace) {
+        throw TraceableError(
+          message: 'Constructing an instance of `$name` failed.',
+          error: error,
+          stackTrace: stackTrace,
+        );
+      }
+    }
+    throw StateError('Kind `$name` does not have any constructor.');
+  }
+
+  @override
+  T newInstanceFromData(EntityData data) {
+    // Construct internal state of this EntityKind.
+    _constructInternalStateOnce();
+
     final constructorFromData = _constructorFromEntityData;
     late T result;
     if (constructorFromData != null) {
       result = constructorFromData(data);
     } else {
-      result = newInstance();
+      result = _constructor!();
     }
     for (var prop in props) {
       if (prop.isMutable) {
@@ -212,29 +276,10 @@ class EntityKindImpl<T extends Object> extends EntityKind<T> {
   }
 
   @override
-  T newInstance() {
-    _buildOnce();
-    final constructor = _constructor;
-    if (constructor != null) {
-      // Construct instance.
-      //
-      // We don't need to initialize with default property values because
-      // the constructor takes care of it.
-      return constructor();
-    }
-    final constructorFromEntityData = _constructorFromEntityData;
-    if (constructorFromEntityData != null) {
-      // We don't need to initialize with default property values because
-      // entityData.get(prop, value) will take care of it.
-      final entityData = EntityData();
-      return constructorFromEntityData(entityData);
-    }
-    throw StateError('Kind `$name` does not have constructor');
-  }
-
-  @override
   protobuf.BuilderInfo protobufBuilderInfo() {
-    _buildOnce();
+    // Construct internal state of this EntityKind.
+    _constructInternalStateOnce();
+
     return _protobufBuilderInfo ??= _newProtobufBuilderInfo();
   }
 
@@ -252,16 +297,23 @@ class EntityKindImpl<T extends Object> extends EntityKind<T> {
   @override
   T protobufTreeDecode(Object? protobufObject,
       {ProtobufDecodingContext? context}) {
-    _buildOnce();
+    // Construct internal state of this EntityKind.
+    _constructInternalStateOnce();
+
     context ??= ProtobufDecodingContext();
     if (protobufObject is! protobuf.GeneratedMessage) {
       throw ArgumentError.value(
-          protobufObject, 'protobufObject', 'Expected GeneratedMessage');
+        protobufObject,
+        'protobufObject',
+        'Expected GeneratedMessage',
+      );
     }
     final generatedMessage = protobufObject;
     final constructorFromEntityData = _constructorFromEntityData;
     if (constructorFromEntityData == null) {
-      // Construct an instance.
+      // --------------
+      // Mutable entity
+      // --------------
       final result = newInstance();
 
       // For each property...
@@ -286,6 +338,9 @@ class EntityKindImpl<T extends Object> extends EntityKind<T> {
       }
       return result;
     } else {
+      // ----------------
+      // Immutable entity
+      // ----------------
       final entityData = EntityData();
 
       // For each property...
@@ -319,37 +374,48 @@ class EntityKindImpl<T extends Object> extends EntityKind<T> {
   @override
   protobuf.GeneratedMessage protobufTreeEncode(T instance,
       {ProtobufEncodingContext? context}) {
-    _buildOnce();
+    // Construct internal state of this EntityKind.
+    _constructInternalStateOnce();
+
     context ??= ProtobufEncodingContext();
     final info = protobufBuilderInfo();
     final generatedMessage = _GeneratedMessageImpl(info);
     for (var prop in props) {
+      // Get property value.
       final propValue = prop.get(instance);
+
+      // Ignore default value.
       if (prop.kind.instanceIsDefaultValue(propValue)) {
         continue;
       }
-      var propValueAsProtobufValue = context.encode(
+
+      // Encode property value.
+      final pbType = info.byIndex[prop.id - 1].type;
+      var pbValue = context.encode(
         propValue,
         kind: prop.kind,
+        pbType: pbType,
       );
-      if (propValueAsProtobufValue != null) {
-        final type = info.byIndex[prop.id - 1].type;
-        final value = _valueToProtobufValue(
-          propValueAsProtobufValue,
-          pbType: type,
-        );
-        generatedMessage.setField(prop.id, value);
-      }
+
+      // Set PB field.
+      generatedMessage.setField(prop.id, pbValue);
     }
     return generatedMessage;
   }
 
   @override
   T randomExample({RandomExampleContext? context}) {
-    _buildOnce();
+    // Construct internal state of this EntityKind.
+    _constructInternalStateOnce();
+
+    // Construct context (if not given).
     context ??= RandomExampleContext();
+
+    // Increment variables that protect us from too long operations
+    // (infinite recursion, etc.).
     context.nonPrimitivesCount++;
     context.depth++;
+
     try {
       // Is it possible that the class is immutable?
       final constructorFromEntityData = _constructorFromEntityData;
@@ -366,7 +432,7 @@ class EntityKindImpl<T extends Object> extends EntityKind<T> {
         }
 
         // Construct instance using the EntityData.
-        return newFromData(entityData);
+        return newInstanceFromData(entityData);
       }
 
       // No, the class is definitely not immutable.
@@ -389,53 +455,58 @@ class EntityKindImpl<T extends Object> extends EntityKind<T> {
     }
   }
 
-  @override
-  String toString({bool props = false}) {
-    return '$name.kind';
-  }
-
-  void _buildOnce() {
-    final buildFunction = _buildFunction;
-    if (buildFunction == null) {
-      return;
-    }
-    if (_isBuilding) {
-      throw StateError('Building kind "$name" led to infinite recursion');
-    }
-    _isBuilding = true;
+  void _constructInternalStateOnce() {
     try {
-      final builder = EntityKindDeclarationContext<T>();
-      final extendsClause = this.extendsClause;
-      if (extendsClause != null) {
-        builder.propList.addAll(extendsClause.kind.props);
+      final defineFunction = _defineFunction;
+      if (defineFunction == null) {
+        return;
       }
+      if (_isBuilding) {
+        throw StateError(
+          'Building kind "$name" led to infinite recursion',
+        );
+      }
+      _isBuilding = true;
       try {
-        buildFunction(builder);
-      } catch (e) {
-        throw StateError('Building kind "$name" failed: $e');
+        final defineContext = EntityKindDefineContext<T>();
+
+        // Extends?
+        final extendsClause = this.extendsClause;
+        if (extendsClause != null) {
+          for (var prop in extendsClause.kind.props) {
+            defineContext.addProp(prop);
+          }
+        }
+
+        // Call `define` functions.
+        defineFunction(defineContext);
+
+        // Set internal state of EntityKind
+        _props = List<Prop<Object, Object?>>.unmodifiable(defineContext.propList);
+        _constructor = defineContext.constructor;
+        _constructorFromEntityData = defineContext.constructorFromData;
+        _examples = defineContext.examples;
+        _protobufBuilderInfo = defineContext.protobufBuilderInfo;
+        _primaryKeyDefinition = defineContext.primaryKeyProps;
+        _defineFunction = null;
+      } finally {
+        _isBuilding = false;
       }
-      _props = List<Prop<Object, Object?>>.unmodifiable(builder.propList);
-      _constructor = builder.constructor;
-      _constructorFromEntityData = builder.constructorFromData;
-      _examples = builder.declaredExamples;
-      _protobufBuilderInfo = builder.protobufBuilderInfo;
-      _primaryKeyDefinition = builder.primaryKeyProps;
-      _buildFunction = null;
-    } finally {
-      _isBuilding = false;
-    }
-    try {
+
       // Check whether the developer made an infinite initialization error.
       final cycle = _findInitializationCycle([], [], this);
       if (cycle != null) {
         throw StateError(
-          'Kind "$name" has an instance initialization cycle ("$cycle") that would lead to stack overflow if `kind.newInstance()` was called.'
+          'Detected an instance initialization cycle ("$cycle") that would lead to stack overflow if `kind.newInstance()` was called.'
           ' You can fix this by using `NullableKind` so the initial value will be null.',
         );
       }
-    } catch (e) {
-      _buildFunction = buildFunction;
-      rethrow;
+    } catch (error, stackTrace) {
+      throw TraceableError(
+        message: 'Building definition for `$name` failed.',
+        error: error,
+        stackTrace: stackTrace,
+      );
     }
   }
 
@@ -477,7 +548,7 @@ class EntityKindImpl<T extends Object> extends EntityKind<T> {
 
   protobuf.BuilderInfo _newProtobufBuilderInfo(
       {ProtobufBuilderInfoContext? context}) {
-    _buildOnce();
+    _constructInternalStateOnce();
     context ??= ProtobufBuilderInfoContext();
     final packageName = this.packageName;
     final info = protobuf.BuilderInfo(
@@ -550,49 +621,16 @@ class EntityKindImpl<T extends Object> extends EntityKind<T> {
             protoName: name,
           );
         }
-      } catch (e) {
-        throw StateError(
-            'Constructing Protocol Buffers BuildInfo failed because of: $prop\nError: $e');
+      } catch (error, stackTrace) {
+        throw TraceableError(
+          message:
+              'Constructing Protocol Buffers BuildInfo failed because of property `${prop.name}`.',
+          error: error,
+          stackTrace: stackTrace,
+        );
       }
     }
     return info;
-  }
-
-  static Object _valueToProtobufValue(Object value, {required int pbType}) {
-    switch (pbType) {
-      // case protobuf.PbFieldType.OB:
-      //   if (value is bool) {
-      //     return value ? 1 : 0;
-      //   }
-      //   break;
-      //
-      // case protobuf.PbFieldType.PB:
-      //   if (value is List) {
-      //     return value.map((e) => e ? 1 : 0).toList();
-      //   }
-      //   break;
-
-      case protobuf.PbFieldType.O6:
-        continue int64Case;
-
-      int64Case:
-      case protobuf.PbFieldType.OS6:
-        if (value is num) {
-          return Int64(value.toInt());
-        }
-        break;
-
-      case protobuf.PbFieldType.P6:
-        continue int64ListCase;
-
-      int64ListCase:
-      case protobuf.PbFieldType.PS6:
-        if (value is List) {
-          return value.map((e) => Int64(e)).toList();
-        }
-        break;
-    }
-    return value;
   }
 }
 

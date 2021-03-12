@@ -52,7 +52,7 @@ import 'package:meta/meta.dart';
 @experimental
 const StringKind stringKindForEmailAddress = StringKind(
   name: 'EmailAddress',
-  singleLine: true,
+  isSingleLine: true,
   minLengthInUtf8: 6,
   maxLengthInUtf8: 80,
   regExpProvider: _regExpProvider,

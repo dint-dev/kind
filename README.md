@@ -42,6 +42,8 @@ Flutter SDK 2.0.0 or later.
   * Floating-point numbers
     * [Float32Kind](https://pub.dev/documentation/kind/latest/kind/Float32Kind-class.html)
     * [Float64Kind](https://pub.dev/documentation/kind/latest/kind/Float64Kind-class.html)
+  * Exact decimal numbers
+    * [DecimalKind](https://pub.dev/documentation/kind/latest/kind/DecimalKind-class.html)
   * Date and time
     * [DateKind](https://pub.dev/documentation/kind/latest/kind/DateKind-class.html)
     * [DateTimeKind](https://pub.dev/documentation/kind/latest/kind/DateTimeKind-class.html)
@@ -52,14 +54,23 @@ Flutter SDK 2.0.0 or later.
   * Lists and sets
     * [ListKind](https://pub.dev/documentation/kind/latest/kind/ListKind-class.html)
     * [SetKind](https://pub.dev/documentation/kind/latest/kind/SetKind-class.html)
-  * Others
+  * One of multiple values or kinds
     * [EnumKind](https://pub.dev/documentation/kind/latest/kind/EnumKind-class.html)
-    * [GeoPointKind](https://pub.dev/documentation/kind/latest/kind/GeoPointKind-class.html)
-    * [JsonKind](https://pub.dev/documentation/kind/latest/kind/JsonKind-class.html)
-    * [NullableKind](https://pub.dev/documentation/kind/latest/kind/NullableKind-class.html)
     * [ObjectKind](https://pub.dev/documentation/kind/latest/kind/ObjectKind-class.html)
     * [OneOfKind](https://pub.dev/documentation/kind/latest/kind/OneOfKind-class.html)
+  * Money
+    * [Currency.kind](https://pub.dev/documentation/kind/latest/kind/Currency/kind.html)
+    * [CurrencyAmountKind](https://pub.dev/documentation/kind/latest/kind/CurrencyAmountKind-class.html)
+  * Geospatial
+    * [GeoPointKind](https://pub.dev/documentation/kind/latest/kind/GeoPointKind-class.html)
+  * Unique identifiers
     * [UuidKind](https://pub.dev/documentation/kind/latest/kind/UuidKind-class.html)
+  * Arbitrary JSON trees
+    * [JsonKind](https://pub.dev/documentation/kind/latest/kind/JsonKind-class.html)
+  * Others
+    * [FutureKind](https://pub.dev/documentation/kind/latest/kind/FutureKind-class.html)
+    * [NullableKind](https://pub.dev/documentation/kind/latest/kind/NullableKind-class.html)
+    * [StreamKind](https://pub.dev/documentation/kind/latest/kind/StreamKind-class.html)
   * Your custom models
     * [CompositePrimitiveKind](https://pub.dev/documentation/kind/latest/kind/CompositePrimitiveKind-class.html)
     * [EntityKind](https://pub.dev/documentation/kind/latest/kind/EntityKind-class.html)
@@ -70,13 +81,21 @@ Flutter SDK 2.0.0 or later.
     * [stringKindForUrl](https://pub.dev/documentation/kind/latest/kind.strings/stringKindForUrl-constant.html) (URL)
 
 ### Other APIs
+  * [Currency](https://pub.dev/documentation/kind/latest/kind/Currency-class.html) (currency)
+  * [CurrencyAmount](https://pub.dev/documentation/kind/latest/kind/CurrencyAmount-class.html) (currency amount)
   * [Date](https://pub.dev/documentation/kind/latest/kind/GeoPoint-class.html) (unlike _DateTime_, has only date)
   * [DateTimeWithTimeZone](https://pub.dev/documentation/kind/latest/kind/GeoPoint-class.html) (unlike _DateTime_, allows arbitrary time zone)
+  * [Decimal](https://pub.dev/documentation/kind/latest/kind/Decimal-class.html) (precise decimal number)
   * [GeoPoint](https://pub.dev/documentation/kind/latest/kind/GeoPoint-class.html) (geographical latitude/longitude coordinates)
   * [ReactiveIterable](https://pub.dev/documentation/kind/latest/kind/ReactiveIterable-class.html)
   * [ReactiveList](https://pub.dev/documentation/kind/latest/kind/ReactiveList-class.html)
   * [ReactiveMap](https://pub.dev/documentation/kind/latest/kind/ReactiveMap-class.html)
   * [ReactiveSet](https://pub.dev/documentation/kind/latest/kind/ReactiveSet-class.html)
+  * [UnitOfArea](https://pub.dev/documentation/kind/latest/kind/UnitOfArea-class.html)
+  * [UnitOfLength](https://pub.dev/documentation/kind/latest/kind/UnitOfLength-class.html)
+  * [UnitOfMeasure](https://pub.dev/documentation/kind/latest/kind/UnitOfMeasure-class.html)
+  * [UnitOfVolume](https://pub.dev/documentation/kind/latest/kind/UnitOfVolume-class.html)
+  * [UnitOfWeight](https://pub.dev/documentation/kind/latest/kind/UnitOfWeight-class.html)
   * [Uuid](https://pub.dev/documentation/kind/latest/kind/GeoPoint-class.html) (128-bit object identifier)
 
 ## Some alternatives
@@ -104,118 +123,218 @@ dependencies:
 ```
 
 ## 2.Write data models
-In the following example, we use [Field](https://pub.dev/documentation/kind/latest/kind/Field-class.html)
-and [ListField](https://pub.dev/documentation/kind/latest/kind/ListField-class.html).
-Wrapping values inside _Field<T>_ simplifies state observation. If you want to use normal Dart
-getters / setters, see "Alternative approaches" section below.
 
+When you extend [Entity](https://pub.dev/documentation/kind/latest/kind/Entity-class.html)
+and declare [EntityKind](https://pub.dev/documentation/kind/latest/kind/EntityKind-class.html)
+for your entity, you get:
+  * `==` (that handles cycles correctly)
+  * `hashCode`
+  * `toString()`
+  * JSON serialization
+  * Protocol Buffers serialization
+  * And more!
+
+There are many ways to declare _EntityKind_. Your choice depends on:
+  * Is your class immutable or mutable?
+  * Do you need state observation?
+
+## Immutable class?
 ```dart
 import 'package:kind/kind.dart';
 
-class Person extends Entity {
-  static final EntityKind<Person> kind = EntityKind<Person>(
-    name: 'Person',
-    build: (b) {
-      b.optionalString(
+class Pet extends Object with EntityMixin {
+  static final EntityKind<Pet> kind = EntityKind<Pet>(
+    name: 'Pet',
+    define: (c) {
+      // In this function, we define:
+      //   * Properties
+      //   * Constructor
+      //   * Additional metadata (examples, etc.)
+
+      // Property #1
+      //
+      // Here "optionalString()" means "define a nullable string property".
+      // It returns an instance of Prop<Pet, String?>.
+      final nameProp = c.optionalString(
+        // ID is some unique integer that's 1 or greater.
+        //
+        // It's used by (optional) Protocol Buffers serialization.
+        //
         id: 1,
-        name: 'fullName',
-        minLength: 1,
-        field: (e) => e.fullName,
+
+        // Name of the field.
+        //
+        // It's used by, for example, JSON serialization.
+        //
+        name: 'name',
+
+        // Here we say that the string must have at least 1 character.
+        minLengthInUtf8: 1,
+
+        // Getter that returns value of the field.
+        getter: (t) => t.name,
       );
-      b.requiredList<Person>(
+
+      // Property #2
+      final bestFriendProp = c.optional<Pet>(
         id: 2,
-        name: 'friends',
-        itemsKind: Person.kind,
-        field: (e) => e.friends,
+        name: 'bestFriend',
+        kind: Pet.kind,
+        getter: (t) => t.bestFriend,
       );
-      b.constructor = () => Person();
+
+      // Property #3
+      final friendsProp = c.requiredList<Pet>(
+        id: 3,
+        name: 'friends',
+        itemsKind: Pet.kind,
+        getter: (t) => t.friends,
+      );
+
+      // Example (optional)
+      c.declaredExamples = [
+        Pet(name: 'Charlie'),
+      ];
+
+      // Define constructor
+      c.constructorFromData = (data) {
+        return Pet(
+          name: data.get(nameProp),
+          bestFriend: data.get(bestFriendProp),
+          friends: data.get(friendsProp),
+        );
+      };
     },
   );
 
   /// Full name.
-  late final Field<String?> fullName = Field<String?>(this);
+  final String? name;
 
-  /// Friends.
-  late final ListField<Person> friends = ListField<Person>(this);
+  /// Best friend.
+  final Pet? bestFriend;
+
+  /// List of friends.
+  final List<Pet> friends;
+
+  Pet({
+    this.name,
+    this.bestFriend,
+    this.friends = const [],
+  });
+
+  @override
+  EntityKind<Pet> getKind() => kind;
+}
+```
+
+Property definition methods such as `optionalString` (in
+[EntityKindDefineContext](https://pub.dev/documentation/kind/latest/kind/EntityKindDefineContext-class.html))
+are just convenient methods for adding [Prop<T,V>](https://pub.dev/documentation/kind/latest/kind/Prop-class.html)
+instances. They save a few lines compared to something like:
+```dart
+c.addProp(Prop<Pet, String?>(
+  id: 1,
+  name: 'name',
+  kind: const StringKind(
+    minLengthInUtf8: 1,
+  ),
+  getter: (t) => t.name,
+));
+```
+
+## Mutable class?
+```dart
+import 'package:kind/kind.dart';
+
+class Pet extends Object with EntityMixin {
+  static final EntityKind<Pet> kind = EntityKind<Pet>(
+    name: 'Pet',
+    define: (c) {
+      // Property #1
+      c.optionalString(
+        id: 1,
+        name: 'name',
+        minLengthInUtf8: 1,
+        getter: (t) => t.name,
+        setter: (e,v) => e.name = v, // <-- Not defined in the earlier approach.
+      );
+
+      // Property #2
+      c.optional<Pet>(
+        id: 2,
+        name: 'bestFriend',
+        kind: Pet.kind,
+        getter: (t) => t.bestFriend,
+        setter: (e,v) => e.bestFriend = v, // <-- Not defined in the earlier approach.
+      );
+
+      // Property #3
+      c.requiredList<Pet>(
+        id: 3,
+        name: 'friends',
+        itemsKind: Pet.kind,
+        getter: (t) => t.friends,
+        setter: (e,v) => e.friends = v, // <-- Not defined in the earlier approach.
+      );
+
+      // Define constructor
+      c.constructor = () => Pet(); // <-- Different from the earlier approach.
+    },
+  );
+
+  /// Full name.
+  String? name;
+
+  /// Best friend.
+  Pet? bestFriend;
+
+  /// List of friends.
+  List<Pet> friends = [];
 
   @override
   EntityKind getKind() => kind;
-}
-
-void main() {
-    final alice = Person();
-    alice.name.value = 'Alice';
-
-    final bob = Person();
-    bob.name.value = 'Bob';
-
-    alice.friends.add(bob);
-    bob.friends.add(alice);
-
-    // Your objects have:
-    //   * `==` (that supports cyclic graphs)
-    //   * `hashCode`
-    //   * `toString()``
-    //   * And more!
 }
 ```
 
 
 # JSON serialization
-Use [jsonTreeEncode(...)](https://pub.dev/documentation/kind/latest/kind/EntityKind/jsonTreeEncode.html)
-and [jsonTreeDecode(...)](https://pub.dev/documentation/kind/latest/kind/EntityKind/jsonTreeDecode.html):
+Use [JsonEncodingContext](https://pub.dev/documentation/kind/latest/kind/JsonEncodingContext-class.html)
+and [JsonDecodingContext](https://pub.dev/documentation/kind/latest/kind/JsonDecodingContext-class.html):
 
 ```dart
-final alice = Person();
-final bob = Person();
-alice.name.value = 'Alice';
-bob.name.value = 'Bob';
-alice.friends.add(bob);
+import 'package:kind/kind.dart';
 
-// Person --> JSON tree
-final aliceJson = person.getKind().jsonTreeEncode(alice);
-// JSON tree:
-//   {
-//     "fullName": "Alice",
-//     "friends": [
-//       {
-//         "fullName": "Bob",
-//       }
-//     ]
-//   }
+void main() {}
+  final cat = Pet();
+  bob.name.value = 'Bob';
+  
+  final dog = Pet();
+  alice.name.value = 'Alice';
+  alice.bestFriend = cat;
 
-// JSON tree --> Person
-final decodedAlice = Person.kind.jsonTreeDecode(aliceJson);
+  // Pet --> JSON tree
+  final encodingContext = JsonEncodingContext();
+  final dogJson = encodingContext.encode(dog, kind: Pet.kind);
+  // JSON tree:
+  //   {
+  //     "name": "Alice",
+  //     "bestFriend": {
+  //       "name": "Bob",
+  //     }
+  //   }
+  
+  // JSON tree --> Pet
+  final decodingContext = JsonEncodingContext();
+  final decodedDog = decodingContext.decode(dogJson, kind: Pet.kind);
+}
 ```
 
-## Mapping identifiers
-If you want to use underscore naming convention, simply pass
-[UnderscoreNamer](https://pub.dev/documentation/kind/latest/kind/UnderscoreNamer-class.html)
-in the context object:
-```dart
-final namer = UnderscoreNamer();
+If you want to map identifiers to different naming convention or have special
+identifier rules, use [Namer](https://pub.dev/documentation/kind/latest/kind/Namer-class.html).
 
-// Person --> JSON tree
-final aliceJson = person.getKind().jsonTreeEncode(
-  alice,
-  context: JsonEncodingContext(namer: namer),
-);
-
-// JSON tree --> Person
-final decodedAlice = Person.kind.jsonTreeDecode(
-  aliceJson,
-  context: JsonDecodingContext(namer: namer),
-);
-```
-
-You can also declare special rules:
-```dart
-final namer = UnderscoreNamer(
-  rules: {
-    'fullName': 'real_name',
-  },
-);
-```
+If you want to change entirely how some classes are serialized, override
+methods in  [JsonEncodingContext](https://pub.dev/documentation/kind/latest/kind/JsonEncodingContext-class.html)
+and [JsonDecodingContext](https://pub.dev/documentation/kind/latest/kind/JsonDecodingContext-class.html).
 
 # Protocol Buffers serialization
 For encoding/decoding Protocol Buffers bytes,
@@ -223,11 +342,11 @@ use [protobufBytesEncode(...)](https://pub.dev/documentation/kind/latest/kind/En
 and [protobufBytesDecode(...)](https://pub.dev/documentation/kind/latest/kind/EntityKind/protobufBytesDecode.html):
 
 ```dart
-// Person --> bytes
-final bytes = Person.kind.protobufBytesEncode(person);
+// Pet --> bytes
+final bytes = Pet.kind.protobufBytesEncode(pet);
 
-// bytes --> Person
-final person = Person.kind.protobufBytesDecode(bytes);
+// bytes --> Pet
+final pet = Pet.kind.protobufBytesDecode(bytes);
 ```
 
 For encoding/decoding [GeneratedMessage](https://pub.dev/documentation/protobuf/latest/protobuf/GeneratedMessage-class.html)
@@ -235,162 +354,144 @@ For encoding/decoding [GeneratedMessage](https://pub.dev/documentation/protobuf/
 use [protobufTreeEncode(...)](https://pub.dev/documentation/kind/latest/kind/EntityKind/protobufTreeEncode.html)
 and [protobufTreeDecode(...)](https://pub.dev/documentation/kind/latest/kind/EntityKind/protobufTreeDecode.html):
 ```dart
-// Person --> GeneratedMessage
-final generatedMessage = Person.kind.protobufTreeEncode(person);
+// Pet --> GeneratedMessage
+final generatedMessage = Pet.kind.protobufTreeEncode(pet);
 
-// GeneratedMessage --> Person
-final person = Person.kind.protobufTreeDecode(generatedMessage);
+// GeneratedMessage --> Pet
+final pet = Pet.kind.protobufTreeDecode(generatedMessage);
 ```
 
-You can also generate _GeneratedMessage_ classes with GRPC tooling and merge messages using
-[mergeFromMessage](https://pub.dev/documentation/protobuf/latest/protobuf/GeneratedMessage/mergeFromMessage.html).
+You can also generate _GeneratedMessage_ classes with GRPC tooling and merge messages (using
+[mergeFromMessage](https://pub.dev/documentation/protobuf/latest/protobuf/GeneratedMessage/mergeFromMessage.html)
+and other methods available).
+
+If you want to map identifiers to different naming convention or have special
+identifier rules, use [Namer](https://pub.dev/documentation/kind/latest/kind/Namer-class.html).
+
+If you want to change entirely how some classes are serialized, override
+methods in  [ProtobufEncodingContext](https://pub.dev/documentation/kind/latest/kind/ProtobufEncodingContext-class.html)
+and [ProtobufDecodingContext](https://pub.dev/documentation/kind/latest/kind/ProtobufDecodingContext-class.html).
 
 
-# Alternative approaches to specifying data classes
-### Why / why not?
-The alternative approaches:
-  * Do not force you to deviate from the way you normally write classes.
-  * Perform better when you have millions of objects.
-  * Do not support reactive programming with `ReactiveSystem` unless you write a lot error-prone
-    boilerplate code.
-    * At some point, we may release a code generator that generates boilerplate for you, but there
-      will inevitably going to be some complexity unless Dart language designers decide to support
-      something like decorator annotations.
+# Defining reactive classes
+## Approach #1: Field<T> instances
+In the following example, we use [Field](https://pub.dev/documentation/kind/latest/kind/Field-class.html)
+and [ListField](https://pub.dev/documentation/kind/latest/kind/ListField-class.html).
+They handle sending of notifications to [ReactiveSystem](https://pub.dev/documentation/kind/latest/kind/ReactiveSystem-class.html).
 
-## Mutable and non-reactive
-You just define `getter` and `setter` in [Prop](https://pub.dev/documentation/kind/latest/kind/Prop-class.html)
-for ordinary Dart fields:
 ```dart
 import 'package:kind/kind.dart';
 
-class Person {
-  /// Full name.
-  String? fullName = '';
-
-  /// Friends.
-  final Set<Person> friends = {};
-}
-
-/// EntityKind for [Person].
-final EntityKind<Person> personKind = EntityKind<Person>(
-  name: 'Person',
-  build: (builder) {
-    builder.optionalString(
-      id: 1,
-      name: 'fullName',
-      getter: (t) => t.fullName,
-      setter: (t,v) => t.fullName = v,
-    );
-    builder.requiredSet<Person>(
-      id: 2,
-      name: 'friends',
-      itemsKind: personKind,
-      getter: (t) => t.friends,
-    );
-    builder.constructor = () => Person();
-  },
-);
-```
-
-## Mutable and reactive
-You can use [ReactiveMixin](https://pub.dev/documentation/kind/latest/kind/ReactiveMixin-class.html)
-for implementing getters and setters that send notifications to
-[ReactiveSystem](https://pub.dev/documentation/kind/latest/kind/ReactiveSystem-class.html):
-```dart
-// ...
-
-class Person extends Entity with ReactiveMixin {
-  String? _fullName;
-  final Set<Person> _friends = ReactiveSet<Person>();
-
-  /// Full name of the person.
-  String? get fullName => beforeGet(_fullName);
-  set fullName(String? value) => _fullName = beforeSet(_fullName, value);
-
-  /// Friends of the person.
-  Set<Person> get friends => beforeGet(_friends);
-
-  @override
-  EntityKind<Person> getKind() => personKind;
-}
-
-// `personKind` is identical to the previous example.
-// ...
-```
-
-
-## Immutable and non-reactive
-```dart
-import 'package:kind/kind.dart';
-
-// Extending Entity is optional, but recommended.
-class Person {
-  /// Full name of the person.
-  final String? name;
-
-  /// Friends of the person.
-  final Set<Person> friends;
-
-  Person({
-    this.fullName,
-    this.friends = const {},
-  });
-}
-
-/// EntityKind for [Person].
-final EntityKind<Person> personKind = EntityKind<Person>(
-  name: 'Person',
-  build: (builder) {
-    final fullName = builder.optionalString(
-      id: 1,
-      name: 'fullName',
-      getter: (t) => t.fullName,
-    );
-    final friends = builder.requiredSet<Person>(
-      id: 2,
-      name: 'friends',
-      itemsKind: personKind,
-      getter: (t) => t.friends,
-    );
-    builder.constructorFromData = (data) {
-      return Person(
-        name: data.get(fullName),
-        friends: data.get(friends),
+class Pet extends Object with EntityMixin {
+  static final EntityKind<Pet> kind = EntityKind<Pet>(
+    name: 'Pet',
+    define: (c) {
+      // Property #1
+      c.optionalString(
+        id: 1,
+        name: 'name',
+        minLengthInUtf8: 1,
+        field: (e) => e.name,
       );
-    };
-  },
-);
-```
 
-## Immutable and reactive
-You can use [ReactiveMixin](https://pub.dev/documentation/kind/latest/kind/ReactiveMixin-class.html)
-for implementing getters and setters that send notifications to
-[ReactiveSystem](https://pub.dev/documentation/kind/latest/kind/ReactiveSystem-class.html):
-```dart
-// ...
+      // Property #2
+      c.optional<Pet>(
+        id: 2,
+        name: 'bestFriend',
+        kind: Pet.kind,
+        field: (e) => e.bestFriend,
+      );
 
-// Extending Entity is optional, but recommended.
-class Person extends Entity with ReactiveMixin {
-  final String? _fullName;
-  final Set<Person> _friends;
+      // Property #3
+      c.requiredList<Pet>(
+        id: 3,
+        name: 'friends',
+        itemsKind: Pet.kind,
+        field: (e) => e.friends,
+      );
 
-  /// Full name of the person.
-  String? get fullName => beforeGet(_fullName);
+      // Define constructor
+      c.constructor = () => Pet();
+    },
+  );
 
-  /// Friends of the person.
-  Set<Person> get friends => beforeGet(_friends);
+  /// Full name.
+  late final Field<String?> name = Field<String?>(this);
 
-  Person({
-    required String? name,
-    Set<Person> friends = const {},
-  }) :
-    _fullName = name,
-    _friends = ReactiveSet<Person>.wrap(friends);
+  /// Best friend.
+  late final Field<Pet?> friends = Field<Pet?>(this);
+
+  /// List of friends.
+  late final ListField<Pet> friends = ListField<Pet>(this);
 
   @override
-  EntityKind<Person> getKind() => personKind;
+  EntityKind getKind() => kind;
 }
+```
 
-// `personKind` is identical to the previous example.
-// ...
+## Approach #2: ReactiveMixin
+You can use [ReactiveMixin](https://pub.dev/documentation/kind/latest/kind/ReactiveMixin-class.html)
+for implementing getters and setters that send notifications to
+[ReactiveSystem](https://pub.dev/documentation/kind/latest/kind/ReactiveSystem-class.html).
+
+This is a bit more error-prone approach than the approach above.
+
+```dart
+import 'package:kind/kind.dart';
+
+class Pet extends Entity with ReactiveMixin {
+  static final EntityKind<Pet> kind = EntityKind<Pet>(
+    name: 'Pet',
+    define: (c) {
+      // Property #1
+      c.optionalString(
+        id: 1,
+        name: 'name',
+        minLengthInUtf8: 1,
+        getter: (t) => t.name,
+        setter: (e,v) => e.name = v, // <-- Not defined in the earlier approach.
+      );
+
+      // Property #2
+      c.optional<Pet>(
+        id: 2,
+        name: 'bestFriend',
+        kind: Pet.kind,
+        getter: (t) => t.bestFriend,
+        setter: (e,v) => e.bestFriend = v, // <-- Not defined in the earlier approach.
+      );
+
+      // Property #3
+      c.requiredList<Pet>(
+        id: 3,
+        name: 'friends',
+        itemsKind: Pet.kind,
+        getter: (t) => t.friends,
+        setter: (e,v) => e.friends = v, // <-- Not defined in the earlier approach.
+      );
+
+      // Define constructor
+      c.constructor = () => Pet(); // <-- Different from the earlier approach.
+    },
+  );
+
+  String? _name;
+  Pet? _bestFriend;
+  List<Pet> _friends = ReactiveList<Pet>.empty();
+
+  /// Full name.
+  String? get name => beforeGet(_name);
+  set name(String? value) => _name = beforeSet(_name, value);
+
+  /// Best friend.
+  Pet? get bestFriend => beforeGet(_bestFriend);
+  set bestFriend(Pet? value) => _bestFriend = beforeSet(_bestFriend, value);
+
+  /// List of friends.
+  List<Pet> get friends => beforeGet(_friends);
+  set friends(List<Pet> value) => _friends = beforeSet(_friends, value);
+
+  @override
+  EntityKind<Pet> getKind() => petKind;
+}
 ```

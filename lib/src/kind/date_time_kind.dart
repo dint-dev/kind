@@ -33,17 +33,15 @@ import 'package:protobuf/protobuf.dart';
 /// You can generate random examples with the methods [randomExample()] and
 /// [randomExampleList()].
 ///
-/// Currently method [randomExample] returns random values between years 1950
-/// and 2020.
-///
-/// This behavior may be changed in future.
+/// Currently [randomExample] returns random values between years 1950 and 2020.
+/// This is an implementation detail that could be changed in future.
 @sealed
 class DateTimeKind extends PrimitiveKind<DateTime> {
   /// [Kind] for [DateTimeKind].
   @protected
   static final EntityKind<DateTimeKind> kind = EntityKind<DateTimeKind>(
     name: 'DateTimeKind',
-    build: (c) {
+    define: (c) {
       c.constructor = () => const DateTimeKind();
     },
   );
