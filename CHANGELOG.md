@@ -1,3 +1,6 @@
+## 0.5.1
+  * Fixes issues in the documentation.
+
 ## 0.5.0
 
   * Major refactoring, including some breaking API changes.

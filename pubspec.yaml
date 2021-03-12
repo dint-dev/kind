@@ -1,5 +1,5 @@
 name: kind
-version: 0.5.0
+version: 0.5.1
 description:
   An unified data layer framework that enables serialization, persistence, and state observability
   for any Dart class. Comes with primitives such as decimal numbers and currency amounts.

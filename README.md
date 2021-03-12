@@ -119,7 +119,7 @@ environment:
   sdk: '>=2.12.0 <3.0.0'
 
 dependencies:
-  kind: ^0.5.0
+  kind: ^0.5.1
 ```
 
 ## 2.Write data models
