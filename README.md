@@ -42,7 +42,7 @@ Flutter SDK 2.0.0 or later.
   * Floating-point numbers
     * [Float32Kind](https://pub.dev/documentation/kind/latest/kind/Float32Kind-class.html)
     * [Float64Kind](https://pub.dev/documentation/kind/latest/kind/Float64Kind-class.html)
-  * Exact decimal numbers
+  * Decimal numbers
     * [DecimalKind](https://pub.dev/documentation/kind/latest/kind/DecimalKind-class.html)
   * Date and time
     * [DateKind](https://pub.dev/documentation/kind/latest/kind/DateKind-class.html)
@@ -85,17 +85,17 @@ Flutter SDK 2.0.0 or later.
   * [CurrencyAmount](https://pub.dev/documentation/kind/latest/kind/CurrencyAmount-class.html) (currency amount)
   * [Date](https://pub.dev/documentation/kind/latest/kind/GeoPoint-class.html) (unlike _DateTime_, has only date)
   * [DateTimeWithTimeZone](https://pub.dev/documentation/kind/latest/kind/GeoPoint-class.html) (unlike _DateTime_, allows arbitrary time zone)
-  * [Decimal](https://pub.dev/documentation/kind/latest/kind/Decimal-class.html) (precise decimal number)
+  * [Decimal](https://pub.dev/documentation/kind/latest/kind/Decimal-class.html) (decimal number)
   * [GeoPoint](https://pub.dev/documentation/kind/latest/kind/GeoPoint-class.html) (geographical latitude/longitude coordinates)
-  * [ReactiveIterable](https://pub.dev/documentation/kind/latest/kind/ReactiveIterable-class.html)
-  * [ReactiveList](https://pub.dev/documentation/kind/latest/kind/ReactiveList-class.html)
-  * [ReactiveMap](https://pub.dev/documentation/kind/latest/kind/ReactiveMap-class.html)
-  * [ReactiveSet](https://pub.dev/documentation/kind/latest/kind/ReactiveSet-class.html)
-  * [UnitOfArea](https://pub.dev/documentation/kind/latest/kind/UnitOfArea-class.html)
-  * [UnitOfLength](https://pub.dev/documentation/kind/latest/kind/UnitOfLength-class.html)
-  * [UnitOfMeasure](https://pub.dev/documentation/kind/latest/kind/UnitOfMeasure-class.html)
-  * [UnitOfVolume](https://pub.dev/documentation/kind/latest/kind/UnitOfVolume-class.html)
-  * [UnitOfWeight](https://pub.dev/documentation/kind/latest/kind/UnitOfWeight-class.html)
+  * [ReactiveIterable](https://pub.dev/documentation/kind/latest/kind/ReactiveIterable-class.html) (reactive Iterable<T>)
+  * [ReactiveList](https://pub.dev/documentation/kind/latest/kind/ReactiveList-class.html) (reactive List<T>)
+  * [ReactiveMap](https://pub.dev/documentation/kind/latest/kind/ReactiveMap-class.html) (reactive Map<T>)
+  * [ReactiveSet](https://pub.dev/documentation/kind/latest/kind/ReactiveSet-class.html) (reactive Set<T>)
+  * [UnitOfArea](https://pub.dev/documentation/kind/latest/kind/UnitOfArea-class.html) (unit of area)
+  * [UnitOfLength](https://pub.dev/documentation/kind/latest/kind/UnitOfLength-class.html) (unit of length)
+  * [UnitOfMeasure](https://pub.dev/documentation/kind/latest/kind/UnitOfMeasure-class.html) (unit of measure)
+  * [UnitOfVolume](https://pub.dev/documentation/kind/latest/kind/UnitOfVolume-class.html) (unit of volume)
+  * [UnitOfWeight](https://pub.dev/documentation/kind/latest/kind/UnitOfWeight-class.html) (unit of weight)
   * [Uuid](https://pub.dev/documentation/kind/latest/kind/GeoPoint-class.html) (128-bit object identifier)
 
 ## Some alternatives
@@ -119,7 +119,7 @@ environment:
   sdk: '>=2.12.0 <3.0.0'
 
 dependencies:
-  kind: ^0.3.2
+  kind: ^0.5.0
 ```
 
 ## 2.Write data models
@@ -192,7 +192,7 @@ class Pet extends Object with EntityMixin {
       );
 
       // Example (optional)
-      c.declaredExamples = [
+      c.examples = [
         Pet(name: 'Charlie'),
       ];
 
